@@ -2,8 +2,11 @@ import { combineReducers } from 'redux';
 
 const INITIAL_STATE = {
 email: null,
-siteData: null,
-workId: null,
+playgroundName: '',
+playgroundId:'',
+playgroundLat:null,
+playgroundLon:null,
+playgroundModal: false,
 userInfo:null
 };
 
@@ -26,12 +29,25 @@ const ourReducer = (state = INITIAL_STATE, action) => {
                       }
                     break;
 
-                    case "SET_SITE_DATA":
+                    case "STORE_PLAYGROUND":
                       return{
                         ...state,
-                        siteData: action.value
+                        playgroundName: action.value,
+                        playgroundId: action.value1,
+                        playgroundLat:action.value2,
+                        playgroundLon:action.value3
                       }
                     break;
+                    case "CLOSE_MODAL_1":
+      
+      return{
+        ...state,
+        playgroundModal: action.value,
+        
+
+      }
+      break;
+
   
   }
   return newState;

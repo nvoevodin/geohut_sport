@@ -11,6 +11,7 @@ import {
 import { Button } from "native-base";
 import * as firebase from "firebase";
 import { Entypo } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 import * as Permissions from "expo-permissions";
 import * as Location from "expo-location";
 import { getDistance } from "geolib";
@@ -18,6 +19,7 @@ import * as Animatable from "react-native-animatable";
 import background from "../assets/background.png";
 import PageTemplate from "./subComponents/Header";
 import { connect } from "react-redux";
+import PlaygroundModal from "./subComponents/playgroundModal"
 
 const moment = require("moment");
 
@@ -51,14 +53,14 @@ class Home extends Component {
     this.readFireBase();
 
     //RETRIEVES SITE INFORMATION (using either email/phone or id)
-    this.getSiteDataWithEmail(firebase.auth().currentUser.email);
+    //this.getSiteDataWithEmail(firebase.auth().currentUser.email);
     
     //EXECUTES LOCATION PERMISSIONS
     this.getLocationsPermissions();
 
 
     //CHECKS IF ALREADY PRECHECKED IN
-    this.precheckedIn();
+    //this.precheckedIn();
 
     //CHECKS IF ALREADY CHECKED IN
     this.checkedIn();
@@ -70,23 +72,23 @@ class Home extends Component {
 
 //FUNCTION: CHECKS IF ALREADY CHECKED IN TODAY (IN CASE LOGGED OUT)
 
-precheckedIn = () =>{
+// precheckedIn = () =>{
 
-  firebase.database().ref('UsersList/'+ this.uid + '/info').once('value', snapshot => {
+//   firebase.database().ref('UsersList/'+ this.uid + '/info').once('value', snapshot => {
         
-    let data = snapshot.val()
+//     let data = snapshot.val()
 
-    fetch(`https://geohut.metis-data.site/precheckcheck/${data.workId}`)
-    .then(res => res.json())
-    .then(res => {  
+//     fetch(`https://geohut.metis-data.site/precheckcheck/${data.workId}`)
+//     .then(res => res.json())
+//     .then(res => {  
      
-      if (res["data"].some(e => e.checkin_date_time.substr(0,10) === moment().utcOffset("-0500").format("YYYY-MM-DD"))){
-        this.setState({preSubmitted: true})
-      }
-    })
-    })
+//       if (res["data"].some(e => e.checkin_date_time.substr(0,10) === moment().utcOffset("-0500").format("YYYY-MM-DD"))){
+//         this.setState({preSubmitted: true})
+//       }
+//     })
+//     })
 
-}
+// }
 
 
 checkedIn = () =>{
@@ -94,12 +96,14 @@ checkedIn = () =>{
   firebase.database().ref('UsersList/'+ this.uid + '/info').once('value', snapshot => {
         
     let data = snapshot.val()
+console.log('test')
+ 
 
-    fetch(`https://geohut.metis-data.site/checkincheck/${data.workId}`)
+    fetch(`http://192.168.2.7:3002/checkincheck/${data.email}`)
     .then(res => res.json())
     .then(res => {  
-     
-      if (res["data"].some(e => e.checkin_date_time.substr(0,10) === moment().utcOffset("-0500").format("YYYY-MM-DD"))){
+     console.log(res["data"])
+      if (res["data"].some(e => e.checkin_datetime.substr(0,10) === moment().utcOffset("-0500").format("YYYY-MM-DD"))){
         this.setState({submitted: true})
       }
     })
@@ -117,8 +121,7 @@ checkedIn = () =>{
         this.props.setUserData({
           firstName: data.firstName,
           lastName: data.lastName,
-          email: firebase.auth().currentUser.email,
-          workId: data.workId
+          user_id: data.email
         });
       })
   }
@@ -126,72 +129,72 @@ checkedIn = () =>{
   //***THE TWO FUNCTIONS BELOW ARE OPTIONS FOR US IF WE END UP USING EMAIL/PHONE OR ID */
 
   //FUNCTION: RETRIEVES SITE DATA FOR THAT USER USING THE EMAIL 
-  getSiteDataWithEmail = (email) => {
-    //console.log("retrieving site data with email:", email);
-    fetch(`https://geohut.metis-data.site/siteinfo/${email}`)
-      .then((res) => res.json())
-      .then((res) => {
+  // getSiteDataWithEmail = (email) => {
+  //   //console.log("retrieving site data with email:", email);
+  //   fetch(`https://geohut.metis-data.site/siteinfo/${email}`)
+  //     .then((res) => res.json())
+  //     .then((res) => {
         
-        //set state
-        this.setState({
-          siteName: res["data"][0].site_name,
-          siteId: res["data"][0].site_id,
-          siteAdress: res["data"][0].site_address,
-        });
+  //       //set state
+  //       this.setState({
+  //         siteName: res["data"][0].site_name,
+  //         siteId: res["data"][0].site_id,
+  //         siteAdress: res["data"][0].site_address,
+  //       });
 
-        //set lat long in user location
-        this.setState((prevState) => ({
-          siteLocation: {
-            // object that we want to update
-            ...prevState.siteLocation, // keep all other key-value pairs
-            latitude: res["data"][0].latitude,
-            longitude: res["data"][0].longitude, // update the value of specific key
-          },
-        }));
+  //       //set lat long in user location
+  //       this.setState((prevState) => ({
+  //         siteLocation: {
+  //           // object that we want to update
+  //           ...prevState.siteLocation, // keep all other key-value pairs
+  //           latitude: res["data"][0].latitude,
+  //           longitude: res["data"][0].longitude, // update the value of specific key
+  //         },
+  //       }));
 
-        //set data into reducer
-        this.props.setSiteData({
-          siteName: res["data"][0].site_name,
-          siteId: res["data"][0].site_id,
-          siteAdress: res["data"][0].site_address,
-          latitude: res["data"][0].latitude,
-          longitude: res["data"][0].longitude
-        });
+  //       //set data into reducer
+  //       this.props.setSiteData({
+  //         siteName: res["data"][0].site_name,
+  //         siteId: res["data"][0].site_id,
+  //         siteAdress: res["data"][0].site_address,
+  //         latitude: res["data"][0].latitude,
+  //         longitude: res["data"][0].longitude
+  //       });
 
-      });
-  };
+  //     });
+  // };
 
-  //FUNCTION: RETRIEVES SITE DATA FOR THAT USER USING USER_ID 
-  getSiteDataWithId = (id) => {
-    fetch(`https://geohut.metis-data.site/usersiteinfo/${id}`)
-      .then((res) => res.json())
-      .then((res) => {
-        console.log('user site data: ',res["data"][0]);
-        this.setState({
-          siteName: res["data"][0].site_name,
-          siteId: res["data"][0].site_id,
-          siteAdress: res["data"][0].site_address,
-        });
+  // //FUNCTION: RETRIEVES SITE DATA FOR THAT USER USING USER_ID 
+  // // getSiteDataWithId = (id) => {
+  // //   fetch(`https://geohut.metis-data.site/usersiteinfo/${id}`)
+  // //     .then((res) => res.json())
+  // //     .then((res) => {
+  // //       console.log('user site data: ',res["data"][0]);
+  // //       this.setState({
+  // //         siteName: res["data"][0].site_name,
+  // //         siteId: res["data"][0].site_id,
+  // //         siteAdress: res["data"][0].site_address,
+  // //       });
 
-        this.setState((prevState) => ({
-          siteLocation: {
-            // object that we want to update
-            ...prevState.siteLocation, // keep all other key-value pairs
-            latitude: res["data"][0].latitude,
-            longitude: res["data"][0].longitude, // update the value of specific key
-          },
-        }));
+  // //       this.setState((prevState) => ({
+  // //         siteLocation: {
+  // //           // object that we want to update
+  // //           ...prevState.siteLocation, // keep all other key-value pairs
+  // //           latitude: res["data"][0].latitude,
+  // //           longitude: res["data"][0].longitude, // update the value of specific key
+  // //         },
+  // //       }));
 
-        //set data into reducer
-        this.props.setSiteData({
-          siteName: res["data"][0].site_name,
-          siteId: res["data"][0].site_id,
-          siteAdress: res["data"][0].site_address,
-          latitude: res["data"][0].latitude,
-          longitude: res["data"][0].longitude
-        });
-      });
-  };
+  // //       //set data into reducer
+  // //       this.props.setSiteData({
+  // //         siteName: res["data"][0].site_name,
+  // //         siteId: res["data"][0].site_id,
+  // //         siteAdress: res["data"][0].site_address,
+  // //         latitude: res["data"][0].latitude,
+  // //         longitude: res["data"][0].longitude
+  // //       });
+  // //     });
+  // // };
 
   //FUNCTION: ASKS FOR LOCATION PERMISSIONS
   getLocationsPermissions = async () => {
@@ -245,59 +248,59 @@ checkedIn = () =>{
       );
       return distance
     } catch (error) {
-      alert.Alert('Something went wrong, please logout, log back in and try again')
+      alert('Something went wrong, please logout, log back in and try again')
     }
   }
 
   //FUNCTION: HANDLES PRECHECKIN
-  preCheckin = async () => {
-    if (this.state.preSubmitted === false) {
-      this.setState({ submittedAnimation: true });
-      console.log("prechecking...");
-      try {
-        //get location
-        let location = await this.getCurrentLoc();
-        console.log(parseFloat(location[0].coords.latitude));
-        console.log(parseFloat(location[0].coords.longitude));
+  // preCheckin = async () => {
+  //   if (this.state.preSubmitted === false) {
+  //     this.setState({ submittedAnimation: true });
+  //     console.log("prechecking...");
+  //     try {
+  //       //get location
+  //       let location = await this.getCurrentLoc();
+  //       console.log(parseFloat(location[0].coords.latitude));
+  //       console.log(parseFloat(location[0].coords.longitude));
 
-        //test how far away the user is
-        let distance = await this.calculateDistance(
-          parseFloat(location[0].coords.latitude),
-          parseFloat(location[0].coords.longitude),
-          this.state.siteLocation.latitude,
-          this.state.siteLocation.longitude
-        );
+  //       //test how far away the user is
+  //       let distance = await this.calculateDistance(
+  //         parseFloat(location[0].coords.latitude),
+  //         parseFloat(location[0].coords.longitude),
+  //         this.state.siteLocation.latitude,
+  //         this.state.siteLocation.longitude
+  //       );
         
-        console.log("distance: ", distance);
-        console.log("worker id: ", this.props.reducer.userInfo.workId)
-        //send data
-        fetch(
-          // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
-          `https://geohut.metis-data.site/add?time=${
-            moment()
-              .utcOffset("-0500")
-              .format("YYYY-MM-DD HH:mm:ss")
-              .substr(0, 18) + "0"
-          }&site_id=${this.props.reducer.siteData.siteId}&first_name=${this.props.reducer.userInfo.firstName}
-              &last_name=${this.props.reducer.userInfo.lastName}&user_id=${this.props.reducer.userInfo.workId}
-              &latitude=${parseFloat(location[0].coords.latitude)}
-              &longitude=${parseFloat(location[0].coords.longitude)}
-              &checkin_type=1
-              &distance=${distance}`,
-          { method: "POST" }
-        ).catch((err) => console.error(err));
+  //       console.log("distance: ", distance);
+  //       console.log("worker id: ", this.props.reducer.userInfo.workId)
+  //       //send data
+  //       fetch(
+  //         // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
+  //         `https://geohut.metis-data.site/add?time=${
+  //           moment()
+  //             .utcOffset("-0500")
+  //             .format("YYYY-MM-DD HH:mm:ss")
+  //             .substr(0, 18) + "0"
+  //         }&site_id=${this.props.reducer.siteData.siteId}&first_name=${this.props.reducer.userInfo.firstName}
+  //             &last_name=${this.props.reducer.userInfo.lastName}&user_id=${this.props.reducer.userInfo.workId}
+  //             &latitude=${parseFloat(location[0].coords.latitude)}
+  //             &longitude=${parseFloat(location[0].coords.longitude)}
+  //             &checkin_type=1
+  //             &distance=${distance}`,
+  //         { method: "POST" }
+  //       ).catch((err) => console.error(err));
 
-        //show checkin as done
-        this.setState({ preSubmitted: true });
-        Alert.alert("Thank you for pre-checkin, do not forget to checkin!");
-      } catch (e) {
-        console.log(e);
-      }
-      this.setState({ submittedAnimation: false });
-    } else {
-      Alert.alert("You have already done a pre-checkin!");
-    }
-  };
+  //       //show checkin as done
+  //       this.setState({ preSubmitted: true });
+  //       Alert.alert("Thank you for pre-checkin, do not forget to checkin!");
+  //     } catch (e) {
+  //       console.log(e);
+  //     }
+  //     this.setState({ submittedAnimation: false });
+  //   } else {
+  //     Alert.alert("You have already done a pre-checkin!");
+  //   }
+  // };
 
 
   //FUNCTION: HANDLES MAIN CHECKIN
@@ -314,8 +317,8 @@ checkedIn = () =>{
         let distance = await this.calculateDistance(
           parseFloat(location[0].coords.latitude),
           parseFloat(location[0].coords.longitude),
-          this.state.siteLocation.latitude,
-          this.state.siteLocation.longitude
+          this.props.reducer.playgroundLat,
+          this.props.reducer.playgroundLon
         );
         console.log("distance: ", distance);
 
@@ -325,17 +328,13 @@ checkedIn = () =>{
           //this.getCurrentLoc();
           fetch(
             // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
-            `https://geohut.metis-data.site/add?time=${
+            `http://192.168.2.7:3002/add?time=${
               moment()
                 .utcOffset("-0500")
                 .format("YYYY-MM-DD HH:mm:ss")
                 .substr(0, 18) + "0"
-            }&site_id=${this.props.reducer.siteData.siteId}&first_name=${this.props.reducer.userInfo.firstName}
-            &last_name=${this.props.reducer.userInfo.lastName}&user_id=${this.props.reducer.userInfo.workId}
-            &latitude=${parseFloat(location[0].coords.latitude)}
-            &longitude=${parseFloat(location[0].coords.longitude)}
-            &checkin_type=0
-            &distance=${distance}`,
+            }&site_id=${this.props.reducer.playgroundId}&first_name=${this.props.reducer.userInfo.firstName}
+            &last_name=${this.props.reducer.userInfo.lastName}&user_id=${this.props.reducer.userInfo.user_id}`,
             { method: "POST" }
           ).catch((err) => console.error(err));
 
@@ -362,18 +361,17 @@ checkedIn = () =>{
 
   render() {
 
-
+console.log(this.state)
     return (
       <React.Fragment>
         <PageTemplate title={"Home"} logout={this.logout} />
         <View style={styles.container}>
           <View style={styles.bubble}>
-            <Text style={styles.titleText}>
-              Site:{" "}
-              {this.state.siteName
-                ? `${this.state.siteName}`
-                : `Retrieving ... `}
-            </Text>
+          <TouchableOpacity onPress={() => {
+                  this.props.onModalOne()}}>
+            <MaterialCommunityIcons name="target" size={50} color="white" />
+            </TouchableOpacity>
+          
           </View>
 
           <View style={styles.container}>
@@ -488,8 +486,9 @@ checkedIn = () =>{
               </Animatable.View>
             )}
           </View>
+          <View><Text style = {{fontSize: 25}}>{this.props.reducer.playgroundName}</Text></View>
 
-          <Button
+          {/* <Button
             style={{
               margin: 10,
               backgroundColor: "#ebf2f2",
@@ -505,7 +504,7 @@ checkedIn = () =>{
             <Text style={{ color: "black", fontWeight: "bold" }}>
               Pre-CheckIn
             </Text>
-          </Button>
+          </Button> */}
 
           {this.state.submittedAnimation && (
             <View style={styles.loading}>
@@ -518,6 +517,7 @@ checkedIn = () =>{
             </View>
           )}
         </View>
+        <PlaygroundModal/>
       </React.Fragment>
     );
   }
@@ -535,7 +535,8 @@ const mapDispachToProps = dispatch => {
   return {
     setEmailData: (y) => dispatch({ type: "SET_EMAIL_DATA", value: y}),
     setUserData: (y) => dispatch({ type: "SET_USER_DATA", value: y}),
-    setSiteData: (y) => dispatch({ type: "SET_SITE_DATA", value: y})
+    setSiteData: (y) => dispatch({ type: "SET_SITE_DATA", value: y}),
+    onModalOne: () => dispatch({ type: "CLOSE_MODAL_1", value: true})
   };
 };
 
@@ -570,15 +571,15 @@ const styles = StyleSheet.create({
   },
   bubble: {
     position: "absolute",
-    top: "-3.2%",
+    top: "-5%",
     alignItems: "center",
     justifyContent: "center",
-    width: "36%",
-    height: "6%",
+    width: "15%",
+    height: "10%",
     marginLeft: "32%",
     marginRight: "32%",
     padding: 5,
-    borderRadius: 30,
+    borderRadius: 50,
     paddingBottom: 5,
     backgroundColor: "#4aa0cf",
     shadowColor: "black", // IOS

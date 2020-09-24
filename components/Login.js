@@ -11,7 +11,7 @@ class Help extends Component {
     state = {
       firstName:'',
       lastName:'',
-      workId:'',
+      
       email:null,
       password:'',
       errorMessage: null,

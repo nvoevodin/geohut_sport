@@ -10,16 +10,20 @@ class SignUp extends Component {
     errorMessage: null,
     firstName: "",
     lastName: "",
-    workId: "",
   };
 
   // when a user signs up they will have a record added to the user table in realtime database
-  addUser = (uid, workId, firstName, lastName, email) => {
+  addUser = (uid, firstName, lastName, email) => {
+
+
+
+
+
     firebase
       .database()
       .ref("UsersList/" + uid + "/info/")
       .set({
-        workId,
+        
         firstName,
         lastName,
         email,
@@ -30,10 +34,10 @@ class SignUp extends Component {
 
   //CHECKS EMAIL AGAINST ALLOWED USERS, CREATES NEW USER, ADDS USERS INFO TO FIREBASE, CHECKS FOR ERRORS
   handleSignUp = (email, password) => {
-    fetch(`https://geohut.metis-data.site/validate/${email}`)
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.data[0].id === email) {
+    // fetch(`https://geohut.metis-data.site/validate/${email}`)
+    //   .then((res) => res.json())
+    //   .then((res) => {
+        //if (res.data[0].id === email) {
           if (this.state.password.length < 6) {
             alert("Must be minimum 6 characters!");
             return;
@@ -42,41 +46,54 @@ class SignUp extends Component {
             .auth()
             .createUserWithEmailAndPassword(email, password)
             .then(() => firebase.auth().currentUser.sendEmailVerification())
+  
+
+            .catch((error) => {this.setState({ errorMessage: error.message })
+            console.log(error.message)})
             .then((user) => {
-              this.addUser(
-                firebase.auth().currentUser.uid,
-                this.state.workId,
-                this.state.firstName,
-                this.state.lastName,
-                this.state.email
-              );
-            })
+              if (this.state.errorMessage === "The email address is already in use by another account."){
+                Alert.alert(
+                  "Access Denied!",
+                  "You already registered with this email.",
+                  [{ text: "OK" }],
+                  { cancelable: false }
+                )
+              } else {
+                this.addUser(
+                  firebase.auth().currentUser.uid,
+                  
+                  this.state.firstName,
+                  this.state.lastName,
+                  this.state.email
+                );
+                Alert.alert(
+                  "SUCCESS!",
+                  "We just emailed you a verification link.",
+                  [{ text: "OK" }],
+                  { cancelable: false }
+                )
+              }
 
-            .catch((error) => this.setState({ errorMessage: error.message }));
+            });
 
-          Alert.alert(
-            "SUCCESS!",
-            "We just emailed you a verification link.",
-            [{ text: "OK" }],
-            { cancelable: false }
-          );
-        } else {
-          Alert.alert(
-            "Access Denied!",
-            "You must use your employer-issued ID!",
-            [{ text: "OK" }],
-            { cancelable: false }
-          );
-        }
-      })
-      .catch((error) =>
-        Alert.alert(
-          "Access Denied!",
-          "You must use your employer-issued ID!",
-          [{ text: "OK" }],
-          { cancelable: false }
-        )
-      );
+
+        // } else {
+        //   Alert.alert(
+        //     "Access Denied!",
+        //     "You must use your employer-issued ID!",
+        //     [{ text: "OK" }],
+        //     { cancelable: false }
+        //   );
+        // }
+      //})
+      // .catch((error) =>
+      //   Alert.alert(
+      //     "Access Denied!",
+      //     "Something is wrong!",
+      //     [{ text: "OK" }],
+      //     { cancelable: false }
+      //   )
+      // );
   };
 
 
@@ -86,6 +103,7 @@ class SignUp extends Component {
   };
 
   render() {
+    
     return (
       <Container style={styles.container}>
         <Form>
@@ -113,7 +131,7 @@ class SignUp extends Component {
               
             />
           </Item>
-          <Item floatingLabel>
+          {/* <Item floatingLabel>
             <Label>Work ID</Label>
             <Input
               secureTextEntry={true}
@@ -122,7 +140,7 @@ class SignUp extends Component {
               onChangeText={(workId) => this.setState({ workId })}
               
             />
-          </Item>
+          </Item> */}
 
           <Item floatingLabel>
             <Label>Email</Label>
@@ -145,7 +163,7 @@ class SignUp extends Component {
             />
           </Item>
 
-          {(!this.state.password || !this.state.email || !this.state.firstName || !this.state.lastName || !this.state.workId) && 
+          {(!this.state.password || !this.state.email || !this.state.firstName || !this.state.lastName) && 
           <Text style = {{color:'red', width: '50%', marginLeft: '30%', marginTop: '5%'}}>All Fields Are Required!</Text>
           } 
 
@@ -154,7 +172,7 @@ class SignUp extends Component {
             full
             rounded
             success
-            disabled = {!this.state.password || !this.state.email || !this.state.firstName || !this.state.lastName || !this.state.workId}
+            disabled = {!this.state.password || !this.state.email || !this.state.firstName || !this.state.lastName}
             onPress={() =>
               this.handleSignUp(this.state.email, this.state.password)
             }
