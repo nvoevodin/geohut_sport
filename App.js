@@ -97,24 +97,24 @@ const bottomTabNavigator = createBottomTabNavigator(
         )
       }
     },
-    Help: {
-      screen: Help,
-      navigationOptions: {
-        tabBarIcon: ({ tintColor }) => (
-          // <Icon name="comments" size={25} color={tintColor} />
-          <Ionicons  name="ios-information-circle" size={25} color={tintColor}/>
-        )
-      }
-    },
-    Profile: {
-      screen: Profile,
-      navigationOptions: {
-        tabBarIcon: ({ tintColor }) => (
-          // <Icon name="search" size={25} color={tintColor} />
-          <Ionicons  name="md-person" size={25} color={tintColor}/>
-        )
-      }
-    },
+    // Help: {
+    //   screen: Help,
+    //   navigationOptions: {
+    //     tabBarIcon: ({ tintColor }) => (
+    //       // <Icon name="comments" size={25} color={tintColor} />
+    //       <Ionicons  name="ios-information-circle" size={25} color={tintColor}/>
+    //     )
+    //   }
+    // },
+    // Profile: {
+    //   screen: Profile,
+    //   navigationOptions: {
+    //     tabBarIcon: ({ tintColor }) => (
+    //       // <Icon name="search" size={25} color={tintColor} />
+    //       <Ionicons  name="md-person" size={25} color={tintColor}/>
+    //     )
+    //   }
+    // },
 
 
   },

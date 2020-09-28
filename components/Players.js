@@ -3,10 +3,14 @@ import {StyleSheet,Modal, TouchableOpacity} from 'react-native';
 import {Container, Header, Content, List, ListItem, Icon, Button, Left,Right, Body, Title,Text, Picker} from 'native-base';
 import { connect } from 'react-redux';
 import PageTemplate from "./subComponents/Header";
+import { View } from 'react-native-animatable';
+import moment from "moment";
 
 
 
+//let x = 'http://192.168.2.7:3002'
 
+let x = 'http://192.168.2.7:3002'
 
 
 class Players extends Component {
@@ -21,13 +25,17 @@ class Players extends Component {
     }
 
     getPlayers = () => {
-    fetch(`http://192.168.2.7:3002/players`)
+      console.log('printing')
+    fetch(`${x}/players/${this.props.reducer.playgroundId}`)
     .then((res) => res.json())
     .then((res) => {
+        
     this.setState({players:res.data})
     });
 
 }
+
+
 
 
   //FUNCTION: LOGS OUT
@@ -53,7 +61,19 @@ class Players extends Component {
     return (
         <React.Fragment>
         <PageTemplate title={"Players"} logout={this.logout} />
+        <View style={styles.container}>
+        <Button style ={{margin:10}}
+                    full
+                    rounded
+                    success
+                    onPress={this.getPlayers}>
 
+                        <Text style = {{color:'white'}}>Refresh</Text>
+                    </Button>
+
+                    <Text style = {{fontSize:20}}>Checked In:</Text>
+    <Text style = {{fontSize:56}}>{this.state.players.length}</Text>
+    </View>
 <Container>
         
  
@@ -65,7 +85,7 @@ class Players extends Component {
               <Left>
               <Text>{object["first_name"]} {object["last_name"]}</Text>  
               </Left>
-              <Right><Text>{object["checkin_datetime"]}</Text></Right>
+              <Right><Text>{moment(object["checkin_datetime"]).format('LT')}</Text></Right>
               
             
               
@@ -103,3 +123,12 @@ const mapStateToProps = (state) => {
   export default connect(mapStateToProps,
     mapDispachToProps
     )(Players)
+
+    const styles = StyleSheet.create({
+      container: {
+       
+        backgroundColor: "#fff",
+        alignItems: "center"
+        
+      }
+    })

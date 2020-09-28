@@ -5,7 +5,9 @@ import { connect } from 'react-redux';
 
 
 
+//let x = 'http://10.244.57.219:3002'
 
+let x = 'http://192.168.2.7:3002'
 
 
 
@@ -21,7 +23,7 @@ class PlaygroundModal extends Component {
     }
 
     getPlaygrounds = () => {
-    fetch(`http://192.168.2.7:3002/sites`)
+    fetch(`${x}/sites`)
     .then((res) => res.json())
     .then((res) => {
     this.setState({playgrounds:res.data})

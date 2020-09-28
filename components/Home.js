@@ -23,6 +23,13 @@ import PlaygroundModal from "./subComponents/playgroundModal"
 
 const moment = require("moment");
 
+
+
+
+//let x = 'http://10.244.57.219:3002'
+
+let x = 'http://192.168.2.7:3002'
+
 class Home extends Component {
   uid = firebase.auth().currentUser.uid;
 
@@ -99,7 +106,7 @@ checkedIn = () =>{
 console.log('test')
  
 
-    fetch(`http://192.168.2.7:3002/checkincheck/${data.email}`)
+    fetch(`${x}/checkincheck/${data.email}`)
     .then(res => res.json())
     .then(res => {  
      console.log(res["data"])
@@ -305,7 +312,10 @@ console.log('test')
 
   //FUNCTION: HANDLES MAIN CHECKIN
   handleButton = async () => {
-    if (this.state.submitted === false) {
+
+if (this.props.reducer.playgroundId === ''){
+  Alert.alert("Select your playground first.");
+} else if (this.state.submitted === false) {
       this.setState({ submittedAnimation: true });
       try {
         //get location
@@ -328,7 +338,7 @@ console.log('test')
           //this.getCurrentLoc();
           fetch(
             // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
-            `http://192.168.2.7:3002/add?time=${
+            `${x}/add?time=${
               moment()
                 .utcOffset("-0500")
                 .format("YYYY-MM-DD HH:mm:ss")
