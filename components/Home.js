@@ -375,8 +375,20 @@ if (this.props.reducer.playgroundId === ''){
       }
       this.setState({ submittedAnimation: false });
     } else {
+console.log(this.props.reducer.playgroundId)
+
+      fetch(
+        // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
+        `${x}/delete?site_id=${this.props.reducer.playgroundId}&user_id=${this.props.reducer.userInfo.user_id}`,
+        { method: "DELETE" }
+      ).catch((error) => {
+        console.log(error)
+      });
+
+      this.setState({ submitted: false });
+
       Alert.alert(
-        "You already checked in. If this is a mistake contact us on the Help page."
+        "You left. Good bye."
       );
     }
   };
