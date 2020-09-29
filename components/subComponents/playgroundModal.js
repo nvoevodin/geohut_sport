@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 
 //let x = 'http://10.244.57.219:3002'
 
-let x = 'http://192.168.2.7:3002'
+let x = 'http://192.168.2.5:3002'
 
 
 
@@ -27,6 +27,9 @@ class PlaygroundModal extends Component {
     .then((res) => res.json())
     .then((res) => {
     this.setState({playgrounds:res.data})
+    
+    }).catch((error) => {
+      console.log(error)
     });
 
 }

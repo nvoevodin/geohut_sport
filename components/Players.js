@@ -10,7 +10,7 @@ import moment from "moment";
 
 //let x = 'http://192.168.2.7:3002'
 
-let x = 'http://192.168.2.7:3002'
+let x = 'http://192.168.2.5:3002'
 
 
 class Players extends Component {
@@ -31,6 +31,8 @@ class Players extends Component {
     .then((res) => {
         
     this.setState({players:res.data})
+    }).catch((error) => {
+      console.log(error)
     });
 
 }

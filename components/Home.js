@@ -29,7 +29,7 @@ const moment = require("moment");
 
 //let x = 'http://10.244.57.219:3002'
 
-let x = 'http://192.168.2.7:3002'
+let x = 'http://192.168.2.5:3002'
 
 class Home extends Component {
   uid = firebase.auth().currentUser.uid;
@@ -118,6 +118,9 @@ console.log('smth')
         this.setState({submitted: false})
       }
     })
+    .catch((error) => {
+      console.log(error)
+    });
     })
 
 }
@@ -257,7 +260,9 @@ console.log('smth')
         },
         (accuracy = 10)
       );
+      console.log('test')
       return distance
+      
     } catch (error) {
       alert('Something went wrong, please logout, log back in and try again')
     }
@@ -324,9 +329,10 @@ if (this.props.reducer.playgroundId === ''){
       try {
         //get location
         let location = await this.getCurrentLoc();
-        //console.log(parseFloat(location[0].coords.latitude));
-        //console.log(parseFloat(location[0].coords.longitude));
-
+        console.log(parseFloat(location[0].coords.latitude));
+        console.log(parseFloat(location[0].coords.longitude));
+        console.log(this.props.reducer.playgroundLat)
+        console.log(this.props.reducer.playgroundLon)
         //test how far away the user is
         let distance = await this.calculateDistance(
           parseFloat(location[0].coords.latitude),
@@ -334,7 +340,7 @@ if (this.props.reducer.playgroundId === ''){
           this.props.reducer.playgroundLat,
           this.props.reducer.playgroundLon
         );
-        //console.log("distance: ", distance);
+        console.log("distance: ", distance);
 
         //validate that location is close enough to the site (200 meters)
         if (distance <= this.state.proximityMax) {
@@ -350,7 +356,9 @@ if (this.props.reducer.playgroundId === ''){
             }&site_id=${this.props.reducer.playgroundId}&first_name=${this.props.reducer.userInfo.firstName}
             &last_name=${this.props.reducer.userInfo.lastName}&user_id=${this.props.reducer.userInfo.user_id}`,
             { method: "POST" }
-          ).catch((err) => console.error(err));
+          ).catch((error) => {
+            console.log(error)
+          });
 
           //close animation
           //this.handleAnimation();
