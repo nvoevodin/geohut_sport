@@ -37,6 +37,7 @@ this.props.storePlayground(name,id,lat,lon)
 
 
 
+
 }
 
 
@@ -73,7 +74,7 @@ this.props.storePlayground(name,id,lat,lon)
               <Text>{object["site_name"]}</Text>
               </Left>
               <Right>
-            <Button onPress={() => {this.selectPlayground(object["site_name"], object["site_id"], object["latitude"], object["longitude"]), this.props.onModalOne()}}>
+            <Button onPress={() => {this.selectPlayground(object["site_name"], object["site_id"], object["latitude"], object["longitude"]), this.props.onModalOne(), this.props.checkIfChecked()}}>
               <Icon name='arrow-forward'/>
             </Button>
           </Right>

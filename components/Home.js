@@ -12,6 +12,7 @@ import { Button } from "native-base";
 import * as firebase from "firebase";
 import { Entypo } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from '@expo/vector-icons'; 
+
 import * as Permissions from "expo-permissions";
 import * as Location from "expo-location";
 import { getDistance } from "geolib";
@@ -99,19 +100,22 @@ class Home extends Component {
 
 
 checkedIn = () =>{
-
+console.log('smth')
   firebase.database().ref('UsersList/'+ this.uid + '/info').once('value', snapshot => {
         
     let data = snapshot.val()
-console.log('test')
+
  
 
     fetch(`${x}/checkincheck/${data.email}`)
     .then(res => res.json())
     .then(res => {  
-     console.log(res["data"])
-      if (res["data"].some(e => e.checkin_datetime.substr(0,10) === moment().utcOffset("-0500").format("YYYY-MM-DD"))){
+     
+      if (res["data"].some(e => e.checkin_datetime.substr(0,10) === moment().utcOffset("-0500").format("YYYY-MM-DD")) && res["data"].some(e => e.site_id === this.props.reducer.playgroundId)){
         this.setState({submitted: true})
+        console.log('checkedIN')
+      } else {
+        this.setState({submitted: false})
       }
     })
     })
@@ -320,8 +324,8 @@ if (this.props.reducer.playgroundId === ''){
       try {
         //get location
         let location = await this.getCurrentLoc();
-        console.log(parseFloat(location[0].coords.latitude));
-        console.log(parseFloat(location[0].coords.longitude));
+        //console.log(parseFloat(location[0].coords.latitude));
+        //console.log(parseFloat(location[0].coords.longitude));
 
         //test how far away the user is
         let distance = await this.calculateDistance(
@@ -330,7 +334,7 @@ if (this.props.reducer.playgroundId === ''){
           this.props.reducer.playgroundLat,
           this.props.reducer.playgroundLon
         );
-        console.log("distance: ", distance);
+        //console.log("distance: ", distance);
 
         //validate that location is close enough to the site (200 meters)
         if (distance <= this.state.proximityMax) {
@@ -371,7 +375,7 @@ if (this.props.reducer.playgroundId === ''){
 
   render() {
 
-console.log(this.state)
+//console.log(this.state)
     return (
       <React.Fragment>
         <PageTemplate title={"Home"} logout={this.logout} />
@@ -410,8 +414,13 @@ console.log(this.state)
               {this.state.submitted == false ? (
                 <Entypo name="location" size={60} color="white" />
               ) : (
-                <Entypo name="check" size={70} color="white" />
+                //<Entypo name="check" size={70} color="white" />
+                <MaterialCommunityIcons name="exit-run" size={60} color="white" />
               )}
+              {this.state.submitted == false ? (
+              <Text style = {{color:'white', fontSize:15}}>Check In</Text>)
+              : ( <Text style = {{color:'white', fontSize:15}}>Check Out</Text>
+                )}
             </TouchableOpacity>
             {/*<ImageBackground source={background} style={styles.image}> </ImageBackground>*/}
             {this.state.submittedAnimation == false ? (
@@ -496,7 +505,7 @@ console.log(this.state)
               </Animatable.View>
             )}
           </View>
-          <View><Text style = {{fontSize: 25}}>{this.props.reducer.playgroundName}</Text></View>
+          <View><Text style = {{fontSize: 25,fontStyle: 'italic'}}>{this.props.reducer.playgroundName}</Text></View>
 
           {/* <Button
             style={{
@@ -527,7 +536,7 @@ console.log(this.state)
             </View>
           )}
         </View>
-        <PlaygroundModal/>
+        <PlaygroundModal checkIfChecked = {() => this.checkedIn()}/>
       </React.Fragment>
     );
   }

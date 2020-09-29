@@ -25,7 +25,7 @@ class Players extends Component {
     }
 
     getPlayers = () => {
-      console.log('printing')
+      
     fetch(`${x}/players/${this.props.reducer.playgroundId}`)
     .then((res) => res.json())
     .then((res) => {
