@@ -34,7 +34,8 @@ const moment = require("moment");
 
 //let x = 'http://10.244.57.219:3002'
 
-let x = 'http://192.168.2.5:3002'
+//let x = 'http://192.168.2.5:3007'
+let x = 'https://volleybuddy.metis-data.site'
 
 class Home extends Component {
   
@@ -49,10 +50,12 @@ class Home extends Component {
     siteLocation: { latitude: null, longitude: null },
     submittedAnimation: false,
     animatedValue: new Animated.Value(70),
-    //FAUSTO
-    volleyballCourt: {
-      latitude: 40.601,//40.7634642,
-      longitude: -73.9643//-73.9290698
+     //FAUSTO - USING TLC FOR NOW
+     volleyballCourt: {
+      //latitude: 40.6,
+      //longitude: -73.5
+      latitude: 40.705030,//40.601,//40.7634642,
+      longitude: -74.011550//-73.9290698
     }
   };
 
