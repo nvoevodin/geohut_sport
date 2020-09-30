@@ -23,6 +23,10 @@ import PageTemplate from "./subComponents/Header";
 import { connect } from "react-redux";
 import PlaygroundModal from "./subComponents/playgroundModal"
 
+//TRACKING - FAUSTO
+import { configureBgTasks } from './bg';
+const TASK_FETCH_LOCATION = 'TASK_FETCH_LOCATION';
+
 const moment = require("moment");
 
 
@@ -45,6 +49,11 @@ class Home extends Component {
     siteLocation: { latitude: null, longitude: null },
     submittedAnimation: false,
     animatedValue: new Animated.Value(70),
+    //FAUSTO
+    volleyballCourt: {
+      latitude: 40.601,//40.7634642,
+      longitude: -73.9643//-73.9290698
+    }
   };
 
   async componentDidMount() {
@@ -79,6 +88,13 @@ class Home extends Component {
     //CHECKS IF ALREADY CHECKED IN
     this.checkedIn();
 
+    //ADDING GEO TRACKING - FAUSTO
+    const {setEnterRegion} = this.props;
+    configureBgTasks({ setEnterRegion });
+   
+    this.startBackgroundUpdate();
+    this.startGeofence();
+
 
 
   }
@@ -103,6 +119,39 @@ class Home extends Component {
 //     })
 
 // }
+
+//define and start geofence -FAUSTO
+startGeofence = async () => {
+  console.log('starting geofencing test ...')
+  //let x = 
+  Location.startGeofencingAsync('TASK_CHECK_GEOFENCE',
+    [
+    {
+      identifier: 'court',
+      latitude: this.state.volleyballCourt.latitude,
+      longitude: this.state.volleyballCourt.longitude,
+      radius: 20,
+      notifyOnEnter: true,
+      notifyOnExit: true,
+     }
+     ]
+    )
+};
+
+//start tracking in background -FAUSTO
+startBackgroundUpdate = async () => {
+  Location.startLocationUpdatesAsync(TASK_FETCH_LOCATION, {
+    accuracy: Location.Accuracy.Highest,
+    distanceInterval: 1, // minimum change (in meters) betweens updates
+    deferredUpdatesInterval: 1000, // minimum interval (in milliseconds) between updates
+    // foregroundService is how you get the task to be updated as often as would be if the app was open
+    foregroundService: {
+      notificationTitle: 'Using your location',
+      notificationBody: 'To turn off, go back to the app and switch something off.',
+    },
+  });
+}
+
 
 
 checkedIn = () =>{
