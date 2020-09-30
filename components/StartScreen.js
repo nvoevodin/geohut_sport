@@ -5,6 +5,9 @@ import * as firebase from "firebase";
 import * as Animatable from "react-native-animatable";
 
 class Help extends Component {
+
+
+
   componentDidMount() {
     //CHECKS IF THE USER ALREADY EXISTS (IF YES, CHECKS IF EMAIL IS VERIFIES (IF YES, FORWARDS
     //TO HOME, IF NOT, KEEPS AT THIS SCREEN))
@@ -27,6 +30,9 @@ class Help extends Component {
     this.props.navigation.navigate("SignUp");
   };
 
+
+  
+
   render() {
     return (
       <Container>
@@ -34,10 +40,10 @@ class Help extends Component {
         <Animatable.View animation="bounceInDown" style={styles.container1}>
           <Image
             source={require("../assets/logo.png")}
-            style={{ width: 170, height: 220 }}
+            style={{ width: 140, height: 220 }}
           />
 
-          <Text style={{ fontSize: 50, fontWeight: "bold" }}>GeoHut</Text>
+          <Text style={{ fontSize: 45, fontWeight: "bold" }}>VolleyPal</Text>
         </Animatable.View>
         {/* BUTTONS  */}
         <View style={styles.container}>
@@ -72,6 +78,7 @@ class Help extends Component {
             style={styles.tinyLogo}
             source={require("../assets/companyLogo.png")}
           />
+          <Text style={{ fontSize: 13, fontWeight: "bold" }}>VeryCool-Studio.com</Text>
         </View>
       </Container>
     );

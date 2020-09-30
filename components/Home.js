@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { Button } from "native-base";
+import * as Font from 'expo-font';
 import * as firebase from "firebase";
 import { Entypo } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from '@expo/vector-icons'; 
@@ -32,6 +33,7 @@ const moment = require("moment");
 let x = 'http://192.168.2.5:3002'
 
 class Home extends Component {
+  
   uid = firebase.auth().currentUser.uid;
 
   state = {
@@ -45,7 +47,11 @@ class Home extends Component {
     animatedValue: new Animated.Value(70),
   };
 
-  componentDidMount() {
+  async componentDidMount() {
+        await Font.loadAsync({
+      Roboto: require('native-base/Fonts/Roboto.ttf'),
+      Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),
+    });
     //CHECK IS USER IS VERIFIED
     if (firebase.auth().currentUser.emailVerified == false) {
       Alert.alert(
@@ -212,9 +218,11 @@ console.log('smth')
 
   //FUNCTION: ASKS FOR LOCATION PERMISSIONS
   getLocationsPermissions = async () => {
-    let { status } = await Permissions.askAsync(Permissions.LOCATION);
-    //status && console.log('location: ', status)
-    if (status !== "granted") {
+    let status;
+    status = await Permissions.getAsync(Permissions.LOCATION);
+    if (status.status !== "granted") {
+      status = await Permissions.askAsync(Permissions.LOCATION)};
+    if (status.status !== "granted") {
       this.setState({
         errorMessage: "Permission to access location was denied",
       });
@@ -392,6 +400,13 @@ console.log(this.props.reducer.playgroundId)
       );
     }
   };
+
+  componentWillUnmount() {
+    // fix Warning: Can't perform a React state update on an unmounted component
+    this.setState = (state,callback)=>{
+        return;
+    };
+}
 
   render() {
 

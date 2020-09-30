@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "GeoHut",
-    "slug": "geohut_beta",
+    "name": "VolleyPal",
+    "slug": "VolleyPal_Beta",
     "platforms": [
       "ios",
       "android",

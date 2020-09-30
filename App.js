@@ -3,9 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import {createBottomTabNavigator} from 'react-navigation-tabs'
 import { createAppContainer, createSwitchNavigator } from 'react-navigation';
 import { Ionicons } from '@expo/vector-icons';
-import * as Font from 'expo-font';
-import { Root } from 'native-base';
-import { AppLoading } from 'expo';
+
 import * as firebase from 'firebase';
 
 import { Provider } from 'react-redux';
@@ -45,27 +43,28 @@ import Players from './components/Players'
 
 
 export default class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { loading: true };
-  }
+  // constructor(props) {
+  //   super(props);
+  //   this.state = { loading: true };
+  // }
 
-  async componentDidMount() {
-    await Font.loadAsync({
-      Roboto: require('native-base/Fonts/Roboto.ttf'),
-      Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),
-    });
-    this.setState({ loading: false });
-  }
+  // async componentDidMount() {
+  //   await Font.loadAsync({
+  //     Roboto: require('native-base/Fonts/Roboto.ttf'),
+  //     Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),
+  //   });
+  //   this.setState({ loading: false });
+  // }
+  
 
   render(){
-    if (this.state.loading) {
-      return (
-        <Root>
-          <AppLoading />
-        </Root>
-      );
-    } else {
+    // if (this.state.loading) {
+    //   return (
+    //     <Root>
+    //       <AppLoading />
+    //     </Root>
+    //   );
+    // } else {
     return (
       
       <Provider store={ store }>
@@ -73,7 +72,7 @@ export default class App extends Component {
       </Provider>
     );
     }
-  }
+  //}
 
 }
 
