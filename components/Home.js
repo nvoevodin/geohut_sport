@@ -22,6 +22,7 @@ import background from "../assets/background.png";
 import PageTemplate from "./subComponents/Header";
 import { connect } from "react-redux";
 import PlaygroundModal from "./subComponents/playgroundModal"
+import PreCheckModal from "./subComponents/preCheckModal"
 
 //TRACKING - FAUSTO
 import { configureBgTasks } from './bg';
@@ -34,7 +35,7 @@ const moment = require("moment");
 
 //let x = 'http://10.244.57.219:3002'
 
-//let x = 'http://192.168.2.5:3007'
+//let x = 'http://192.168.2.5:3002'
 let x = 'https://volleybuddy.metis-data.site'
 
 class Home extends Component {
@@ -318,7 +319,7 @@ console.log('smth')
           latitude: end_x,
           longitude: end_y,
         },
-        (accuracy = 10)
+        (accuracy = 100)
       );
       console.log('test')
       return distance
@@ -437,13 +438,34 @@ if (this.props.reducer.playgroundId === ''){
     } else {
 console.log(this.props.reducer.playgroundId)
 
-      fetch(
-        // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
-        `${x}/delete?site_id=${this.props.reducer.playgroundId}&user_id=${this.props.reducer.userInfo.user_id}`,
-        { method: "DELETE" }
-      ).catch((error) => {
-        console.log(error)
-      });
+await fetch(
+  // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
+  `${x}/update?site_id=${this.props.reducer.playgroundId}&user_id=${this.props.reducer.userInfo.user_id}`,
+  { method: "PUT" }
+).catch((error) => {
+  console.log(error)
+})
+
+await fetch(
+  // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
+  `${x}/addToStorage?site_id=${this.props.reducer.playgroundId}&user_id=${this.props.reducer.userInfo.user_id}`,
+  { method: "POST" }
+).catch((error) => {
+  console.log(error)
+})
+  fetch(
+    // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
+    `${x}/delete?site_id=${this.props.reducer.playgroundId}&user_id=${this.props.reducer.userInfo.user_id}`,
+    { method: "DELETE" }
+  ).catch((error) => {
+    console.log(error)
+  })
+
+
+
+
+
+
 
       this.setState({ submitted: false });
 
@@ -453,12 +475,7 @@ console.log(this.props.reducer.playgroundId)
     }
   };
 
-  componentWillUnmount() {
-    // fix Warning: Can't perform a React state update on an unmounted component
-    this.setState = (state,callback)=>{
-        return;
-    };
-}
+
 
   render() {
 
@@ -594,7 +611,7 @@ console.log(this.props.reducer.playgroundId)
           </View>
           <View><Text style = {{fontSize: 25,fontStyle: 'italic'}}>{this.props.reducer.playgroundName}</Text></View>
 
-          {/* <Button
+          <Button
             style={{
               margin: 10,
               backgroundColor: "#ebf2f2",
@@ -605,12 +622,13 @@ console.log(this.props.reducer.playgroundId)
             }}
             full
             rounded
-            onPress={this.preCheckin}
+            onPress={
+              this.props.onModalTwo}
           >
             <Text style={{ color: "black", fontWeight: "bold" }}>
               Pre-CheckIn
             </Text>
-          </Button> */}
+          </Button>
 
           {this.state.submittedAnimation && (
             <View style={styles.loading}>
@@ -624,6 +642,8 @@ console.log(this.props.reducer.playgroundId)
           )}
         </View>
         <PlaygroundModal checkIfChecked = {() => this.checkedIn()}/>
+        
+        <PreCheckModal/>
       </React.Fragment>
     );
   }
@@ -642,7 +662,8 @@ const mapDispachToProps = dispatch => {
     setEmailData: (y) => dispatch({ type: "SET_EMAIL_DATA", value: y}),
     setUserData: (y) => dispatch({ type: "SET_USER_DATA", value: y}),
     setSiteData: (y) => dispatch({ type: "SET_SITE_DATA", value: y}),
-    onModalOne: () => dispatch({ type: "CLOSE_MODAL_1", value: true})
+    onModalOne: () => dispatch({ type: "CLOSE_MODAL_1", value: true}),
+    onModalTwo: () => dispatch({ type: "CLOSE_MODAL_2", value: true})
   };
 };
 
