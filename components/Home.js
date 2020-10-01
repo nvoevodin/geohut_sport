@@ -24,8 +24,8 @@ import { connect } from "react-redux";
 import PlaygroundModal from "./subComponents/playgroundModal"
 
 //TRACKING - FAUSTO
-import { configureBgTasks } from './bg';
-const TASK_FETCH_LOCATION = 'TASK_FETCH_LOCATION';
+//import { configureBgTasks } from './bg';
+//const TASK_FETCH_LOCATION = 'TASK_FETCH_LOCATION';
 
 const moment = require("moment");
 
@@ -92,11 +92,11 @@ class Home extends Component {
     this.checkedIn();
 
     //ADDING GEO TRACKING - FAUSTO
-    const {setEnterRegion} = this.props;
-    configureBgTasks({ setEnterRegion });
+    //const {setEnterRegion} = this.props;
+    //configureBgTasks({ setEnterRegion });
    
-    this.startBackgroundUpdate();
-    this.startGeofence();
+    //this.startBackgroundUpdate();
+    //this.startGeofence();
 
 
 
