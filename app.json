@@ -22,7 +22,13 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.vcoolstudio.geohut"
+    },
+    "android": {
+      
+      "package": "com.vcoolstudio.geohut",
+      "versionCode": 2
     },
     "description": ""
   }
