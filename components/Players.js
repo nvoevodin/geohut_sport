@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {StyleSheet,Modal, TouchableOpacity} from 'react-native';
-import {Container, Header, Content, List, ListItem, Icon, Button, Left,Right, Body, Title,Text, Picker} from 'native-base';
+import {Container, Header, Content, List, ListItem,  Button, Left,Right, Body, Title,Text, Tab, Tabs,TabHeading} from 'native-base';
 import { connect } from 'react-redux';
 import PageTemplate from "./subComponents/Header";
 import { View } from 'react-native-animatable';
@@ -10,13 +10,14 @@ import moment from "moment";
 
 //let x = 'http://192.168.2.7:3002'
 
-//let x = 'http://192.168.2.5:3002'
+//let x = 'http://192.168.2.5:3007'
 
 let x = 'https://volleybuddy.metis-data.site'
 class Players extends Component {
 
     state = {
-         players: []
+         players: [],
+         preChecks: []
     }
 
     componentDidMount() {
@@ -31,6 +32,16 @@ class Players extends Component {
     .then((res) => {
         
     this.setState({players:res.data})
+    }).catch((error) => {
+      console.log(error)
+    });
+
+
+    fetch(`${x}/pre_checks/${this.props.reducer.playgroundId}`)
+    .then((res) => res.json())
+    .then((res) => {
+        
+    this.setState({preChecks:res.data})
     }).catch((error) => {
       console.log(error)
     });
@@ -61,8 +72,13 @@ class Players extends Component {
   
       
     return (
-        <React.Fragment>
+      <Container>
         <PageTemplate title={"Players"} logout={this.logout} />
+        <Tabs >
+        <Tab heading={<TabHeading style={{backgroundColor: '#5cb85c'}}>
+          <Text>Playing Now</Text>
+          </TabHeading>}
+          >
         <View style={styles.container}>
         <Button style ={{margin:10}}
                     full
@@ -73,11 +89,11 @@ class Players extends Component {
                         <Text style = {{color:'white'}}>Refresh</Text>
                     </Button>
 
+                    
+
                     <Text style = {{fontSize:20}}>Checked In:</Text>
     <Text style = {{fontSize:56}}>{this.state.players.length}</Text>
     </View>
-<Container>
-        
  
         <Content>
           <List>
@@ -96,12 +112,50 @@ class Players extends Component {
           )}
           </List>
         </Content>
+      </Tab>
+      <Tab heading={<TabHeading style={{backgroundColor: '#5cb85c'}}>
+          <Text>Coming to Play</Text>
+          </TabHeading>}
+          >
+      <View style={styles.container}>
+        <Button style ={{margin:10}}
+                    full
+                    rounded
+                    success
+                    onPress={this.getPlayers}>
+
+                        <Text style = {{color:'white'}}>Refresh</Text>
+                    </Button>
+
+                    
+
+                    <Text style = {{fontSize:20}}>Pre-Checked In:</Text>
+    <Text style = {{fontSize:56}}>{this.state.preChecks.length}</Text>
+    </View>
+ 
+        <Content>
+          <List>
+          {this.state.preChecks.map((object,index) =>
+          
+            <ListItem key = {index}>
+              <Left>
+              <Text>{object["first_name"]} {object["last_name"]}</Text>  
+              </Left>
+              <Right><Text>{moment(object["pre_checkin_datetime"]).format('LT')}</Text></Right>
+              
+            
+              
+            </ListItem>
+        
+          )}
+          </List>
+        </Content>
+      </Tab>
+
+
+        </Tabs>
+
       </Container>
-
-
-      
-
-        </React.Fragment>
     );
   }
 }

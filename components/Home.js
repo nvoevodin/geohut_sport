@@ -35,7 +35,7 @@ const moment = require("moment");
 
 //let x = 'http://10.244.57.219:3002'
 
-//let x = 'http://192.168.2.5:3002'
+//let x = 'http://192.168.2.5:3007'
 let x = 'https://volleybuddy.metis-data.site'
 
 class Home extends Component {
@@ -44,7 +44,7 @@ class Home extends Component {
 
   state = {
     submitted: false,
-    preSubmitted: false,
+    
     proximity: null,
     hasLocationPermission: null,
     proximityMax: 200,
@@ -475,7 +475,31 @@ await fetch(
     }
   };
 
+  cancelPrecheck =async()=>{
 
+    fetch(
+      // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
+      `${x}/cancelPreCheck?site_id=${this.props.reducer.playgroundId}&user_id=${this.props.reducer.userInfo.user_id}`,
+      { method: "DELETE" }
+    ).catch((error) => {
+      console.log(error)
+    })
+
+    this.props.cancelPreCheck()
+
+    alert('You canceled your pre-check.')
+
+  }
+
+  playgroudAlert = () =>{
+    Alert.alert('Select a Playground First!')
+  }
+
+  submittedAlert = () =>{
+    Alert.alert('Cant Pre-Check While Still Playing!')
+  }
+
+  
 
   render() {
 
@@ -504,7 +528,7 @@ await fetch(
                 width: 170,
                 height: 170,
                 backgroundColor:
-                  this.state.submitted == false ? "#eb6e3d" : "green",
+                  this.state.submitted == false ? '#5cb85c' : "#eb6e3d",
                 borderRadius: 100,
                 shadowColor: "rgba(0,0,0, .4)", // IOS
                 shadowOffset: { height: 1, width: 1 }, // IOS
@@ -609,12 +633,13 @@ await fetch(
               </Animatable.View>
             )}
           </View>
-          <View><Text style = {{fontSize: 25,fontStyle: 'italic'}}>{this.props.reducer.playgroundName}</Text></View>
+          <View><Text style = {{fontSize: 24,fontStyle: 'italic'}}>{this.props.reducer.playgroundName}</Text></View>
 
           <Button
             style={{
               margin: 10,
-              backgroundColor: "#ebf2f2",
+              backgroundColor:
+              this.props.reducer.preCheckStatus == false ? "#ebf2f2" : '#5cb85c',
               shadowColor: "black", // IOS
               shadowOffset: { height: 4, width: 0 }, // IOS
               shadowOpacity: 0.4, // IOS
@@ -623,11 +648,18 @@ await fetch(
             full
             rounded
             onPress={
-              this.props.onModalTwo}
+              this.props.reducer.playgroundId === ''? this.playgroudAlert:
+              this.state.submitted === true?this.submittedAlert:
+              this.props.reducer.preCheckStatus == false?
+              this.props.onModalTwo:this.cancelPrecheck}
           >
+            {this.props.reducer.preCheckStatus == false ?
             <Text style={{ color: "black", fontWeight: "bold" }}>
               Pre-CheckIn
-            </Text>
+            </Text> : 
+            <Text style={{ color: "white", fontWeight: "bold" }}>
+              Cancel
+            </Text>}
           </Button>
 
           {this.state.submittedAnimation && (
@@ -663,7 +695,8 @@ const mapDispachToProps = dispatch => {
     setUserData: (y) => dispatch({ type: "SET_USER_DATA", value: y}),
     setSiteData: (y) => dispatch({ type: "SET_SITE_DATA", value: y}),
     onModalOne: () => dispatch({ type: "CLOSE_MODAL_1", value: true}),
-    onModalTwo: () => dispatch({ type: "CLOSE_MODAL_2", value: true})
+    onModalTwo: () => dispatch({ type: "CLOSE_MODAL_2", value: true}),
+    cancelPreCheck: () => dispatch({ type: "CANCEL_PRECHECK", value: false})
   };
 };
 

@@ -12,13 +12,13 @@ class PageTemplate extends Component {
     render() {
         return (
             <React.Fragment>
-            <View style={{backgroundColor: '#eb6e3d', alignSelf: 'stretch',width: '100%', height:'12%',
+            <View style={{backgroundColor: '#5cb85c', alignSelf: 'stretch',width: '100%', height:'11%',
     justifyContent: 'flex-end'}}>
 
       <Text 
               style={{
                   position: 'absolute',
-                  marginTop: '7%',
+                  marginTop: '6%',
                   marginLeft: '3%',
                   color: 'white', 
                   fontSize: 35}}
@@ -30,7 +30,7 @@ class PageTemplate extends Component {
                 
                 <View style=
                         {{position:'absolute',
-                          marginTop: '11%',
+                          marginTop: '10%',
                           right: 14,
                           
                           display: 'flex',

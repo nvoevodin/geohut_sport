@@ -8,6 +8,8 @@ playgroundLat:null,
 playgroundLon:null,
 playgroundModal: false,
 preCheckModal: false,
+
+preCheckStatus: false,
 userInfo:null
 };
 
@@ -37,6 +39,20 @@ const ourReducer = (state = INITIAL_STATE, action) => {
                         playgroundId: action.value1,
                         playgroundLat:action.value2,
                         playgroundLon:action.value3
+                      }
+                    break;
+                    case "STORE_PRECHECK":
+                      return{
+                        ...state,
+                        
+                        preCheckStatus: action.value
+                      }
+                    break;
+                    case "CANCEL_PRECHECK":
+                      return{
+                        ...state,
+                        
+                        preCheckStatus: action.value
                       }
                     break;
                     case "CLOSE_MODAL_1":
