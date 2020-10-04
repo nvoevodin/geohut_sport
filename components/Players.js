@@ -91,8 +91,8 @@ class Players extends Component {
 
                     
 
-                    <Text style = {{fontSize:20}}>Checked In:</Text>
-    <Text style = {{fontSize:56}}>{this.state.players.length}</Text>
+                    <Text style = {{fontSize:19}}>Checked In:</Text>
+    <Text style = {{fontSize:50}}>{this.state.players.length}</Text>
     </View>
  
         <Content>
@@ -101,9 +101,9 @@ class Players extends Component {
           
             <ListItem key = {index}>
               <Left>
-              <Text>{object["first_name"]} {object["last_name"]}</Text>  
+              <Text style = {{fontSize:11}}>{object["first_name"]} {object["last_name"]}</Text>  
               </Left>
-              <Right><Text>{moment(object["checkin_datetime"]).format('LT')}</Text></Right>
+              <Right><Text style = {{fontSize:11}}>{moment(object["checkin_datetime"]).utcOffset("-0000").format('LT')}</Text></Right>
               
             
               
@@ -129,25 +129,25 @@ class Players extends Component {
 
                     
 
-                    <Text style = {{fontSize:20}}>Pre-Checked In:</Text>
-    <Text style = {{fontSize:56}}>{this.state.preChecks.length}</Text>
+                    <Text style = {{fontSize:19}}>Pre-Checked In:</Text>
+    <Text style = {{fontSize:50}}>{this.state.preChecks.length}</Text>
     </View>
  
         <Content>
           <List>
           {this.state.preChecks.map((object,index) =>
-          
+        
             <ListItem key = {index}>
               <Left>
-              <Text>{object["first_name"]} {object["last_name"]}</Text>  
+              <Text style = {{fontSize:11}} >{object["first_name"]} {object["last_name"]}</Text>  
               </Left>
-              <Right><Text>{moment(object["pre_checkin_datetime"]).format('LT')}</Text></Right>
+              <Right><Text style = {{fontSize:11}}>{moment(object["pre_checkin_datetime"]).utcOffset("-0000").format('LT')}</Text></Right>
               
             
               
             </ListItem>
         
-          )}
+  )}
           </List>
         </Content>
       </Tab>

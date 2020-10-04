@@ -9,7 +9,7 @@
     ],
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/appstore.png",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -23,12 +23,12 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.vcoolstudio.geohut"
+      "bundleIdentifier": "com.vcoolstudio.volleypal",
+      "buildNumber": "1.0.0"
     },
     "android": {
-      
-      "package": "com.vcoolstudio.geohut",
-      "versionCode": 2
+      "package": "com.vcoolstudio.volleypal",
+      "versionCode": 1
     },
     "description": ""
   }

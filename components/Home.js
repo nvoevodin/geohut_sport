@@ -170,7 +170,7 @@ console.log('smth')
     .then(res => res.json())
     .then(res => {  
      
-      if (res["data"].some(e => e.checkin_datetime.substr(0,10) === moment().utcOffset("-0500").format("YYYY-MM-DD")) && res["data"].some(e => e.site_id === this.props.reducer.playgroundId)){
+      if (res["data"].some(e => e.checkin_datetime.substr(0,10) === moment().format("YYYY-MM-DD")) && res["data"].some(e => e.site_id === this.props.reducer.playgroundId)){
         this.setState({submitted: true})
         console.log('checkedIN')
       } else {
@@ -411,7 +411,7 @@ if (this.props.reducer.playgroundId === ''){
             // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
             `${x}/add?time=${
               moment()
-                .utcOffset("-0500")
+                
                 .format("YYYY-MM-DD HH:mm:ss")
                 .substr(0, 18) + "0"
             }&site_id=${this.props.reducer.playgroundId}&first_name=${this.props.reducer.userInfo.firstName}
