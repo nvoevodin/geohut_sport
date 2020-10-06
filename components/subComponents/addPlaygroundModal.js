@@ -15,14 +15,14 @@ let x = 'https://volleybuddy.metis-data.site'
 class AddPlayground extends Component {
 
     state = {
-         playgrounds: [],
-         location: null
-    }
-
-    componentDidMount() {
-       
+    
+            Name: "",
+            Address: ""
+        
         
     }
+
+
 
     getCurrentLoc = async () => {
         try {
@@ -31,6 +31,19 @@ class AddPlayground extends Component {
           location = await eval("(" + "[" + location + "]" + ")");
           //location && console.log(location[0].coords.latitude);
           console.log(location[0].coords.latitude);
+
+          console.log(this.state.Name)
+          console.log(this.state.Address)
+
+          fetch(
+            // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
+            `${x}/addPlayground?name=${this.state.Name}&address=${this.state.Address}&latitude=${location[0].coords.latitude}&longitude=${location[0].coords.longitude}`,
+            { method: "POST" }
+          ).catch((error) => {
+            console.log(error)
+          })
+          alert("Playground is successfully added!");
+          this.props.closeAddPlaygroundModal()
         } catch (e) {
           alert("cannot get current location, try again or ask for help");
         }
@@ -70,13 +83,17 @@ class AddPlayground extends Component {
           
            <Text style = {{textAlign:'center',fontSize:20, marginTop:'10%', marginBottom:'3%'}}>Name</Text>
 
-            <Textarea underline placeholder='Name the playground. Use the most recognized name. Ex.: Central Park Beach Volleyball Playground' />
+            <Textarea underline blurOnSubmit={true} placeholder='Name the playground. Use the most recognized name. Ex.: Central Park Beach Volleyball Playground'
+            onChangeText={(Name) => this.setState({ Name })}
+            />
           
     
 
             <Text style = {{textAlign:'center',fontSize:20, marginTop:'10%', marginBottom:'3%'}}>Address</Text>
 
-<Textarea underline placeholder='Use the closest known address to the playground. Ex.: Central Park West, New York, NY 10019' />
+<Textarea underline blurOnSubmit={true} placeholder='Use the closest known address to the playground. Ex.: Central Park West, New York, NY 10019'
+onChangeText={(Address) => this.setState({ Address })}
+/>
     
 
 
