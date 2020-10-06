@@ -7,6 +7,7 @@ playgroundId:'',
 playgroundLat:null,
 playgroundLon:null,
 playgroundModal: false,
+addPlaygroundModal: false,
 preCheckModal: false,
 
 preCheckStatus: false,
@@ -73,6 +74,15 @@ const ourReducer = (state = INITIAL_STATE, action) => {
 
       }
       break;
+      case "CLOSE_MODAL_3":
+      
+        return{
+          ...state,
+          addPlaygroundModal: action.value,
+          
+  
+        }
+        break;
 
   
   }

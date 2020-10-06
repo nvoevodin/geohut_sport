@@ -2,7 +2,8 @@ import React, {Component} from 'react';
 import {StyleSheet,Modal, TouchableOpacity} from 'react-native';
 import {Container, Header, Content, List, ListItem, Icon, Button, Left,Right, Body, Title,Text, Picker} from 'native-base';
 import { connect } from 'react-redux';
-
+import { Entypo } from '@expo/vector-icons';
+import AddPlayground from "./addPlaygroundModal"
 
 
 //let x = 'http://10.244.57.219:3002'
@@ -43,6 +44,10 @@ this.props.storePlayground(name,id,lat,lon)
 
 }
 
+openClose = () => {
+  this.props.onModalOne(),this.props.addPlaygroundModal()
+}
+
 
   render() {
 
@@ -67,6 +72,11 @@ this.props.storePlayground(name,id,lat,lon)
           <Body>
             <Title style = {{color:'black'}}>Select Playground</Title>
           </Body>
+          <Right>
+          <Button transparent onPress={this.openClose}>
+          <Entypo name="plus" size={28} color="black" />
+            </Button>
+          </Right>
         </Header>
         <Content>
           <List>
@@ -91,44 +101,13 @@ this.props.storePlayground(name,id,lat,lon)
 
 
         </Modal>
-
+        <AddPlayground/>
         </React.Fragment>
     );
   }
 }
 
 
-// const styles = StyleSheet.create({
-    
-//   container: {
-      
-//      // <-- the magic
-     
-//     flex: 1,
-//     flexDirection: 'column',
-//     alignItems: 'center',
-//     //justifyContent: 'center',
-//     backgroundColor: '#e6eded'
-   
-//   },
-//   buttonContainer: {
-//       width: '40%',
-//       position: 'absolute',
-//   bottom:40
-//   },
-//   titleText: {
-//     fontSize: 25,
-//     fontWeight: 'bold',
-//     marginTop: '5%'
-//   },
-//   listedText:{
-//       marginTop:'3%',
-//     fontSize: 15,
-//     width: '80%',
-//     textAlign: 'center'
-//   }
- 
-// });
 
 const mapStateToProps = (state) => {
     
@@ -139,6 +118,7 @@ const mapStateToProps = (state) => {
   const mapDispachToProps = dispatch => {
     return {
       onModalOne: () => dispatch({ type: "CLOSE_MODAL_1", value: false}),
+      addPlaygroundModal: () => dispatch({ type: "CLOSE_MODAL_3", value: true}),
       storePlayground: (name,id,lat,lon) => dispatch({ type: "STORE_PLAYGROUND", value: name,value1: id, value2:lat,value3:lon})
      
     };
