@@ -10,8 +10,8 @@ const moment = require("moment");
 
 //let x = 'http://10.244.57.219:3002'
 
-let x = 'http://192.168.2.9:3007'
-//let x = 'https://volleybuddy.metis-data.site'
+//let x = 'http://192.168.2.9:3007'
+let x = 'https://volleybuddy.metis-data.site'
  
 class PreCheckModal extends Component {
 

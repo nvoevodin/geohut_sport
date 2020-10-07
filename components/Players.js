@@ -10,9 +10,9 @@ import moment from "moment";
 
 //let x = 'http://192.168.2.7:3002'
 
-let x = 'http://192.168.2.9:3007'
+//let x = 'http://192.168.2.9:3007'
 
-//let x = 'https://volleybuddy.metis-data.site'
+let x = 'https://volleybuddy.metis-data.site'
 class Players extends Component {
 
     state = {
