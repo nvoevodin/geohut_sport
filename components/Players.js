@@ -97,11 +97,11 @@ class Players extends Component {
           <List>
           {this.state.players.map((object,index) =>
           
-            <ListItem key = {index}>
+            <ListItem key = {index} style = {{flex:1}}>
               <Left>
               <Text style = {{fontSize:11}}>{object["first_name"]} {object["last_name"]}</Text>  
               </Left>
-              <Right><Text style = {{fontSize:11}}>{moment(object["checkin_datetime"]).utcOffset("-0000").format('LT')}</Text></Right>
+              <Right><Text style = {{fontSize:11}}>{moment(object["checkin_datetime"]).format('LT')}</Text></Right>
               
             
               
@@ -137,7 +137,7 @@ class Players extends Component {
               <Left>
               <Text style = {{fontSize:11}} >{object["first_name"]} {object["last_name"]}</Text>  
               </Left>
-              <Right><Text style = {{fontSize:11}}>{moment(object["pre_checkin_datetime"]).utcOffset("-0000").format('LT')}</Text></Right>
+              <Right><Text style = {{fontSize:11}}>{moment(object["pre_checkin_datetime"]).format('LT')}</Text></Right>
               
             
               

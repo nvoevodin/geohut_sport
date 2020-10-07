@@ -52,7 +52,7 @@ class PreCheckModal extends Component {
       <DateTimePickerModal
         isVisible={this.props.reducer.preCheckModal}
         mode="time"
-        onConfirm={(date) =>{this.handleConfirm(moment(date).format()),this.props.onModalTwo()}}
+        onConfirm={(date) =>{this.handleConfirm(moment(date).utc().format()),this.props.onModalTwo()}}
         onCancel={this.props.onModalTwo}
       />
    

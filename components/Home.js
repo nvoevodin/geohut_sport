@@ -44,7 +44,7 @@ class Home extends Component {
 
   state = {
     submitted: false,
-    
+    presubmitted: false,
     proximity: null,
     hasLocationPermission: null,
     proximityMax: 200,
@@ -87,7 +87,7 @@ class Home extends Component {
 
 
     //CHECKS IF ALREADY PRECHECKED IN
-    //this.precheckedIn();
+    this.preCheckedIn();
 
     //CHECKS IF ALREADY CHECKED IN
     this.checkedIn();
@@ -170,7 +170,7 @@ console.log('smth')
     .then(res => res.json())
     .then(res => {  
      
-      if (res["data"].some(e => e.checkin_datetime.substr(0,10) === moment().format("YYYY-MM-DD")) && res["data"].some(e => e.site_id === this.props.reducer.playgroundId)){
+      if (res["data"].some(e => e.checkin_datetime.substr(0,10) === moment().utc().format("YYYY-MM-DD")) && res["data"].some(e => e.site_id === this.props.reducer.playgroundId)){
         this.setState({submitted: true})
         console.log('checkedIN')
       } else {
@@ -183,6 +183,36 @@ console.log('smth')
     })
 
 }
+
+
+preCheckedIn = () =>{
+  console.log('smth')
+    firebase.database().ref('UsersList/'+ this.uid + '/info').once('value', snapshot => {
+          
+      let data = snapshot.val()
+  
+   
+  
+      fetch(`${x}/precheckcheck/${data.email}`)
+      .then(res => res.json())
+      .then(res => {  
+       
+        if (res["data"].some(e => e.site_id === this.props.reducer.playgroundId)){
+          this.props.storePreCheck()
+          console.log('precheckedIN')
+        } else {
+          this.props.cancelPreCheck()
+          
+        }
+      })
+      .catch((error) => {
+        console.log(error)
+      });
+      })
+  
+  }
+
+
 
 
   //FUNCTION: READS FIREBASE AND SETS DATA INTO REDUX
@@ -382,9 +412,9 @@ console.log('smth')
 
   //FUNCTION: HANDLES MAIN CHECKIN
   handleButton = async () => {
-
+    console.log(moment().utc().format("YYYY-MM-DD HH:mm:ss").substr(0, 18) + "0")
 if (this.props.reducer.playgroundId === ''){
-  Alert.alert("Select your playground first.");
+  Alert.alert("Select your court first.");
 } else if (this.state.submitted === false) {
       this.setState({ submittedAnimation: true });
       try {
@@ -410,10 +440,7 @@ if (this.props.reducer.playgroundId === ''){
           fetch(
             // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
             `${x}/add?time=${
-              moment()
-                
-                .format("YYYY-MM-DD HH:mm:ss")
-                .substr(0, 18) + "0"
+              moment().utc().format("YYYY-MM-DD HH:mm:ss").substr(0, 18) + "0"
             }&site_id=${this.props.reducer.playgroundId}&first_name=${this.props.reducer.userInfo.firstName}
             &last_name=${this.props.reducer.userInfo.lastName}&user_id=${this.props.reducer.userInfo.user_id}`,
             { method: "POST" }
@@ -477,22 +504,42 @@ await fetch(
 
   cancelPrecheck =async()=>{
 
-    fetch(
-      // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
-      `${x}/cancelPreCheck?site_id=${this.props.reducer.playgroundId}&user_id=${this.props.reducer.userInfo.user_id}`,
-      { method: "DELETE" }
-    ).catch((error) => {
-      console.log(error)
-    })
 
-    this.props.cancelPreCheck()
+    Alert.alert(
+      "Cancel Your Pre-CheckIn?",
+      "",
+      [
+        {
+          text: "Cancel",
+          onPress: () => {
 
-    alert('You canceled your pre-check.')
+          },
+          style: "cancel"
+        },
+        { text: "OK", onPress: () => {
+          fetch(
+            // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
+            `${x}/cancelPreCheck?site_id=${this.props.reducer.playgroundId}&user_id=${this.props.reducer.userInfo.user_id}`,
+            { method: "DELETE" }
+          ).catch((error) => {
+            console.log(error)
+          })
+      
+          this.props.cancelPreCheck()
+      
+          alert('You canceled your pre-check.')
+        } }
+      ],
+      { cancelable: false }
+    );
+
+
+
 
   }
 
   playgroudAlert = () =>{
-    Alert.alert('Select a Playground First!')
+    Alert.alert('Select a Court First!')
   }
 
   submittedAlert = () =>{
@@ -501,20 +548,25 @@ await fetch(
 
   
 
-  render() {
 
+
+
+  render() {
+console.log(this.props.reducer.preCheckStatus+'status')
 //console.log(this.state)
     return (
       <React.Fragment>
         <PageTemplate title={"Home"} logout={this.logout} />
         <View style={styles.container}>
-          <View style={styles.bubble}>
-          <TouchableOpacity onPress={() => {
+          <Button style={styles.bubble} onPress={() => {
                   this.props.onModalOne()}}>
-            <MaterialCommunityIcons name="target" size={50} color="white" />
-            </TouchableOpacity>
+        
+        <Text style = {{color:'white', fontWeight:'bold', fontSize:17}}>Courts </Text>
+            <MaterialCommunityIcons name="target" size={35} color="white" />
+           
           
-          </View>
+          
+          </Button>
 
           <View style={styles.container}>
             <TouchableOpacity
@@ -658,7 +710,7 @@ await fetch(
               Pre-CheckIn
             </Text> : 
             <Text style={{ color: "white", fontWeight: "bold" }}>
-              Cancel
+              Cancel PreCheck
             </Text>}
           </Button>
 
@@ -673,7 +725,7 @@ await fetch(
             </View>
           )}
         </View>
-        <PlaygroundModal checkIfChecked = {() => this.checkedIn()}/>
+        <PlaygroundModal checkIfChecked = {() => this.checkedIn()} checkIfPreChecked = {() => this.preCheckedIn()}/>
         
         <PreCheckModal/>
       </React.Fragment>
@@ -696,7 +748,8 @@ const mapDispachToProps = dispatch => {
     setSiteData: (y) => dispatch({ type: "SET_SITE_DATA", value: y}),
     onModalOne: () => dispatch({ type: "CLOSE_MODAL_1", value: true}),
     onModalTwo: () => dispatch({ type: "CLOSE_MODAL_2", value: true}),
-    cancelPreCheck: () => dispatch({ type: "CANCEL_PRECHECK", value: false})
+    cancelPreCheck: () => dispatch({ type: "CANCEL_PRECHECK", value: false}),
+    storePreCheck: () => dispatch({ type: "STORE_PRECHECK", value: true})
   };
 };
 
@@ -734,7 +787,7 @@ const styles = StyleSheet.create({
     top: "-5%",
     alignItems: "center",
     justifyContent: "center",
-    width: "15%",
+    width: "18%",
     height: "10%",
     marginLeft: "32%",
     marginRight: "32%",

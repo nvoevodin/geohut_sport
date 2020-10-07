@@ -40,10 +40,10 @@ class Help extends Component {
         <Animatable.View animation="bounceInDown" style={styles.container1}>
           <Image
             source={require("../assets/logo.png")}
-            style={{ width: 120, height: 200 }}
+            style={{ width: 120, height: 190 }}
           />
 
-          <Text style={{ fontSize: 45, fontWeight: "bold" }}>VolleyPal</Text>
+          <Text style={{ fontSize: 43, fontWeight: "bold" }}>VolleyPal</Text>
         </Animatable.View>
         {/* BUTTONS  */}
         <View style={styles.container}>

@@ -27,7 +27,7 @@ class Help extends Component {
     //LOGS U IN, DISPLAYS ERROR MESSAGE IF ANY
     handleLogin = (email, password) => {
       firebase.auth()
-      .signInWithEmailAndPassword(email, password)
+      .signInWithEmailAndPassword(email.trim(), password)
       .then(() => this.props.navigation.navigate('Home'))
       .catch(error => this.setState({ errorMessage: error.message }))
            

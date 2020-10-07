@@ -84,9 +84,9 @@ openClose = () => {
             <Title style = {{color:'black'}}>Select Courts</Title>
           </Body>
           <Right>
-          <Button transparent onPress={this.openClose}>
+          {/* <Button transparent onPress={this.openClose}>
           <Entypo name="plus" size={28} color="black" />
-            </Button>
+            </Button> */}
           </Right>
         </Header>
         <Tabs tabBarUnderlineStyle={{backgroundColor:'grey'}}>
@@ -100,7 +100,7 @@ openClose = () => {
               <Text>{object["site_name"]}</Text>
               </Left>
               <Right>
-            <Button onPress={() => {this.selectPlayground(object["site_name"], object["site_id"], object["latitude"], object["longitude"]), this.props.onModalOne(), this.props.checkIfChecked()}}>
+            <Button onPress={() => {this.selectPlayground(object["site_name"], object["site_id"], object["latitude"], object["longitude"]), this.props.onModalOne(), this.props.checkIfChecked(),this.props.checkIfPreChecked()}}>
               <Icon name='arrow-forward'/>
             </Button>
           </Right>

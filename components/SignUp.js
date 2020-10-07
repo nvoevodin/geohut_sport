@@ -29,7 +29,7 @@ class SignUp extends Component {
         email,
       })
       .then((data) => {})
-      .catch((error) => {});
+      .catch((error) => {alert(error)});
   };
 
   //CHECKS EMAIL AGAINST ALLOWED USERS, CREATES NEW USER, ADDS USERS INFO TO FIREBASE, CHECKS FOR ERRORS
@@ -44,7 +44,7 @@ class SignUp extends Component {
           }
           firebase
             .auth()
-            .createUserWithEmailAndPassword(email, password)
+            .createUserWithEmailAndPassword(email.trim(), password)
             .then(() => firebase.auth().currentUser.sendEmailVerification())
   
 
@@ -74,7 +74,14 @@ class SignUp extends Component {
                 )
               }
 
-            });
+            })
+              .catch((error) =>
+        Alert.alert(
+          "Access Denied!",
+          "Something is wrong!",
+          [{ text: "OK" }],
+          { cancelable: false }
+        ))
 
 
         // } else {
