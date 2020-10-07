@@ -73,9 +73,9 @@ openClose = () => {
             <Title style = {{color:'black'}}>Select Playground</Title>
           </Body>
           <Right>
-          <Button transparent onPress={this.openClose}>
+          {/* <Button transparent onPress={this.openClose}>
           <Entypo name="plus" size={28} color="black" />
-            </Button>
+            </Button> */}
           </Right>
         </Header>
         <Content>
