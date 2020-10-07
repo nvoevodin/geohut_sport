@@ -25,6 +25,7 @@ class Profile extends Component {
   state = {
     firstName:'',
     lastName:'',
+    email:'',
     modalVisible: false,
     total: null,
     totalWeek: null,
@@ -45,15 +46,15 @@ class Profile extends Component {
     
   }
 
-  getCheckinData =() => {
+  // getCheckinData =() => {
   
-    fetch(`https://geohut.metis-data.site/historycheckins/${this.props.reducer.userInfo.workId}`)
-      .then(res => res.json())
-      .then(res => {
-       console.log(res["data"])
-        this.setState({ data: res["data"], showHistory: true })
-      })
-  }
+  //   fetch(`https://geohut.metis-data.site/historycheckins/${this.props.reducer.userInfo.workId}`)
+  //     .then(res => res.json())
+  //     .then(res => {
+  //      console.log(res["data"])
+  //       this.setState({ data: res["data"], showHistory: true })
+  //     })
+  // }
 
 
   readUserData() {
@@ -66,37 +67,37 @@ class Profile extends Component {
        
         this.setState({ firstName: data.firstName,
                         lastName: data.lastName,
-                        workId: data.workId});
+                        email: data.email});
 
-                        fetch(`https://geohut.metis-data.site/checkins/${this.props.reducer.userInfo.workId}`)
-                        .then(res => res.json())
-                        .then(res => {
-                          console.log(res.data)
+                    //     fetch(`https://geohut.metis-data.site/checkins/${this.props.reducer.userInfo.workId}`)
+                    //     .then(res => res.json())
+                    //     .then(res => {
+                    //       console.log(res.data)
                 
-                    this.setState({total:res.data[0]['total']})
+                    // this.setState({total:res.data[0]['total']})
                     
-                        }).catch(error => this.setState({totalWeek: 0}))
+                    //     }).catch(error => this.setState({totalWeek: 0}))
                       
                         
 
 
-                        fetch(`https://geohut.metis-data.site/checkinsWeek/${this.props.reducer.userInfo.workId}`)
-                        .then(res => res.json())
-                        .then(res => {
-                          console.log(res.data)
-                    this.setState({totalWeek:res.data[0]['count_ins']})
+                    //     fetch(`https://geohut.metis-data.site/checkinsWeek/${this.props.reducer.userInfo.workId}`)
+                    //     .then(res => res.json())
+                    //     .then(res => {
+                    //       console.log(res.data)
+                    // this.setState({totalWeek:res.data[0]['count_ins']})
                     
-                        }).catch(error => {
+                    //     }).catch(error => {
                          
                           
-                          this.setState({totalWeek: 0})})
+                    //       this.setState({totalWeek: 0})})
     })
     
   }
 
-  showHistory = () => {
-    this.setState({ showHistory : !this.state.showHistory })
-  }
+  // showHistory = () => {
+  //   this.setState({ showHistory : !this.state.showHistory })
+  // }
 
 
     render(){
@@ -109,7 +110,7 @@ class Profile extends Component {
               <CardItem header bordered>
                 <View style={styles.cardContainer}>
                   <Text style={styles.cartTitles}>User Id: </Text>
-                  <Text>{this.state.workId}</Text>
+                  <Text>{this.state.email}</Text>
                 </View>
               </CardItem>
               <CardItem bordered>
@@ -122,14 +123,14 @@ class Profile extends Component {
                     <Text style={styles.cartTitles}>Last Name: </Text>
                     <Text>{this.state.lastName}</Text>
                   </View>
-                  <View style={styles.cardContainer}>
+                  {/* <View style={styles.cardContainer}>
                     <Text style={styles.cartTitles}>Check-Ins This Week: </Text>
                     <Text>{this.state.totalWeek}</Text>
                   </View>
                   <View style={styles.cardContainer}>
                     <Text style={styles.cartTitles}>Total Check-Ins: </Text>
                     <Text>{this.state.total}</Text>
-                  </View>
+                  </View> */}
                 
                 </Body>
               </CardItem>
@@ -146,14 +147,14 @@ class Profile extends Component {
               
            
                     
-                    <Button style ={{margin:10}}
+                    {/* <Button style ={{margin:10}}
                       full
                       rounded
                       primary
                       onPress={this.getCheckinData}>
                       <Text style = {{color:'white'}}>{this.state.showHistory ? 'Refresh Checkin History' : 'Show Checkin History'}</Text>
-                    </Button>
-                    { this.state.showHistory ?
+                    </Button> */}
+                    {/* { this.state.showHistory ?
                     <Button style ={{margin:10, marginTop: 5}}
                       full
                       rounded
@@ -161,9 +162,9 @@ class Profile extends Component {
                       onPress={()=>Alert.alert('Data sharing is coming soon! Thank you for your patience.')}>
                       <Text style = {{color:'white'}}>Share my Data</Text>
                     </Button> : <View></View>
-                    }
+                    } */}
 
-                    { this.state.showHistory ?
+                    {/* { this.state.showHistory ?
                      
                       this.state.data.map((item, index) => (
                         <View key = {index} style = {styles.item}>
@@ -181,7 +182,7 @@ class Profile extends Component {
                                 </View>
                         </View>
                       ))  : <View></View>
-                    }
+                    } */}
 
                    
           </Content>

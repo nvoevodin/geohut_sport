@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "VolleyPal",
-    "slug": "VolleyPal_Beta",
+    "name": "VolleyPal_Dev",
+    "slug": "volleypal_beta_dev",
     "platforms": [
       "ios",
       "android",

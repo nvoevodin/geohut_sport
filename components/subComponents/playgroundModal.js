@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {StyleSheet,Modal, TouchableOpacity} from 'react-native';
-import {Container, Header, Content, List, ListItem, Icon, Button, Left,Right, Body, Title,Text, Picker} from 'native-base';
+import {Container, Header, Content, List, ListItem, Icon, Button, Left,Right, Body, Title,Text, Tab, Tabs,TabHeading} from 'native-base';
 import { connect } from 'react-redux';
 import { Entypo } from '@expo/vector-icons';
 import AddPlayground from "./addPlaygroundModal"
@@ -8,14 +8,15 @@ import AddPlayground from "./addPlaygroundModal"
 
 //let x = 'http://10.244.57.219:3002'
 
-//let x = 'http://192.168.2.5:3007'
-let x = 'https://volleybuddy.metis-data.site'
+let x = 'http://192.168.2.9:3007'
+//let x = 'https://volleybuddy.metis-data.site'
 
 
 class PlaygroundModal extends Component {
 
     state = {
-         playgrounds: []
+         playgrounds: [],
+         potential_sites: []
     }
 
     componentDidMount() {
@@ -28,6 +29,16 @@ class PlaygroundModal extends Component {
     .then((res) => res.json())
     .then((res) => {
     this.setState({playgrounds:res.data})
+    
+    }).catch((error) => {
+      console.log(error)
+    });
+
+
+    fetch(`${x}/potential_sites`)
+    .then((res) => res.json())
+    .then((res) => {
+    this.setState({potential_sites:res.data})
     
     }).catch((error) => {
       console.log(error)
@@ -70,14 +81,16 @@ openClose = () => {
             </Button>
           </Left>
           <Body>
-            <Title style = {{color:'black'}}>Select Playground</Title>
+            <Title style = {{color:'black'}}>Select Courts</Title>
           </Body>
           <Right>
-          {/* <Button transparent onPress={this.openClose}>
+          <Button transparent onPress={this.openClose}>
           <Entypo name="plus" size={28} color="black" />
-            </Button> */}
+            </Button>
           </Right>
         </Header>
+        <Tabs tabBarUnderlineStyle={{backgroundColor:'grey'}}>
+        <Tab tabStyle ={{backgroundColor: '#e3e8e6'}} activeTextStyle={{color: 'grey', fontWeight: 'bold', fontSize:18}} activeTabStyle={{backgroundColor: '#e3e8e6'}} textStyle={{color: 'grey', fontWeight: 'normal'}} heading="Live Courts">
         <Content>
           <List>
           {this.state.playgrounds.map((object,index) =>
@@ -97,6 +110,31 @@ openClose = () => {
           )}
           </List>
         </Content>
+        </Tab>
+        <Tab tabStyle ={{backgroundColor: '#e3e8e6'}} activeTextStyle={{color: 'grey', fontWeight: 'bold', fontSize:18}} activeTabStyle={{backgroundColor: '#e3e8e6'}} textStyle={{color: 'grey', fontWeight: 'normal'}} heading="Potential Courts">
+
+
+<Content>
+          <List>
+          {this.state.potential_sites.map((object,index) =>
+          
+            <ListItem key = {index}>
+                <Left>
+              <Text>{object["site_name"]}</Text>
+              </Left>
+              <Right>
+
+          </Right>
+              
+            </ListItem>
+        
+          )}
+          </List>
+        </Content>
+
+          </Tab>
+
+        </Tabs>
       </Container>
 
 

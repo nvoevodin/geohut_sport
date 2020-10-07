@@ -10,9 +10,9 @@ import moment from "moment";
 
 //let x = 'http://192.168.2.7:3002'
 
-//let x = 'http://192.168.2.5:3007'
+let x = 'http://192.168.2.9:3007'
 
-let x = 'https://volleybuddy.metis-data.site'
+//let x = 'https://volleybuddy.metis-data.site'
 class Players extends Component {
 
     state = {
@@ -74,10 +74,8 @@ class Players extends Component {
     return (
       <Container>
         <PageTemplate title={"Players"} logout={this.logout} />
-        <Tabs >
-        <Tab heading={<TabHeading style={{backgroundColor: '#5cb85c'}}>
-          <Text>Playing Now</Text>
-          </TabHeading>}
+        <Tabs tabBarUnderlineStyle={{backgroundColor:'grey'}}>
+        <Tab tabStyle ={{backgroundColor: '#5cb85c'}} activeTextStyle={{color: '#fff', fontWeight: 'bold', fontSize:18}} activeTabStyle={{backgroundColor: '#5cb85c'}} textStyle={{color: '#fff', fontWeight: 'normal'}} heading="Playing Now"
           >
         <View style={styles.container}>
         <Button style ={{margin:10}}
@@ -113,9 +111,7 @@ class Players extends Component {
           </List>
         </Content>
       </Tab>
-      <Tab heading={<TabHeading style={{backgroundColor: '#5cb85c'}}>
-          <Text>Coming to Play</Text>
-          </TabHeading>}
+      <Tab tabStyle ={{backgroundColor: '#5cb85c'}} activeTextStyle={{color: '#fff', fontWeight: 'bold', fontSize:18}} activeTabStyle={{backgroundColor: '#5cb85c'}} textStyle={{color: '#fff', fontWeight: 'normal'}} heading="Coming to Play"
           >
       <View style={styles.container}>
         <Button style ={{margin:10}}

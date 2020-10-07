@@ -105,15 +105,15 @@ const bottomTabNavigator = createBottomTabNavigator(
     //     )
     //   }
     // },
-    // Profile: {
-    //   screen: Profile,
-    //   navigationOptions: {
-    //     tabBarIcon: ({ tintColor }) => (
-    //       // <Icon name="search" size={25} color={tintColor} />
-    //       <Ionicons  name="md-person" size={25} color={tintColor}/>
-    //     )
-    //   }
-    // },
+    Profile: {
+      screen: Profile,
+      navigationOptions: {
+        tabBarIcon: ({ tintColor }) => (
+          // <Icon name="search" size={25} color={tintColor} />
+          <Ionicons  name="md-person" size={25} color={tintColor}/>
+        )
+      }
+    },
 
 
   },
