@@ -19,33 +19,47 @@ class PreCheckModal extends Component {
 
  
    handleConfirm = async (date) => {
-   console.log(date)
+
+   
+      var a = new Date(moment().utc().format())
+
+      var b = new Date(moment(date).utc().format())
+
+  
+
+      if ((b-a) < 0){
+        alert('Select later time!')
+      } else {
+        fetch(
+          // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
+          `${x}/preCheck?time=${date}&site_id=${this.props.reducer.playgroundId}&first_name=${this.props.reducer.userInfo.firstName}
+          &last_name=${this.props.reducer.userInfo.lastName}&user_id=${this.props.reducer.userInfo.user_id}`,
+          { method: "POST" }
+        ).catch((error) => {
+          console.log(error)
+        });
+
+
+
+    alert(
+      `Success! You are coming around ${moment(date).format('LT')}.`
+    );
+
+
+  this.props.storePreCheck()
+      }
+  
+   
     
 
-                fetch(
-                  // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
-                  `${x}/preCheck?time=${date}&site_id=${this.props.reducer.playgroundId}&first_name=${this.props.reducer.userInfo.firstName}
-                  &last_name=${this.props.reducer.userInfo.lastName}&user_id=${this.props.reducer.userInfo.user_id}`,
-                  { method: "POST" }
-                ).catch((error) => {
-                  console.log(error)
-                });
-      
-  
-      
-            alert(
-              `Success! You are coming around ${moment(date).format('LT')}.`
-            );
-       
 
-          this.props.storePreCheck()
   };
 
 
 
   
   render() {
-    console.log(this.props.reducer.preCheckModal)
+    
   return (
     
     

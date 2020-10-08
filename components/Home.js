@@ -159,7 +159,7 @@ startBackgroundUpdate = async () => {
 
 
 checkedIn = () =>{
-console.log('smth')
+
   firebase.database().ref('UsersList/'+ this.uid + '/info').once('value', snapshot => {
         
     let data = snapshot.val()
@@ -186,7 +186,7 @@ console.log('smth')
 
 
 preCheckedIn = () =>{
-  console.log('smth')
+ 
     firebase.database().ref('UsersList/'+ this.uid + '/info').once('value', snapshot => {
           
       let data = snapshot.val()
@@ -199,7 +199,7 @@ preCheckedIn = () =>{
        
         if (res["data"].some(e => e.site_id === this.props.reducer.playgroundId)){
           this.props.storePreCheck()
-          console.log('precheckedIN')
+          
         } else {
           this.props.cancelPreCheck()
           
@@ -351,7 +351,7 @@ preCheckedIn = () =>{
         },
         (accuracy = 100)
       );
-      console.log('test')
+    
       return distance
       
     } catch (error) {
@@ -412,7 +412,7 @@ preCheckedIn = () =>{
 
   //FUNCTION: HANDLES MAIN CHECKIN
   handleButton = async () => {
-    console.log(moment().utc().format("YYYY-MM-DD HH:mm:ss").substr(0, 18) + "0")
+   
 if (this.props.reducer.playgroundId === ''){
   Alert.alert("Select your court first.");
 } else if (this.state.submitted === false) {
