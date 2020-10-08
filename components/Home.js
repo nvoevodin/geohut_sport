@@ -561,8 +561,8 @@ console.log(this.props.reducer.preCheckStatus+'status')
           <Button style={styles.bubble} onPress={() => {
                   this.props.onModalOne()}}>
         
-        <Text style = {{color:'white', fontWeight:'bold', fontSize:17}}>Courts </Text>
-            <MaterialCommunityIcons name="target" size={35} color="white" />
+        <Text style = {{color:'white', fontWeight:'bold', fontSize:19}}>Courts </Text>
+            <MaterialCommunityIcons name="target" size={34} color="white" />
            
           
           
@@ -784,7 +784,7 @@ const styles = StyleSheet.create({
   },
   bubble: {
     position: "absolute",
-    top: "-5%",
+    top: "-5.3%",
     alignItems: "center",
     justifyContent: "center",
     width: "18%",
