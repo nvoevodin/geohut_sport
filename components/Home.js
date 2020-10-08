@@ -464,7 +464,7 @@ if (this.props.reducer.playgroundId === ''){
       this.setState({ submittedAnimation: false });
     } else {
 console.log(this.props.reducer.playgroundId)
-
+this.setState({ submittedAnimation: true });
 await fetch(
   // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
   `${x}/update?site_id=${this.props.reducer.playgroundId}&user_id=${this.props.reducer.userInfo.user_id}`,
@@ -493,7 +493,7 @@ await fetch(
 
 
 
-
+  this.setState({ submittedAnimation: false });
       this.setState({ submitted: false });
 
       Alert.alert(
