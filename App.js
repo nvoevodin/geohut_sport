@@ -30,6 +30,9 @@ const firebaseConfig ={
 firebase.initializeApp(firebaseConfig)
 
 
+global.x = 'http://192.168.2.9:3007'
+//global.x = 'https://volleybuddy.metis-data.site'
+
 
 import Home from './components/Home'
 import Help from './components/Help'

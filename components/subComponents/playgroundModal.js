@@ -1,15 +1,13 @@
 import React, {Component} from 'react';
-import {StyleSheet,Modal, TouchableOpacity} from 'react-native';
+import {StyleSheet,Modal, TouchableOpacity, Alert} from 'react-native';
 import {Container, Header, Content, List, ListItem, Icon, Button, Left,Right, Body, Title,Text, Tab, Tabs,TabHeading} from 'native-base';
 import { connect } from 'react-redux';
 import { Entypo } from '@expo/vector-icons';
 import AddPlayground from "./addPlaygroundModal"
 
+import AsyncStorage from '@react-native-community/async-storage';
 
-//let x = 'http://10.244.57.219:3002'
 
-//let x = 'http://192.168.2.9:3007'
-let x = 'https://volleybuddy.metis-data.site'
 
 
 class PlaygroundModal extends Component {
@@ -25,7 +23,7 @@ class PlaygroundModal extends Component {
     }
 
     getPlaygrounds = () => {
-    fetch(`${x}/sites`)
+    fetch(`${global.x}/sites`)
     .then((res) => res.json())
     .then((res) => {
     this.setState({playgrounds:res.data})
@@ -35,7 +33,7 @@ class PlaygroundModal extends Component {
     });
 
 
-    fetch(`${x}/potential_sites`)
+    fetch(`${global.x}/potential_sites`)
     .then((res) => res.json())
     .then((res) => {
     this.setState({potential_sites:res.data})
@@ -50,13 +48,58 @@ selectPlayground = (name,id,lat,lon) => {
 this.props.storePlayground(name,id,lat,lon)
 
 
-
-
-
 }
 
 openClose = () => {
   this.props.onModalOne(),this.props.addPlaygroundModal()
+}
+
+confirmCourt = (site) => {
+  
+  Alert.alert(
+    "Courts Confirmation",
+    "By clicking OK, you confirm that these courts (or this court) really exists! Please do not falsly confirm as this ruins the experience for everyone!",
+    [
+      {
+        text: "Cancel",
+        onPress: () => {
+
+        },
+        style: "cancel"
+      },
+      { text: "OK", onPress: async () => {
+        console.log(site)
+
+        const value = await AsyncStorage.getItem('confirmed')
+
+        if(value !== null) {
+          console.log(value)
+          alert('Can only confirm once!')
+        } else {
+
+          await fetch(
+            // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
+            `${global.x}/confirm_potential_sites?site_id=${site}`,
+            { method: "PUT" }
+          ).catch((error) => {
+            console.log(error)
+          })
+  
+          try {
+            await AsyncStorage.setItem('confirmed', 'yes')
+          } catch (e) {
+            console.log('something wrong (storage)')
+          }
+  
+  alert('Thank you! Your confirmation is recorded.')
+
+        }
+
+
+} }
+    ],
+    { cancelable: false }
+  );
 }
 
 
@@ -84,9 +127,9 @@ openClose = () => {
             <Title style = {{color:'black'}}>Select Courts</Title>
           </Body>
           <Right>
-          {/* <Button transparent onPress={this.openClose}>
+          <Button transparent onPress={this.openClose}>
           <Entypo name="plus" size={28} color="black" />
-            </Button> */}
+            </Button>
           </Right>
         </Header>
         <Tabs tabBarUnderlineStyle={{backgroundColor:'grey'}}>
@@ -122,9 +165,12 @@ openClose = () => {
                 <Left>
               <Text>{object["site_name"]}</Text>
               </Left>
-              <Right>
-
-          </Right>
+           
+              <Button disabled = {false} style ={{backgroundColor: '#e3e8e6'}} onPress={() => {this.confirmCourt(object["site_id"])}}>
+                <Text style = {{color: 'grey'}}>Confirm | {5 - object["confirms"]} left</Text>
+                <Icon name='thumbs-up' style={{fontSize: 25, color: 'green'}}/>
+            </Button>
+         
               
             </ListItem>
         

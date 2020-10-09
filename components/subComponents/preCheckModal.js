@@ -8,10 +8,7 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 const moment = require("moment");
 
 
-//let x = 'http://10.244.57.219:3002'
 
-//let x = 'http://192.168.2.9:3007'
-let x = 'https://volleybuddy.metis-data.site'
  
 class PreCheckModal extends Component {
 
@@ -32,7 +29,7 @@ class PreCheckModal extends Component {
       } else {
         fetch(
           // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
-          `${x}/preCheck?time=${date}&site_id=${this.props.reducer.playgroundId}&first_name=${this.props.reducer.userInfo.firstName}
+          `${global.x}/preCheck?time=${date}&site_id=${this.props.reducer.playgroundId}&first_name=${this.props.reducer.userInfo.firstName}
           &last_name=${this.props.reducer.userInfo.lastName}&user_id=${this.props.reducer.userInfo.user_id}`,
           { method: "POST" }
         ).catch((error) => {

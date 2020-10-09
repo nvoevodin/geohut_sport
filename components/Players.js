@@ -8,11 +8,7 @@ import moment from "moment";
 
 
 
-//let x = 'http://192.168.2.7:3002'
 
-//let x = 'http://192.168.2.9:3007'
-
-let x = 'https://volleybuddy.metis-data.site'
 class Players extends Component {
 
     state = {
@@ -27,7 +23,7 @@ class Players extends Component {
 
     getPlayers = () => {
       
-    fetch(`${x}/players/${this.props.reducer.playgroundId}`)
+    fetch(`${global.x}/players/${this.props.reducer.playgroundId}`)
     .then((res) => res.json())
     .then((res) => {
         
@@ -37,7 +33,7 @@ class Players extends Component {
     });
 
 
-    fetch(`${x}/pre_checks/${this.props.reducer.playgroundId}`)
+    fetch(`${global.x}/pre_checks/${this.props.reducer.playgroundId}`)
     .then((res) => res.json())
     .then((res) => {
         
@@ -69,7 +65,7 @@ class Players extends Component {
 
   render() {
 
-  
+  console.log(global.addr)
       
     return (
       <Container>
@@ -101,7 +97,7 @@ class Players extends Component {
               <Left>
               <Text style = {{fontSize:11}}>{object["first_name"]} {object["last_name"]}</Text>  
               </Left>
-              <Right><Text style = {{fontSize:11}}>{moment(object["checkin_datetime"]).format('LT')}</Text></Right>
+              <Text style = {{fontSize:11}}>{moment(object["checkin_datetime"]).format('LT')}</Text>
               
             
               

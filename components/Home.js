@@ -33,10 +33,9 @@ const moment = require("moment");
 
 
 
-//let x = 'http://10.244.57.219:3002'
 
-//let x = 'http://192.168.2.9:3007'
-let x = 'https://volleybuddy.metis-data.site'
+
+
 
 class Home extends Component {
   
@@ -166,7 +165,7 @@ checkedIn = () =>{
 
  
 
-    fetch(`${x}/checkincheck/${data.email}`)
+    fetch(`${global.x}/checkincheck/${data.email}`)
     .then(res => res.json())
     .then(res => {  
      
@@ -193,7 +192,7 @@ preCheckedIn = () =>{
   
    
   
-      fetch(`${x}/precheckcheck/${data.email}`)
+      fetch(`${global.x}/precheckcheck/${data.email}`)
       .then(res => res.json())
       .then(res => {  
        
@@ -439,7 +438,7 @@ if (this.props.reducer.playgroundId === ''){
           //this.getCurrentLoc();
           fetch(
             // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
-            `${x}/add?time=${
+            `${global.x}/add?time=${
               moment().utc().format("YYYY-MM-DD HH:mm:ss").substr(0, 18) + "0"
             }&site_id=${this.props.reducer.playgroundId}&first_name=${this.props.reducer.userInfo.firstName}
             &last_name=${this.props.reducer.userInfo.lastName}&user_id=${this.props.reducer.userInfo.user_id}`,
@@ -467,7 +466,7 @@ console.log(this.props.reducer.playgroundId)
 this.setState({ submittedAnimation: true });
 await fetch(
   // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
-  `${x}/update?site_id=${this.props.reducer.playgroundId}&user_id=${this.props.reducer.userInfo.user_id}`,
+  `${global.x}/update?site_id=${this.props.reducer.playgroundId}&user_id=${this.props.reducer.userInfo.user_id}`,
   { method: "PUT" }
 ).catch((error) => {
   console.log(error)
@@ -475,14 +474,14 @@ await fetch(
 
 await fetch(
   // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
-  `${x}/addToStorage?site_id=${this.props.reducer.playgroundId}&user_id=${this.props.reducer.userInfo.user_id}`,
+  `${global.x}/addToStorage?site_id=${this.props.reducer.playgroundId}&user_id=${this.props.reducer.userInfo.user_id}`,
   { method: "POST" }
 ).catch((error) => {
   console.log(error)
 })
   fetch(
     // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
-    `${x}/delete?site_id=${this.props.reducer.playgroundId}&user_id=${this.props.reducer.userInfo.user_id}`,
+    `${global.x}/delete?site_id=${this.props.reducer.playgroundId}&user_id=${this.props.reducer.userInfo.user_id}`,
     { method: "DELETE" }
   ).catch((error) => {
     console.log(error)
@@ -519,7 +518,7 @@ await fetch(
         { text: "OK", onPress: () => {
           fetch(
             // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
-            `${x}/cancelPreCheck?site_id=${this.props.reducer.playgroundId}&user_id=${this.props.reducer.userInfo.user_id}`,
+            `${global.x}/cancelPreCheck?site_id=${this.props.reducer.playgroundId}&user_id=${this.props.reducer.userInfo.user_id}`,
             { method: "DELETE" }
           ).catch((error) => {
             console.log(error)

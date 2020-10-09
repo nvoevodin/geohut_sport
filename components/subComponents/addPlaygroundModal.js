@@ -6,10 +6,7 @@ import { connect } from 'react-redux';
 import * as Location from "expo-location";
 
 
-//let x = 'http://10.244.57.219:3002'
 
-//let x = 'http://192.168.2.9:3007'
-let x = 'https://volleybuddy.metis-data.site'
 
 
 class AddPlayground extends Component {
@@ -37,7 +34,7 @@ class AddPlayground extends Component {
 
           fetch(
             // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
-            `${x}/addPlayground?name=${this.state.Name}&address=${this.state.Address}&latitude=${location[0].coords.latitude}&longitude=${location[0].coords.longitude}`,
+            `${global.x}/addPlayground?name=${this.state.Name}&address=${this.state.Address}&latitude=${location[0].coords.latitude}&longitude=${location[0].coords.longitude}`,
             { method: "POST" }
           ).catch((error) => {
             console.log(error)
