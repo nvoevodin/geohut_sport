@@ -185,7 +185,7 @@ confirmCourt = (site) => {
 
 
         </Modal>
-        <AddPlayground/>
+        <AddPlayground playgrounds = {this.state.playgrounds}/>
         </React.Fragment>
     );
   }
