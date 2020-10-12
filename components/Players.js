@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {StyleSheet,Modal, TouchableOpacity} from 'react-native';
-import {Container, Header, Content, List, ListItem,  Button, Left,Right, Body, Title,Text, Tab, Tabs,TabHeading} from 'native-base';
+import {Container, Header, Content, Card, CardItem,  Button, Left,Right, Body, Title,Text, Tab, Tabs,TabHeading} from 'native-base';
 import { connect } from 'react-redux';
 import PageTemplate from "./subComponents/Header";
 import { View } from 'react-native-animatable';
@@ -90,10 +90,10 @@ class Players extends Component {
     </View>
  
         <Content>
-          <List>
+          <Card>
           {this.state.players.map((object,index) =>
           
-            <ListItem key = {index} style = {{flex:1}}>
+            <CardItem key = {index} style = {{flex:1}}>
               <Left>
               <Text style = {{fontSize:11}}>{object["first_name"]} {object["last_name"]}</Text>  
               </Left>
@@ -101,10 +101,10 @@ class Players extends Component {
               
             
               
-            </ListItem>
+            </CardItem>
         
           )}
-          </List>
+          </Card>
         </Content>
       </Tab>
       <Tab tabStyle ={{backgroundColor: '#5cb85c'}} activeTextStyle={{color: '#fff', fontWeight: 'bold', fontSize:18}} activeTabStyle={{backgroundColor: '#5cb85c'}} textStyle={{color: '#fff', fontWeight: 'normal'}} heading="Coming to Play"
@@ -126,10 +126,10 @@ class Players extends Component {
     </View>
  
         <Content>
-          <List>
+          <Card>
           {this.state.preChecks.map((object,index) =>
         
-            <ListItem key = {index}>
+            <CardItem key = {index}>
               <Left>
               <Text style = {{fontSize:11}} >{object["first_name"]} {object["last_name"]}</Text>  
               </Left>
@@ -137,10 +137,10 @@ class Players extends Component {
               
             
               
-            </ListItem>
+            </CardItem>
         
   )}
-          </List>
+          </Card>
         </Content>
       </Tab>
 
