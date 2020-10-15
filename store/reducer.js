@@ -27,6 +27,16 @@ const ourReducer = (state = INITIAL_STATE, action) => {
         reportModal: action.value,
       }
     break;
+
+    
+
+    case "SET_SITE_DATA":
+      return{
+        ...state,
+        playgroundId: action.value
+      }
+    break;
+
                     case "SET_EMAIL_DATA":
                       return{
                         ...state,

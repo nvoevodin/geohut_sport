@@ -3,7 +3,8 @@ import { StyleSheet, Text, View, Image } from "react-native";
 import { Container, Form, Button } from "native-base";
 import * as firebase from "firebase";
 import * as Animatable from "react-native-animatable";
-
+import { connect } from "react-redux";
+import AsyncStorage from '@react-native-community/async-storage';
 class Help extends Component {
 
 
@@ -11,6 +12,8 @@ class Help extends Component {
   componentDidMount() {
     //CHECKS IF THE USER ALREADY EXISTS (IF YES, CHECKS IF EMAIL IS VERIFIES (IF YES, FORWARDS
     //TO HOME, IF NOT, KEEPS AT THIS SCREEN))
+
+    this.setSite() 
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         this.props.navigation.navigate(
@@ -18,7 +21,21 @@ class Help extends Component {
         );
       }
     });
+
+
   }
+
+ setSite = async () =>{
+  //const value = await AsyncStorage.getItem('defaultCourt')
+
+  AsyncStorage.getItem('defaultCourt', (error, result) => {
+    var res = JSON.parse(result) 
+    this.props.storePlayground(res[0],res[1],res[2],res[3])
+  
+  });
+  //console.log(value + 'testin')
+  //this.props.setSiteData(value)
+ }
 
   //MOVE TO LOGIN
   handleLogin = () => {
@@ -85,7 +102,21 @@ class Help extends Component {
   }
 }
 
-export default Help;
+const mapStateToProps = (state) => {
+    
+  const { reducer } = state
+  return { reducer }
+};
+
+const mapDispachToProps = dispatch => {
+  return {
+
+    storePlayground: (name,id,lat,lon) => dispatch({ type: "STORE_PLAYGROUND", value: name,value1: id, value2:lat,value3:lon})
+
+  };
+};
+
+export default connect(mapStateToProps, mapDispachToProps)(Help);
 
 const styles = StyleSheet.create({
   container: {

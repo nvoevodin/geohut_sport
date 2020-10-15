@@ -8,6 +8,7 @@ import {
   Animated,
   ActivityIndicator,
 } from "react-native";
+
 import { Button } from "native-base";
 import * as Font from 'expo-font';
 import * as firebase from "firebase";
@@ -78,7 +79,10 @@ class Home extends Component {
     //READS FROM FIREBASE AND SETS EMAIL AND WORKID IN REDUX
     this.readFireBase();
 
-    //RETRIEVES SITE INFORMATION (using either email/phone or id)
+
+    
+
+
     //this.getSiteDataWithEmail(firebase.auth().currentUser.email);
     
     //EXECUTES LOCATION PERMISSIONS
@@ -101,6 +105,9 @@ class Home extends Component {
 
 
   }
+
+
+
 
 
 //FUNCTION: CHECKS IF ALREADY CHECKED IN TODAY (IN CASE LOGGED OUT)
@@ -552,7 +559,7 @@ await fetch(
 
 
   render() {
-console.log(this.props.reducer.preCheckStatus+'status')
+console.log(this.props.reducer.playgroundId + 'test')
 //console.log(this.state)
     return (
       <React.Fragment>
@@ -745,7 +752,7 @@ const mapDispachToProps = dispatch => {
   return {
     setEmailData: (y) => dispatch({ type: "SET_EMAIL_DATA", value: y}),
     setUserData: (y) => dispatch({ type: "SET_USER_DATA", value: y}),
-    setSiteData: (y) => dispatch({ type: "SET_SITE_DATA", value: y}),
+    
     onModalOne: () => dispatch({ type: "CLOSE_MODAL_1", value: true}),
     onModalTwo: () => dispatch({ type: "CLOSE_MODAL_2", value: true}),
     cancelPreCheck: () => dispatch({ type: "CANCEL_PRECHECK", value: false}),

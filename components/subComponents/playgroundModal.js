@@ -14,7 +14,8 @@ class PlaygroundModal extends Component {
 
     state = {
          playgrounds: [],
-         potential_sites: []
+         potential_sites: [],
+         defaultCourtId: ''
     }
 
     componentDidMount() {
@@ -42,10 +43,44 @@ class PlaygroundModal extends Component {
       console.log(error)
     });
 
+    AsyncStorage.getItem('defaultCourt', (error, result) => {
+      var res = JSON.parse(result) 
+      this.setState({defaultCourtId: res[1]})
+    
+    });
+
 }
 
 selectPlayground = (name,id,lat,lon) => {
 this.props.storePlayground(name,id,lat,lon)
+
+
+Alert.alert(
+  `${name} selected.`,
+  `Do you want to make ${name} your default court?`,
+  [
+    {
+      text: "No",
+      onPress: () => {
+
+      },
+      style: "cancel"
+    },
+    { text: "Yes", onPress: () => {
+
+      this.setState({defaultCourtId:id})
+
+      try {
+        AsyncStorage.setItem('defaultCourt', JSON.stringify([name,id,lat,lon]))
+      } catch (e) {
+        console.log('something wrong (storage)')
+      }
+
+      alert(`Nice! ${name} is your new default court.`)
+    } }
+  ],
+  { cancelable: false }
+);
 
 
 }
@@ -138,17 +173,21 @@ confirmCourt = (site) => {
           <List>
           {this.state.playgrounds.map((object,index) =>
           
-            <ListItem key = {index}>
+                        <ListItem  key = {index}>
+                          <TouchableOpacity style = {{flexDirection:'row'}} onPress={() => {this.selectPlayground(object["site_name"], object["site_id"], object["latitude"], object["longitude"]),  this.props.checkIfChecked(),this.props.checkIfPreChecked()}}>
                 <Left>
               <Text>{object["site_name"]}</Text>
               </Left>
               <Right>
-            <Button onPress={() => {this.selectPlayground(object["site_name"], object["site_id"], object["latitude"], object["longitude"]), this.props.onModalOne(), this.props.checkIfChecked(),this.props.checkIfPreChecked()}}>
+                {this.state.defaultCourtId === object["site_id"]?<Text>default</Text>:null}
+            {/* <Button onPress={() => {this.selectPlayground(object["site_name"], object["site_id"], object["latitude"], object["longitude"]), this.props.onModalOne(), this.props.checkIfChecked(),this.props.checkIfPreChecked()}}>
               <Icon name='arrow-forward'/>
-            </Button>
+            </Button> */}
           </Right>
-              
+          </TouchableOpacity>
             </ListItem>
+          
+
         
           )}
           </List>

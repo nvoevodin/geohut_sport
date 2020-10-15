@@ -11,7 +11,7 @@ class forgotPassword extends Component {
         email: null
     }  
     
-    forgotPassword = (yourEmail) => {
+    forgotPassword = (yourEmail) => { 
         console.log(yourEmail);
         firebase.auth().sendPasswordResetEmail(yourEmail)
           .then(function (user) {
