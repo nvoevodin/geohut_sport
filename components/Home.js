@@ -9,13 +9,14 @@ import {
   ActivityIndicator,
 } from "react-native";
 
-import { Button } from "native-base";
+import { Button,Right,Left } from "native-base";
 import * as Font from 'expo-font';
 import * as firebase from "firebase";
 import { Entypo } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 
-import * as Permissions from "expo-permissions";
+
+import * as Permissions from 'expo-permissions';
 import * as Location from "expo-location";
 import { getDistance } from "geolib";
 import * as Animatable from "react-native-animatable";
@@ -24,6 +25,9 @@ import PageTemplate from "./subComponents/Header";
 import { connect } from "react-redux";
 import PlaygroundModal from "./subComponents/playgroundModal"
 import PreCheckModal from "./subComponents/preCheckModal"
+import onShare from "./subComponents/shareButton"
+
+import notificationFunction from "./functions/notifications"
 
 //TRACKING - FAUSTO
 //import { configureBgTasks } from './bg';
@@ -61,6 +65,9 @@ class Home extends Component {
   };
 
   async componentDidMount() {
+
+    
+
         await Font.loadAsync({
       Roboto: require('native-base/Fonts/Roboto.ttf'),
       Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),
@@ -81,7 +88,7 @@ class Home extends Component {
 
 
     
-
+    notificationFunction();
 
     //this.getSiteDataWithEmail(firebase.auth().currentUser.email);
     
@@ -574,6 +581,18 @@ console.log(this.props.reducer.playgroundId + 'test')
           
           
           </Button>
+
+          <Button style ={{position: "absolute", top: "3%", right:'6%',borderRadius:60, height:60, width:60}}
+                    full
+                    rounded
+                    success
+                    onPress={onShare}
+                    >
+
+<Entypo name="share" size={30} color="white" />
+                    </Button>
+          
+      
 
           <View style={styles.container}>
             <TouchableOpacity

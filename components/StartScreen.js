@@ -13,6 +13,10 @@ class Help extends Component {
     //CHECKS IF THE USER ALREADY EXISTS (IF YES, CHECKS IF EMAIL IS VERIFIES (IF YES, FORWARDS
     //TO HOME, IF NOT, KEEPS AT THIS SCREEN))
 
+
+  
+
+
     this.setSite() 
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
@@ -26,13 +30,51 @@ class Help extends Component {
   }
 
  setSite = async () =>{
+
+
   //const value = await AsyncStorage.getItem('defaultCourt')
 
-  AsyncStorage.getItem('defaultCourt', (error, result) => {
-    var res = JSON.parse(result) 
-    this.props.storePlayground(res[0],res[1],res[2],res[3])
   
-  });
+    AsyncStorage.getItem('defaultCourt', (error, result) => {
+      var res = JSON.parse(result) 
+      try {
+      this.props.storePlayground(res[0],res[1],res[2],res[3])
+      } catch (e) {
+        console.log(e)
+      }
+    
+    
+  })
+
+
+
+
+  var value = await AsyncStorage.getItem('anonimous')
+  val = (value === 'true')
+  console.log(val + 'ttt')
+  try {
+    this.props.setAnanimous(val)
+  } catch (e) {console.log(e)}
+ 
+
+
+  // AsyncStorage.getItem('anonimous')
+  //   .then( function (value) {
+  //       var val = JSON.parse(value) // boolean false
+  //       console.log(val)
+  //       this.props.setAnanimous(val)
+  //   })
+//   AsyncStorage.getItem('anonimous', function (err, value) {
+   
+//     var val =  JSON.parse(value)// boolean false
+//     console.log(val + 'ggg')
+//     this.props.setAnanimous(val)
+
+//     if (err) {
+
+//   console.log(err)
+//     }
+// })
   //console.log(value + 'testin')
   //this.props.setSiteData(value)
  }
@@ -111,7 +153,8 @@ const mapStateToProps = (state) => {
 const mapDispachToProps = dispatch => {
   return {
 
-    storePlayground: (name,id,lat,lon) => dispatch({ type: "STORE_PLAYGROUND", value: name,value1: id, value2:lat,value3:lon})
+    storePlayground: (name,id,lat,lon) => dispatch({ type: "STORE_PLAYGROUND", value: name,value1: id, value2:lat,value3:lon}),
+    setAnanimous: (x) => dispatch({ type: "SET_ANANIMOUS", value: x}),
 
   };
 };

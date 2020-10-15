@@ -45,8 +45,9 @@ class PlaygroundModal extends Component {
 
     AsyncStorage.getItem('defaultCourt', (error, result) => {
       var res = JSON.parse(result) 
+      try {
       this.setState({defaultCourtId: res[1]})
-    
+      } catch(e){console.log(e)}
     });
 
 }

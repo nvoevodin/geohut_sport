@@ -6,7 +6,7 @@ import PageTemplate from './subComponents/Header'
 import ChangeInfo from './subComponents/changeInformationModal'
 import { AntDesign } from '@expo/vector-icons'; 
 //import Layout from '../constants/Layout';
- 
+import AsyncStorage from '@react-native-community/async-storage';
 
 import { connect } from 'react-redux';
 
@@ -32,13 +32,19 @@ class Profile extends Component {
     totalWeek: null,
     showHistory: false,
     data:null,
-    isEnabled: false
+    isEnabled: this.props.reducer.isAnanimous
   }
 
   toggleSwitch = () => {
 
     this.props.setAnanimous(!this.state.isEnabled)
     this.setState({isEnabled: !this.state.isEnabled})
+    try {
+     AsyncStorage.setItem('anonimous', JSON.stringify(!this.state.isEnabled))
+    } catch (e) {
+      console.log(e)
+      console.log('something wrong (storage)')
+    }
   
   };
 
@@ -50,6 +56,7 @@ class Profile extends Component {
 
 
   componentDidMount() {
+    console.log(this.props.reducer.isAnanimous)
     this.readUserData()
     
   }
