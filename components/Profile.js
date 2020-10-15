@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, View, Alert } from 'react-native';
-import { Button, Content, Card, CardItem, Body } from "native-base";
+import { TouchableOpacity, StyleSheet, Text, View, Switch } from 'react-native';
+import { Button, Content, Card, CardItem, Body, Right, Left } from "native-base";
 import * as firebase from 'firebase';
 import PageTemplate from './subComponents/Header'
 import ChangeInfo from './subComponents/changeInformationModal'
+import { AntDesign } from '@expo/vector-icons'; 
 //import Layout from '../constants/Layout';
  
 
@@ -30,9 +31,16 @@ class Profile extends Component {
     total: null,
     totalWeek: null,
     showHistory: false,
-    data:null
+    data:null,
+    isEnabled: false
   }
 
+  toggleSwitch = () => {
+
+    this.props.setAnanimous(!this.state.isEnabled)
+    this.setState({isEnabled: !this.state.isEnabled})
+  
+  };
 
 
 //CHANGE INFO MODAL TOGGLE
@@ -99,7 +107,9 @@ class Profile extends Component {
   //   this.setState({ showHistory : !this.state.showHistory })
   // }
 
-
+question = () => {
+  alert("If you are anonimous, your name will not be displayed in the CheckIn and Pre-CheckIn lists in the Players tab")
+}
     render(){
 
         return (
@@ -134,7 +144,24 @@ class Profile extends Component {
                 
                 </Body>
               </CardItem>
-              
+              <CardItem>
+<Left>
+              <Text style={styles.cartTitles}>Anonimous: </Text>
+                    {this.state.isEnabled?<Text>Yes</Text>:<Text>No</Text>}
+                    <TouchableOpacity onPress={this.question}>
+                    <AntDesign style = {{marginLeft: 10}} name="questioncircleo" size={24} color="black" />
+                    </TouchableOpacity>
+                    </Left>
+                <Right>
+              <Switch
+        trackColor={{ false: '#767577', true: '#81b0ff' }}
+        thumbColor={this.state.isEnabled ? '#f5dd4b' : '#f4f3f4'}
+        ios_backgroundColor="#3e3e3e"
+        onValueChange={this.toggleSwitch}
+        value={this.state.isEnabled}
+      />
+      </Right>
+              </CardItem>
             </Card>
               
                <Button style ={{margin:10, marginTop: 40}}
@@ -207,9 +234,17 @@ const mapStateToProps = (state) => {
   return { reducer }
 };
 
+const mapDispachToProps = dispatch => {
+  return {
+    setAnanimous: (x) => dispatch({ type: "SET_ANANIMOUS", value: x}),
+
+  };
+};
 
 
-export default connect(mapStateToProps
+
+export default connect(mapStateToProps,
+  mapDispachToProps
   )(Profile);
 
 

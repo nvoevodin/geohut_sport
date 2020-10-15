@@ -5,23 +5,32 @@ import { connect } from 'react-redux';
 import PageTemplate from "./subComponents/Header";
 import { View } from 'react-native-animatable';
 import moment from "moment";
-
-
+import { Ionicons } from '@expo/vector-icons'; 
+import Report from './subComponents/picker'
 
 
 class Players extends Component {
 
     state = {
          players: [],
-         preChecks: []
+         preChecks: [],
+         report: null,
+         
+         modalOpen: false
     }
 
     componentDidMount() {
-        this.getPlayers()
+        this.getPlayersAndCourts()
         
     }
 
-    getPlayers = () => {
+
+    modifyReport = (x) =>{
+    
+      this.setState({report:x})   
+  }
+
+    getPlayersAndCourts = () => {
       
     fetch(`${global.x}/players/${this.props.reducer.playgroundId}`)
     .then((res) => res.json())
@@ -38,6 +47,18 @@ class Players extends Component {
     .then((res) => {
         
     this.setState({preChecks:res.data})
+    }).catch((error) => {
+      console.log(error)
+    });
+
+
+    fetch(`${global.x}/live_courts_info/${this.props.reducer.playgroundId}`)
+    .then((res) => res.json())
+    .then((res) => {
+
+      
+        
+    this.setState({report:res.data[0]["count"]})
     }).catch((error) => {
       console.log(error)
     });
@@ -62,10 +83,16 @@ class Players extends Component {
 
 // }
 
+alertChecked = () => {
+  alert('This is the number of people who have checked in and are currently at the courts. Please report approximate number of people that you see at the courts by pressing the blue button on the right. Thank you!')
+}
 
+// Reported = () => {
+
+// }
   render() {
 
-  console.log(global.addr)
+console.log(this.state.reportar)
       
     return (
       <Container>
@@ -85,9 +112,43 @@ class Players extends Component {
 
                     
 
-                    <Text style = {{fontSize:19}}>Checked In:</Text>
-    <Text style = {{fontSize:50}}>{this.state.players.length}</Text>
+
     </View>
+
+    <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
+    <View style={styles.container}>
+<Text style = {{fontSize:19}}>Checked In:</Text>
+                    
+<Button style ={{margin:10,borderRadius:70, height:75, width:75}}
+                    full
+                    rounded
+                    success
+                    onPress={this.alertChecked}>
+
+                        <Text style = {{color:'white', fontSize:24}}>{this.state.players.length}</Text>
+                    </Button>
+</View>
+
+<View style={styles.container}>
+<Text style = {{fontSize:19}}>Reported:</Text>
+                    
+                    <Button style ={{margin:10,borderRadius:70, height:75, width:75}}
+                    disabled={this.props.reducer.playgroundId == ''?true:false}
+                    full
+                    rounded
+                    primary
+                    onPress={this.props.onModalOne}>
+
+                        {this.state.report !== null?<Text style = {{color:'white', fontSize:24}}>{this.state.report}</Text>:<Ionicons name="ios-people" size={24} color="white" />}
+                    </Button>
+</View>
+
+    </View>
+
+
+  
+
+       
  
         <Content>
           <Card>
@@ -146,8 +207,9 @@ class Players extends Component {
 
 
         </Tabs>
-
+        <Report modifyReport = {this.modifyReport}/>
       </Container>
+ 
     );
   }
 }
@@ -162,7 +224,7 @@ const mapStateToProps = (state) => {
 
   const mapDispachToProps = dispatch => {
     return {
-      //onModalOne: () => dispatch({ type: "CLOSE_MODAL_1", value: false}),
+      onModalOne: () => dispatch({ type: "MODAL_REPORT", value: true}),
      // storePlayground: (name,id,lat,lon) => dispatch({ type: "STORE_PLAYGROUND", value: name,value1: id, value2:lat,value3:lon})
      
     };

@@ -440,8 +440,8 @@ if (this.props.reducer.playgroundId === ''){
             // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
             `${global.x}/add?time=${
               moment().utc().format("YYYY-MM-DD HH:mm:ss").substr(0, 18) + "0"
-            }&site_id=${this.props.reducer.playgroundId}&first_name=${this.props.reducer.userInfo.firstName}
-            &last_name=${this.props.reducer.userInfo.lastName}&user_id=${this.props.reducer.userInfo.user_id}`,
+            }&site_id=${this.props.reducer.playgroundId}&first_name=${this.props.reducer.isAnanimous?"Anonimous":this.props.reducer.userInfo.firstName}
+            &last_name=${this.props.reducer.isAnanimous?"Player":this.props.reducer.userInfo.lastName}&user_id=${this.props.reducer.userInfo.user_id}`,
             { method: "POST" }
           ).catch((error) => {
             console.log(error)
@@ -539,6 +539,7 @@ await fetch(
 
   playgroudAlert = () =>{
     Alert.alert('Select a Court First!')
+
   }
 
   submittedAlert = () =>{

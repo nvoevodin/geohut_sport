@@ -9,16 +9,24 @@ playgroundLon:null,
 playgroundModal: false,
 addPlaygroundModal: false,
 preCheckModal: false,
-
+isAnanimous: false,
 preCheckStatus: false,
-userInfo:null
+userInfo:null,
+reportModal: false
 };
 
 const ourReducer = (state = INITIAL_STATE, action) => {
     const newState = { ...state };
 
   switch (action.type) {
-        
+
+    
+    case "MODAL_REPORT":
+      return{
+        ...state,
+        reportModal: action.value,
+      }
+    break;
                     case "SET_EMAIL_DATA":
                       return{
                         ...state,
@@ -83,6 +91,15 @@ const ourReducer = (state = INITIAL_STATE, action) => {
   
         }
         break;
+        case "SET_ANANIMOUS":
+      
+          return{
+            ...state,
+            isAnanimous: action.value,
+            
+    
+          }
+          break;
 
   
   }
