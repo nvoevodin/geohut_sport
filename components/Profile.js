@@ -12,6 +12,10 @@ import { connect } from 'react-redux';
 
 class Profile extends Component {
 
+  gotQuestion = () => {
+alert("If you have any questions, would like to provide feedback, or would like to contact us for something else, please visit VolleyPal's website www.volleypal.site or email us at volleypal@gmail.com. Our website contains detailed description of the app with step by step tutorial. If you would like to email us about something, plese use subject lines like: Feedback, App Question, App Bug. We will try to be as responsive as possible. Thank you!")
+  }
+
 
   logout = () =>{
     firebase.auth().signOut()
@@ -178,6 +182,9 @@ question = () => {
                onPress={this.showModal}>
                    <Text style = {{color:'white'}}>Change Info</Text>
                </Button>
+
+
+
               
            
                     
@@ -225,6 +232,16 @@ question = () => {
        showModal = {this.showModal}
        
        />
+
+<Button style ={{position: "absolute", bottom: "5%", right:'6%',borderRadius:60, height:70, width:70}}
+                    full
+                    rounded
+                    success
+                    onPress={this.gotQuestion}
+                    >
+
+<AntDesign name="questioncircleo" size={35} color="white" />
+                    </Button>
         </React.Fragment>
           );
 
