@@ -105,7 +105,7 @@ console.log(this.state.reportar)
                     full
                     rounded
                     success
-                    onPress={this.getPlayers}>
+                    onPress={this.getPlayersAndCourts}>
 
                         <Text style = {{color:'white'}}>Refresh</Text>
                     </Button>
@@ -175,7 +175,7 @@ console.log(this.state.reportar)
                     full
                     rounded
                     success
-                    onPress={this.getPlayers}>
+                    onPress={this.getPlayersAndCourts}>
 
                         <Text style = {{color:'white'}}>Refresh</Text>
                     </Button>
