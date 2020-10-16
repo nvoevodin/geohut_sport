@@ -88,7 +88,7 @@ class Home extends Component {
 
 
     
-    notificationFunction();
+    //notificationFunction();
 
     //this.getSiteDataWithEmail(firebase.auth().currentUser.email);
     
