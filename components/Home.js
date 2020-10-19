@@ -9,11 +9,12 @@ import {
   ActivityIndicator,
 } from "react-native";
 
-import { Button,Right,Left } from "native-base";
-import * as Font from 'expo-font';
+
+import { Button,Right,Left, Header,Title } from "native-base";
+
 import * as firebase from "firebase";
 import { Entypo } from "@expo/vector-icons";
-import { MaterialCommunityIcons } from '@expo/vector-icons'; 
+ 
 
 
 import * as Permissions from 'expo-permissions';
@@ -21,12 +22,12 @@ import * as Location from "expo-location";
 import { getDistance } from "geolib";
 import * as Animatable from "react-native-animatable";
 import background from "../assets/background.png";
-import PageTemplate from "./subComponents/Header";
+
 import { connect } from "react-redux";
 import PlaygroundModal from "./subComponents/playgroundModal"
 import PreCheckModal from "./subComponents/preCheckModal"
 import onShare from "./subComponents/shareButton"
-
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import notificationFunction from "./functions/notifications"
 
 //TRACKING - FAUSTO
@@ -34,6 +35,7 @@ import notificationFunction from "./functions/notifications"
 //const TASK_FETCH_LOCATION = 'TASK_FETCH_LOCATION';
 
 const moment = require("moment");
+import AsyncStorage from '@react-native-community/async-storage';
 
 
 
@@ -47,6 +49,7 @@ class Home extends Component {
   uid = firebase.auth().currentUser.uid;
 
   state = {
+    finished:false,
     submitted: false,
     presubmitted: false,
     proximity: null,
@@ -66,12 +69,10 @@ class Home extends Component {
 
   async componentDidMount() {
 
-    
 
-        await Font.loadAsync({
-      Roboto: require('native-base/Fonts/Roboto.ttf'),
-      Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),
-    });
+
+
+
     //CHECK IS USER IS VERIFIED
     if (firebase.auth().currentUser.emailVerified == false) {
       Alert.alert(
@@ -83,24 +84,17 @@ class Home extends Component {
       this.logout();
     }
 
-    //READS FROM FIREBASE AND SETS EMAIL AND WORKID IN REDUX
-    this.readFireBase();
-
-
     
-    //notificationFunction();
-
-    //this.getSiteDataWithEmail(firebase.auth().currentUser.email);
-    
-    //EXECUTES LOCATION PERMISSIONS
-    this.getLocationsPermissions();
-
-
-    //CHECKS IF ALREADY PRECHECKED IN
-    this.preCheckedIn();
+        this.readFireBase(this.props.reducer.userId[1],this.props.reducer.userId[2],this.props.reducer.userId[3]);
+           //CHECKS IF ALREADY PRECHECKED IN
+    this.preCheckedIn(this.props.reducer.userId[3]);
 
     //CHECKS IF ALREADY CHECKED IN
-    this.checkedIn();
+    this.checkedIn(this.props.reducer.userId[3]);
+     
+    //   } catch(e){console.log(e)}
+    // });
+ 
 
     //ADDING GEO TRACKING - FAUSTO
     //const {setEnterRegion} = this.props;
@@ -109,33 +103,29 @@ class Home extends Component {
     //this.startBackgroundUpdate();
     //this.startGeofence();
 
+ //EXECUTES LOCATION PERMISSIONS
+ this.getLocationsPermissions();
 
 
   }
 
 
+  componentDidUpdate(prevProps){
+    if(prevProps.reducer.playgroundId !== this.props.reducer.playgroundId){
+      console.log('updating')
+
+        //READS FROM FIREBASE AND SETS EMAIL AND WORKID IN REDUX
+        this.readFireBase(this.props.reducer.userId[1],this.props.reducer.userId[2],this.props.reducer.userId[3]);
+           //CHECKS IF ALREADY PRECHECKED IN
+    this.preCheckedIn(this.props.reducer.userId[3]);
+
+    //CHECKS IF ALREADY CHECKED IN
+    this.checkedIn(this.props.reducer.userId[3]);
+    }
+
+  }
 
 
-
-//FUNCTION: CHECKS IF ALREADY CHECKED IN TODAY (IN CASE LOGGED OUT)
-
-// precheckedIn = () =>{
-
-//   firebase.database().ref('UsersList/'+ this.uid + '/info').once('value', snapshot => {
-        
-//     let data = snapshot.val()
-
-//     fetch(`https://geohut.metis-data.site/precheckcheck/${data.workId}`)
-//     .then(res => res.json())
-//     .then(res => {  
-     
-//       if (res["data"].some(e => e.checkin_date_time.substr(0,10) === moment().utcOffset("-0500").format("YYYY-MM-DD"))){
-//         this.setState({preSubmitted: true})
-//       }
-//     })
-//     })
-
-// }
 
 //define and start geofence -FAUSTO
 startGeofence = async () => {
@@ -171,18 +161,18 @@ startBackgroundUpdate = async () => {
 
 
 
-checkedIn = () =>{
+checkedIn = (email) =>{
 
-  firebase.database().ref('UsersList/'+ this.uid + '/info').once('value', snapshot => {
+  //firebase.database().ref('UsersList/'+ this.uid + '/info').once('value', snapshot => {
         
-    let data = snapshot.val()
+    //let data = snapshot.val()
 
- 
+ console.log(email)
 
-    fetch(`${global.x}/checkincheck/${data.email}`)
+    fetch(`${global.x}/checkincheck/${email}`)
     .then(res => res.json())
     .then(res => {  
-     
+     console.log(res['data'])
       if (res["data"].some(e => e.checkin_datetime.substr(0,10) === moment().utc().format("YYYY-MM-DD")) && res["data"].some(e => e.site_id === this.props.reducer.playgroundId)){
         this.setState({submitted: true})
         console.log('checkedIN')
@@ -193,20 +183,20 @@ checkedIn = () =>{
     .catch((error) => {
       console.log(error)
     });
-    })
+   // })
 
 }
 
 
-preCheckedIn = () =>{
+preCheckedIn = (email) =>{
  
-    firebase.database().ref('UsersList/'+ this.uid + '/info').once('value', snapshot => {
+    //firebase.database().ref('UsersList/'+ this.uid + '/info').once('value', snapshot => {
           
-      let data = snapshot.val()
+      //let data = snapshot.val()
   
    
   
-      fetch(`${global.x}/precheckcheck/${data.email}`)
+      fetch(`${global.x}/precheckcheck/${email}`)
       .then(res => res.json())
       .then(res => {  
        
@@ -221,7 +211,7 @@ preCheckedIn = () =>{
       .catch((error) => {
         console.log(error)
       });
-      })
+      //})
   
   }
 
@@ -229,88 +219,20 @@ preCheckedIn = () =>{
 
 
   //FUNCTION: READS FIREBASE AND SETS DATA INTO REDUX
-  readFireBase = () => {
-    firebase.database().ref('UsersList/'+ this.uid + '/info').once('value', snapshot => {
+  readFireBase = (first_name,last_name,email) => {
+    //firebase.database().ref('UsersList/'+ this.uid + '/info').once('value', snapshot => {
         
-      let data = snapshot.val()
+      //let data = snapshot.val()
         //console.log('user data: ',data)
         this.props.setUserData({
-          firstName: data.firstName,
-          lastName: data.lastName,
-          user_id: data.email
+          firstName: first_name,
+          lastName: last_name,
+          user_id: email
         });
-      })
+      //})
   }
 
-  //***THE TWO FUNCTIONS BELOW ARE OPTIONS FOR US IF WE END UP USING EMAIL/PHONE OR ID */
 
-  //FUNCTION: RETRIEVES SITE DATA FOR THAT USER USING THE EMAIL 
-  // getSiteDataWithEmail = (email) => {
-  //   //console.log("retrieving site data with email:", email);
-  //   fetch(`https://geohut.metis-data.site/siteinfo/${email}`)
-  //     .then((res) => res.json())
-  //     .then((res) => {
-        
-  //       //set state
-  //       this.setState({
-  //         siteName: res["data"][0].site_name,
-  //         siteId: res["data"][0].site_id,
-  //         siteAdress: res["data"][0].site_address,
-  //       });
-
-  //       //set lat long in user location
-  //       this.setState((prevState) => ({
-  //         siteLocation: {
-  //           // object that we want to update
-  //           ...prevState.siteLocation, // keep all other key-value pairs
-  //           latitude: res["data"][0].latitude,
-  //           longitude: res["data"][0].longitude, // update the value of specific key
-  //         },
-  //       }));
-
-  //       //set data into reducer
-  //       this.props.setSiteData({
-  //         siteName: res["data"][0].site_name,
-  //         siteId: res["data"][0].site_id,
-  //         siteAdress: res["data"][0].site_address,
-  //         latitude: res["data"][0].latitude,
-  //         longitude: res["data"][0].longitude
-  //       });
-
-  //     });
-  // };
-
-  // //FUNCTION: RETRIEVES SITE DATA FOR THAT USER USING USER_ID 
-  // // getSiteDataWithId = (id) => {
-  // //   fetch(`https://geohut.metis-data.site/usersiteinfo/${id}`)
-  // //     .then((res) => res.json())
-  // //     .then((res) => {
-  // //       console.log('user site data: ',res["data"][0]);
-  // //       this.setState({
-  // //         siteName: res["data"][0].site_name,
-  // //         siteId: res["data"][0].site_id,
-  // //         siteAdress: res["data"][0].site_address,
-  // //       });
-
-  // //       this.setState((prevState) => ({
-  // //         siteLocation: {
-  // //           // object that we want to update
-  // //           ...prevState.siteLocation, // keep all other key-value pairs
-  // //           latitude: res["data"][0].latitude,
-  // //           longitude: res["data"][0].longitude, // update the value of specific key
-  // //         },
-  // //       }));
-
-  // //       //set data into reducer
-  // //       this.props.setSiteData({
-  // //         siteName: res["data"][0].site_name,
-  // //         siteId: res["data"][0].site_id,
-  // //         siteAdress: res["data"][0].site_address,
-  // //         latitude: res["data"][0].latitude,
-  // //         longitude: res["data"][0].longitude
-  // //       });
-  // //     });
-  // // };
 
   //FUNCTION: ASKS FOR LOCATION PERMISSIONS
   getLocationsPermissions = async () => {
@@ -371,56 +293,6 @@ preCheckedIn = () =>{
       alert('Something went wrong, please logout, log back in and try again')
     }
   }
-
-  //FUNCTION: HANDLES PRECHECKIN
-  // preCheckin = async () => {
-  //   if (this.state.preSubmitted === false) {
-  //     this.setState({ submittedAnimation: true });
-  //     console.log("prechecking...");
-  //     try {
-  //       //get location
-  //       let location = await this.getCurrentLoc();
-  //       console.log(parseFloat(location[0].coords.latitude));
-  //       console.log(parseFloat(location[0].coords.longitude));
-
-  //       //test how far away the user is
-  //       let distance = await this.calculateDistance(
-  //         parseFloat(location[0].coords.latitude),
-  //         parseFloat(location[0].coords.longitude),
-  //         this.state.siteLocation.latitude,
-  //         this.state.siteLocation.longitude
-  //       );
-        
-  //       console.log("distance: ", distance);
-  //       console.log("worker id: ", this.props.reducer.userInfo.workId)
-  //       //send data
-  //       fetch(
-  //         // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
-  //         `https://geohut.metis-data.site/add?time=${
-  //           moment()
-  //             .utcOffset("-0500")
-  //             .format("YYYY-MM-DD HH:mm:ss")
-  //             .substr(0, 18) + "0"
-  //         }&site_id=${this.props.reducer.siteData.siteId}&first_name=${this.props.reducer.userInfo.firstName}
-  //             &last_name=${this.props.reducer.userInfo.lastName}&user_id=${this.props.reducer.userInfo.workId}
-  //             &latitude=${parseFloat(location[0].coords.latitude)}
-  //             &longitude=${parseFloat(location[0].coords.longitude)}
-  //             &checkin_type=1
-  //             &distance=${distance}`,
-  //         { method: "POST" }
-  //       ).catch((err) => console.error(err));
-
-  //       //show checkin as done
-  //       this.setState({ preSubmitted: true });
-  //       Alert.alert("Thank you for pre-checkin, do not forget to checkin!");
-  //     } catch (e) {
-  //       console.log(e);
-  //     }
-  //     this.setState({ submittedAnimation: false });
-  //   } else {
-  //     Alert.alert("You have already done a pre-checkin!");
-  //   }
-  // };
 
 
   //FUNCTION: HANDLES MAIN CHECKIN
@@ -566,30 +438,43 @@ await fetch(
 
 
   render() {
-console.log(this.props.reducer.playgroundId + 'test')
+
 //console.log(this.state)
     return (
       <React.Fragment>
-        <PageTemplate title={"Home"} logout={this.logout} />
+
+<Header style = {{backgroundColor:'#5cb85c',height: 70, paddingTop:0}}>
+        <Left>
+        <Title style = {{color:'white', fontSize: 30}}>Home</Title>
+          </Left>
+
+          <Right>
+          <TouchableOpacity onPress = {this.logout}>
+          <MaterialCommunityIcons name="exit-run" size={30} color="white" />
+          </TouchableOpacity>
+          </Right>
+        </Header>
+
+        {/* <PageTemplate title={"Home"} logout={this.logout} /> */}
         <View style={styles.container}>
           <Button style={styles.bubble} onPress={() => {
                   this.props.onModalOne()}}>
         
-        <Text style = {{color:'white', fontWeight:'bold', fontSize:19}}>Courts </Text>
-            <MaterialCommunityIcons name="target" size={34} color="white" />
+        <Text style = {{color:'white', fontWeight:'bold', fontSize:18}}>Courts </Text>
+            <MaterialCommunityIcons name="target" size={32} color="white" />
            
           
           
           </Button>
 
-          <Button style ={{position: "absolute", top: "3%", right:'6%',borderRadius:60, height:60, width:60}}
+          <Button style ={{position: "absolute", top: "3%", right:'6%',borderRadius:55, height:55, width:55}}
                     full
                     rounded
                     success
                     onPress={onShare}
                     >
 
-<Entypo name="share" size={30} color="white" />
+<Entypo name="share" size={28} color="white" />
                     </Button>
           
       
@@ -637,19 +522,19 @@ console.log(this.props.reducer.playgroundId + 'test')
                   style={{
                     zIndex: 0,
                     justifyContent: "center",
-                    width: 80,
-                    height: 80,
+                    width: 70,
+                    height: 70,
                     opacity: 0.2,
                     transform: [
                       {
                         translateX: this.state.animatedValue.interpolate({
-                          inputRange: [0, 80],
+                          inputRange: [0, 70],
                           outputRange: [0, 1],
                         }),
                       },
                       {
                         translateY: this.state.animatedValue.interpolate({
-                          inputRange: [0, 80],
+                          inputRange: [0, 70],
                           outputRange: [0, 1],
                         }),
                       },
@@ -677,19 +562,19 @@ console.log(this.props.reducer.playgroundId + 'test')
                   style={{
                     zIndex: 0,
                     justifyContent: "center",
-                    width: 80,
-                    height: 80,
+                    width: 70,
+                    height: 70,
                     opacity: 0.2,
                     transform: [
                       {
                         translateX: this.state.animatedValue.interpolate({
-                          inputRange: [0, 80],
+                          inputRange: [0, 70],
                           outputRange: [0, 1],
                         }),
                       },
                       {
                         translateY: this.state.animatedValue.interpolate({
-                          inputRange: [0, 80],
+                          inputRange: [0, 70],
                           outputRange: [0, 1],
                         }),
                       },
@@ -810,13 +695,13 @@ const styles = StyleSheet.create({
   },
   bubble: {
     position: "absolute",
-    top: "-5.3%",
+    top: "-4.6%",
     alignItems: "center",
     justifyContent: "center",
-    width: "18%",
-    height: "10%",
-    marginLeft: "32%",
-    marginRight: "32%",
+    width: "14%",
+    height: "9%",
+    marginLeft: "33%",
+    marginRight: "33%",
     padding: 5,
     borderRadius: 50,
     paddingBottom: 5,

@@ -8,11 +8,14 @@ playgroundLat:null,
 playgroundLon:null,
 playgroundModal: false,
 addPlaygroundModal: false,
+addGroupModal: false,
+yourGroupModal: false,
 preCheckModal: false,
 isAnanimous: false,
 preCheckStatus: false,
 userInfo:null,
-reportModal: false
+reportModal: false,
+userId:[]
 };
 
 const ourReducer = (state = INITIAL_STATE, action) => {
@@ -101,6 +104,25 @@ const ourReducer = (state = INITIAL_STATE, action) => {
   
         }
         break;
+        
+        case "OPEN_CLOSE_YOUR_GROUP_MODAL":
+      
+          return{
+            ...state,
+            yourGroupModal: action.value,
+            
+    
+          }
+          break;
+        case "OPEN_CLOSE_ADD_GROUP_MODAL":
+      
+          return{
+            ...state,
+            addGroupModal: action.value,
+            
+    
+          }
+          break;
         case "SET_ANANIMOUS":
       
           return{
@@ -110,6 +132,17 @@ const ourReducer = (state = INITIAL_STATE, action) => {
     
           }
           break;
+          case "STORE_USER_ID":
+      
+            return{
+              ...state,
+              userId: [action.value,action.value1,action.value2,action.value3],
+              
+      
+            }
+            break;
+
+         
 
   
   }

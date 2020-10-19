@@ -2,12 +2,12 @@ import React, {Component} from 'react';
 import {StyleSheet,Modal, TouchableOpacity} from 'react-native';
 import {Container, Header, Content, Card, CardItem,  Button, Left,Right, Body, Title,Text, Tab, Tabs,TabHeading} from 'native-base';
 import { connect } from 'react-redux';
-import PageTemplate from "./subComponents/Header";
+
 import { View } from 'react-native-animatable';
 import moment from "moment";
 import { Ionicons } from '@expo/vector-icons'; 
 import Report from './subComponents/picker'
-
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 class Players extends Component {
 
@@ -96,7 +96,17 @@ console.log(this.state.reportar)
       
     return (
       <Container>
-        <PageTemplate title={"Players"} logout={this.logout} />
+        <Header style = {{backgroundColor:'#5cb85c',height: 70, paddingTop:0}}>
+        <Left>
+        <Title style = {{color:'white', fontSize: 30}}>Players</Title>
+          </Left>
+
+          <Right>
+          <TouchableOpacity onPress = {this.logout}>
+          <MaterialCommunityIcons name="exit-run" size={30} color="white" />
+          </TouchableOpacity>
+          </Right>
+        </Header>
         <Tabs tabBarUnderlineStyle={{backgroundColor:'grey'}}>
         <Tab tabStyle ={{backgroundColor: '#5cb85c'}} activeTextStyle={{color: '#fff', fontWeight: 'bold', fontSize:18}} activeTabStyle={{backgroundColor: '#5cb85c'}} textStyle={{color: '#fff', fontWeight: 'normal'}} heading="Playing Now"
           >

@@ -3,6 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import {createBottomTabNavigator} from 'react-navigation-tabs'
 import { createAppContainer, createSwitchNavigator } from 'react-navigation';
 import { Ionicons } from '@expo/vector-icons';
+import { AntDesign } from '@expo/vector-icons'; 
 
 import * as firebase from 'firebase';
 
@@ -30,7 +31,7 @@ const firebaseConfig ={
 firebase.initializeApp(firebaseConfig)
 
 
-//global.x = 'http://192.168.2.10:3007'
+//global.x = 'http://192.168.2.6:3007'
 global.x = 'https://volleybuddy.metis-data.site'
 
 
@@ -42,6 +43,7 @@ import SignUp from './components/SignUp'
 import StartScreen from './components/StartScreen'
 import PageTemplate from './components/subComponents/Header'
 import Players from './components/Players'
+import Groups from './components/Groups'
 
 
 
@@ -96,6 +98,17 @@ const bottomTabNavigator = createBottomTabNavigator(
         tabBarIcon: ({ tintColor }) => (
           // <Icon name="comments" size={25} color={tintColor} />
           <Ionicons name="ios-people" size={25} color={tintColor} />
+        )
+      }
+    },
+
+    Groups: {
+      screen: Groups,
+      navigationOptions: {
+        tabBarIcon: ({ tintColor }) => (
+          // <Icon name="comments" size={25} color={tintColor} />
+          <AntDesign name="addusergroup" size={25} color={tintColor} />
+          //<Ionicons name="ios-people" size={25} color={tintColor} />
         )
       }
     },

@@ -5,24 +5,73 @@ import * as firebase from "firebase";
 import * as Animatable from "react-native-animatable";
 import { connect } from "react-redux";
 import AsyncStorage from '@react-native-community/async-storage';
+import * as Font from 'expo-font';
+
 class Help extends Component {
 
 
 
-  componentDidMount() {
+  async componentDidMount() {
+
+
+    await Font.loadAsync({
+      Roboto: require('native-base/Fonts/Roboto.ttf'),
+      Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),
+    });
     //CHECKS IF THE USER ALREADY EXISTS (IF YES, CHECKS IF EMAIL IS VERIFIES (IF YES, FORWARDS
     //TO HOME, IF NOT, KEEPS AT THIS SCREEN))
+
+
+
+
+
+
+    // await AsyncStorage.getItem('user_info', async (error, result) => {
+    //   var res = JSON.parse(result) 
+
+      
+    //   try {
+    //     console.log(res)
+    //     if(res === null){
+    //       await fetch(`${global.x}/get_user/${user.uid}`)
+    //       .then((res) => res.json())
+    //       .then(async(res) => {
+
+
+    //         try {
+           
+            
+    //          await  AsyncStorage.setItem('user_info', JSON.stringify([res.data[0]["uid"], res.data[0]["first_name"], res.data[0]["last_name"], res.data[0]["email"]]))
+    //         } catch (e) {
+    //           console.log('something wrong (storage)')
+    //         }
+          
+    //       }).catch((error) => {
+    //         console.log(error)
+    //       });
+
+    //     }
+
+     
+    //   } catch(e){console.log(e)}
+    // });
+
 
 
   
 
 
     this.setSite() 
-    firebase.auth().onAuthStateChanged((user) => {
+    firebase.auth().onAuthStateChanged((user) =>  {
       if (user) {
-        this.props.navigation.navigate(
-          user.emailVerified == true ? "Home" : "StartScreen"
-        );
+
+        if(user.emailVerified == true){
+          this.props.navigation.navigate("Home")
+        } else {
+          this.props.navigation.navigate("StartScreen")
+          alert('Verify your email first!')
+        }
+        
       }
     });
 
@@ -38,6 +87,7 @@ class Help extends Component {
     AsyncStorage.getItem('defaultCourt', (error, result) => {
       var res = JSON.parse(result) 
       try {
+        
       this.props.storePlayground(res[0],res[1],res[2],res[3])
       } catch (e) {
         console.log(e)

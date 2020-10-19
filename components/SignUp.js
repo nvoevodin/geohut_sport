@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import { StyleSheet, Text, Alert } from "react-native";
 import { Container, Form, Input, Item, Button, Label } from "native-base";
 import * as firebase from "firebase";
+import AsyncStorage from '@react-native-community/async-storage';
+const moment = require("moment");
 
 class SignUp extends Component {
   state = {
@@ -15,7 +17,23 @@ class SignUp extends Component {
   // when a user signs up they will have a record added to the user table in realtime database
   addUser = (uid, firstName, lastName, email) => {
 
+    fetch(
+      
+      `${global.x}/new_user?datetime_stamp=${
+        moment().utc().format("YYYY-MM-DD HH:mm:ss").substr(0, 18) + "0"
+      }&uid=${uid}&first_name=${firstName}&last_name=${lastName}&email=${email}`,
+      { method: "POST" }
+    ).catch((error) => {
+      console.log(error)
+    });
 
+
+
+    try {
+      AsyncStorage.setItem('user_info', JSON.stringify([uid, firstName, lastName, email]))
+    } catch (e) {
+      console.log('something wrong (storage)')
+    }
 
 
 
@@ -75,32 +93,18 @@ class SignUp extends Component {
               }
 
             })
-              .catch((error) =>
-        Alert.alert(
-          "Access Denied!",
-          "Something is wrong!",
-          [{ text: "OK" }],
-          { cancelable: false }
-        ))
+              .catch((error) =>{
+                console.log(error)
+                Alert.alert(
+                  "Access Denied!",
+                  "Something is wrong!",
+                  [{ text: "OK" }],
+                  { cancelable: false }
+                )
+              }
+     )
 
 
-        // } else {
-        //   Alert.alert(
-        //     "Access Denied!",
-        //     "You must use your employer-issued ID!",
-        //     [{ text: "OK" }],
-        //     { cancelable: false }
-        //   );
-        // }
-      //})
-      // .catch((error) =>
-      //   Alert.alert(
-      //     "Access Denied!",
-      //     "Something is wrong!",
-      //     [{ text: "OK" }],
-      //     { cancelable: false }
-      //   )
-      // );
   };
 
 
@@ -138,16 +142,7 @@ class SignUp extends Component {
               
             />
           </Item>
-          {/* <Item floatingLabel>
-            <Label>Work ID</Label>
-            <Input
-              secureTextEntry={true}
-              autoCorrect={false}
-              autoCapitalize="none"
-              onChangeText={(workId) => this.setState({ workId })}
-              
-            />
-          </Item> */}
+
 
           <Item floatingLabel>
             <Label>Email</Label>

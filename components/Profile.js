@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
 import { TouchableOpacity, StyleSheet, Text, View, Switch } from 'react-native';
-import { Button, Content, Card, CardItem, Body, Right, Left } from "native-base";
+import { Button, Content, Card, CardItem, Body, Right, Left, Header, Title } from "native-base";
 import * as firebase from 'firebase';
 import PageTemplate from './subComponents/Header'
 import ChangeInfo from './subComponents/changeInformationModal'
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons'; 
 //import Layout from '../constants/Layout';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -76,17 +77,27 @@ alert("If you have any questions, would like to provide feedback, or would like 
   // }
 
 
-  readUserData() {
+  readUserData = async () =>{
 
   
-    firebase.database().ref('UsersList/'+ this.uid + '/info').once('value', snapshot => {
+    await AsyncStorage.getItem('user_info', (error, result) => {
+      var res = JSON.parse(result) 
+      console.log('lskjdfhgfdsgkdjlsflkdsjfgdsfg')
+      try {
+        this.setState({ firstName: res[1],
+          lastName: res[2],
+          email: res[3]});
      
-    let data = snapshot.val()
+      } catch(e){console.log(e)}
+    });
+
+
+    //firebase.database().ref('UsersList/'+ this.uid + '/info').once('value', snapshot => {
+     
+    //let data = snapshot.val()
 
        
-        this.setState({ firstName: data.firstName,
-                        lastName: data.lastName,
-                        email: data.email});
+        
 
                     //     fetch(`https://geohut.metis-data.site/checkins/${this.props.reducer.userInfo.workId}`)
                     //     .then(res => res.json())
@@ -110,7 +121,7 @@ alert("If you have any questions, would like to provide feedback, or would like 
                          
                           
                     //       this.setState({totalWeek: 0})})
-    })
+    //})
     
   }
 
@@ -125,7 +136,17 @@ question = () => {
 
         return (
           <React.Fragment>
-          <PageTemplate title={'Profile'} logout = {this.logout}/>
+                  <Header style = {{backgroundColor:'#5cb85c',height: 70, paddingTop:0}}>
+        <Left>
+        <Title style = {{color:'white', fontSize: 30}}>Profile</Title>
+          </Left>
+
+          <Right>
+          <TouchableOpacity onPress = {this.logout}>
+          <MaterialCommunityIcons name="exit-run" size={30} color="white" />
+          </TouchableOpacity>
+          </Right>
+        </Header>
           <Content padder>
             <Card>
               <CardItem header bordered>
