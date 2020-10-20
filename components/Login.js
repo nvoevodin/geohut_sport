@@ -43,8 +43,9 @@ class Login extends Component {
     
           
           try {
-            console.log(res)
-            if(res === null){
+            console.log(res[0] + 's')
+            console.log(firebase.auth().currentUser.uid + 's')
+            if(res === null | res[0] !== firebase.auth().currentUser.uid){
               await fetch(`${global.x}/get_user/${firebase.auth().currentUser.uid}`)
               .then((res) => res.json())
               .then(async(res) => {

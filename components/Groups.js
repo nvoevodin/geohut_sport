@@ -59,10 +59,10 @@ class Groups extends Component {
 
 
     joinGroup = async (name,id) => {
-
+      console.log(this.props.reducer.userId)
       await fetch(
         // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
-        `${global.x}/add_group_members?group_id=${id}&user_id=${this.props.reducer.userInfo.user_id}`,
+        `${global.x}/add_group_members?group_id=${id}&user_id=${this.props.reducer.userId[3]}`,
         { method: "PUT" }
       ).catch((error) => {
         console.log(error)

@@ -64,7 +64,7 @@ class Home extends Component {
   async componentDidMount() {
 
 
-
+console.log(this.props.reducer.userId)
 
 
     //CHECK IS USER IS VERIFIED
@@ -399,9 +399,15 @@ class Home extends Component {
           fetch(
             // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
             `${global.x}/add?time=${
+<<<<<<< HEAD
             moment().utc().format("YYYY-MM-DD HH:mm:ss").substr(0, 18) + "0"
             }&site_id=${this.props.reducer.playgroundId}&first_name=${this.props.reducer.isAnanimous ? "Anonimous" : this.props.reducer.userInfo.firstName}
             &last_name=${this.props.reducer.isAnanimous ? "Player" : this.props.reducer.userInfo.lastName}&user_id=${this.props.reducer.userInfo.user_id}`,
+=======
+              moment().utc().format("YYYY-MM-DD HH:mm:ss").substr(0, 18) + "0"
+            }&site_id=${this.props.reducer.playgroundId}&first_name=${this.props.reducer.isAnanimous?"Anonimous":this.props.reducer.userId[1]}
+            &last_name=${this.props.reducer.isAnanimous?"Player":this.props.reducer.userId[2]}&user_id=${this.props.reducer.userId[3]}`,
+>>>>>>> ee28b08be5a2483b2118fea448f2b2797f9777cd
             { method: "POST" }
           ).catch((error) => {
             console.log(error)
@@ -422,6 +428,7 @@ class Home extends Component {
       }
       this.setState({ submittedAnimation: false });
     } else {
+<<<<<<< HEAD
       console.log(this.props.reducer.playgroundId)
       this.setState({ submittedAnimation: true });
       await fetch(
@@ -446,6 +453,32 @@ class Home extends Component {
       ).catch((error) => {
         console.log(error)
       })
+=======
+console.log(this.props.reducer.playgroundId)
+this.setState({ submittedAnimation: true });
+await fetch(
+  // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
+  `${global.x}/update?site_id=${this.props.reducer.playgroundId}&user_id=${this.props.reducer.userId[3]}`,
+  { method: "PUT" }
+).catch((error) => {
+  console.log(error)
+})
+
+await fetch(
+  // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
+  `${global.x}/addToStorage?site_id=${this.props.reducer.playgroundId}&user_id=${this.props.reducer.userId[3]}`,
+  { method: "POST" }
+).catch((error) => {
+  console.log(error)
+})
+  fetch(
+    // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
+    `${global.x}/delete?site_id=${this.props.reducer.playgroundId}&user_id=${this.props.reducer.userId[3]}`,
+    { method: "DELETE" }
+  ).catch((error) => {
+    console.log(error)
+  })
+>>>>>>> ee28b08be5a2483b2118fea448f2b2797f9777cd
 
 
 
@@ -475,6 +508,7 @@ class Home extends Component {
           },
           style: "cancel"
         },
+<<<<<<< HEAD
         {
           text: "OK", onPress: () => {
             fetch(
@@ -490,6 +524,21 @@ class Home extends Component {
             alert('You canceled your pre-check.')
           }
         }
+=======
+        { text: "OK", onPress: () => {
+          fetch(
+            // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
+            `${global.x}/cancelPreCheck?site_id=${this.props.reducer.playgroundId}&user_id=${this.props.reducer.userId[3]}`,
+            { method: "DELETE" }
+          ).catch((error) => {
+            console.log(error)
+          })
+      
+          this.props.cancelPreCheck()
+      
+          alert('You canceled your pre-check.')
+        } }
+>>>>>>> ee28b08be5a2483b2118fea448f2b2797f9777cd
       ],
       { cancelable: false }
     );
@@ -515,7 +564,13 @@ class Home extends Component {
 
   render() {
 
+<<<<<<< HEAD
     //console.log(this.state)
+=======
+    console.log(this.props.reducer.userId)
+
+//console.log(this.state)
+>>>>>>> ee28b08be5a2483b2118fea448f2b2797f9777cd
     return (
       <React.Fragment>
 

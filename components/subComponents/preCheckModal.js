@@ -29,8 +29,8 @@ class PreCheckModal extends Component {
       } else {
         fetch(
           // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
-          `${global.x}/preCheck?time=${date}&site_id=${this.props.reducer.playgroundId}&first_name=${this.props.reducer.isAnanimous?"Anonimous":this.props.reducer.userInfo.firstName}
-          &last_name=${this.props.reducer.isAnanimous?"Player":this.props.reducer.userInfo.lastName}&user_id=${this.props.reducer.userInfo.user_id}`,
+          `${global.x}/preCheck?time=${date}&site_id=${this.props.reducer.playgroundId}&first_name=${this.props.reducer.isAnanimous?"Anonimous":this.props.reducer.userId[1]}
+          &last_name=${this.props.reducer.isAnanimous?"Player":this.props.reducer.userId[2]}&user_id=${this.props.reducer.userId[3]}`,
           { method: "POST" }
         ).catch((error) => {
           console.log(error)
