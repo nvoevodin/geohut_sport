@@ -70,7 +70,7 @@ class Home extends Component {
   async componentDidMount() {
 
 
-
+console.log(this.props.reducer.userId)
 
 
     //CHECK IS USER IS VERIFIED
@@ -326,8 +326,8 @@ if (this.props.reducer.playgroundId === ''){
             // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
             `${global.x}/add?time=${
               moment().utc().format("YYYY-MM-DD HH:mm:ss").substr(0, 18) + "0"
-            }&site_id=${this.props.reducer.playgroundId}&first_name=${this.props.reducer.isAnanimous?"Anonimous":this.props.reducer.userInfo.firstName}
-            &last_name=${this.props.reducer.isAnanimous?"Player":this.props.reducer.userInfo.lastName}&user_id=${this.props.reducer.userInfo.user_id}`,
+            }&site_id=${this.props.reducer.playgroundId}&first_name=${this.props.reducer.isAnanimous?"Anonimous":this.props.reducer.userId[1]}
+            &last_name=${this.props.reducer.isAnanimous?"Player":this.props.reducer.userId[2]}&user_id=${this.props.reducer.userId[3]}`,
             { method: "POST" }
           ).catch((error) => {
             console.log(error)
@@ -352,7 +352,7 @@ console.log(this.props.reducer.playgroundId)
 this.setState({ submittedAnimation: true });
 await fetch(
   // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
-  `${global.x}/update?site_id=${this.props.reducer.playgroundId}&user_id=${this.props.reducer.userInfo.user_id}`,
+  `${global.x}/update?site_id=${this.props.reducer.playgroundId}&user_id=${this.props.reducer.userId[3]}`,
   { method: "PUT" }
 ).catch((error) => {
   console.log(error)
@@ -360,14 +360,14 @@ await fetch(
 
 await fetch(
   // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
-  `${global.x}/addToStorage?site_id=${this.props.reducer.playgroundId}&user_id=${this.props.reducer.userInfo.user_id}`,
+  `${global.x}/addToStorage?site_id=${this.props.reducer.playgroundId}&user_id=${this.props.reducer.userId[3]}`,
   { method: "POST" }
 ).catch((error) => {
   console.log(error)
 })
   fetch(
     // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
-    `${global.x}/delete?site_id=${this.props.reducer.playgroundId}&user_id=${this.props.reducer.userInfo.user_id}`,
+    `${global.x}/delete?site_id=${this.props.reducer.playgroundId}&user_id=${this.props.reducer.userId[3]}`,
     { method: "DELETE" }
   ).catch((error) => {
     console.log(error)
@@ -404,7 +404,7 @@ await fetch(
         { text: "OK", onPress: () => {
           fetch(
             // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
-            `${global.x}/cancelPreCheck?site_id=${this.props.reducer.playgroundId}&user_id=${this.props.reducer.userInfo.user_id}`,
+            `${global.x}/cancelPreCheck?site_id=${this.props.reducer.playgroundId}&user_id=${this.props.reducer.userId[3]}`,
             { method: "DELETE" }
           ).catch((error) => {
             console.log(error)
@@ -438,6 +438,8 @@ await fetch(
 
 
   render() {
+
+    console.log(this.props.reducer.userId)
 
 //console.log(this.state)
     return (

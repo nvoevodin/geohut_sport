@@ -57,8 +57,8 @@ class Report extends Component {
                 // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
                 `${global.x}/live_courts_info?time=${
                   moment().utc().format("YYYY-MM-DD HH:mm:ss").substr(0, 18) + "0"
-                }&site_id=${this.props.reducer.playgroundId}&first_name=${this.props.reducer.isAnanimous?"Anonimous":this.props.reducer.userInfo.firstName}
-                &last_name=${this.props.reducer.isAnanimous?"Player":this.props.reducer.userInfo.lastName}&count=${parseInt(title)}`,
+                }&site_id=${this.props.reducer.playgroundId}&first_name=${this.props.reducer.isAnanimous?"Anonimous":this.props.reducer.userId[1]}
+                &last_name=${this.props.reducer.isAnanimous?"Player":this.props.reducer.userId[2]}&count=${parseInt(title)}`,
                 { method: "POST" }
               ).catch((error) => {
                 console.log(error)
