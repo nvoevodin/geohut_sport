@@ -171,6 +171,7 @@ confirmCourt = (site) => {
         </Header>
         <Tabs tabBarUnderlineStyle={{backgroundColor:'grey'}}>
         <Tab tabStyle ={{backgroundColor: '#e3e8e6'}} activeTextStyle={{color: 'grey', fontWeight: 'bold', fontSize:18}} activeTabStyle={{backgroundColor: '#e3e8e6'}} textStyle={{color: 'grey', fontWeight: 'normal'}} heading="Live Courts">
+        
         <Content>
           <List>
           {this.state.playgrounds.map((object,index) =>

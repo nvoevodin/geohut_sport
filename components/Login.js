@@ -53,9 +53,36 @@ class Login extends Component {
           //   }catch(e){console.log('fuckkkkkkkkkkkkkkkkkkk')}
           // } else {
             try {
+
+              if(res === null){
+
+                await fetch(`${global.x}/get_user/${firebase.auth().currentUser.uid}`)
+                .then((res) => res.json())
+                .then(async(res) => {
+      
+      
+                  try {
+               
+                  try{
+                    
+                    this.props.storeUserId(res.data[0]["uid"],res.data[0]["first_name"], res.data[0]["last_name"], res.data[0]["email"])
+                  } catch (e){
+                    console.log('signup 1')
+                    console.log(e)}
+                  
+                   await  AsyncStorage.setItem('user_info', JSON.stringify([res.data[0]["uid"], res.data[0]["first_name"], res.data[0]["last_name"], res.data[0]["email"]]))
+                  } catch (e) {
+                    console.log('something wrong (storage)')
+                  }
+                
+                }).catch((error) => {
+                  console.log(error)
+                });
+
+              }
             
             
-              if(res === undefined || res.length == 0){
+              else if(res === undefined || res.length == 0){
                 await fetch(`${global.x}/get_user/${firebase.auth().currentUser.uid}`)
                 .then((res) => res.json())
                 .then(async(res) => {
