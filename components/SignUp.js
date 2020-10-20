@@ -24,6 +24,7 @@ class SignUp extends Component {
       }&uid=${uid}&first_name=${firstName}&last_name=${lastName}&email=${email}`,
       { method: "POST" }
     ).catch((error) => {
+      console.log('signup 1')
       console.log(error)
     });
 
@@ -32,6 +33,7 @@ class SignUp extends Component {
     try {
       AsyncStorage.setItem('user_info', JSON.stringify([uid, firstName, lastName, email]))
     } catch (e) {
+      console.log('signup 2')
       console.log('something wrong (storage)')
     }
 

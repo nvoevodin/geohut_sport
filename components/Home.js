@@ -78,9 +78,9 @@ console.log(this.props.reducer.userId)
       this.logout();
     }
 
-    console.log("user information:", this.props.reducer.userId)
-    this.readFireBase(this.props.reducer.userId[1], this.props.reducer.userId[2], this.props.reducer.userId[3]);
-    //CHECKS IF ALREADY PRECHECKED IN
+    console.log(this.props.reducer.userId)
+        this.readFireBase(this.props.reducer.userId[1],this.props.reducer.userId[2],this.props.reducer.userId[3]);
+           //CHECKS IF ALREADY PRECHECKED IN
     this.preCheckedIn(this.props.reducer.userId[3]);
 
     //CHECKS IF ALREADY CHECKED IN
@@ -237,26 +237,24 @@ console.log(this.props.reducer.userId)
 
     //let data = snapshot.val()
 
-    console.log(email)
+ 
 
     fetch(`${global.x}/checkincheck/${email}`)
-      .then(res => res.json())
-      .then(res => {
-        console.log(res['data'])
-        if (res["data"].some(e => e.checkin_datetime.substr(0, 10) === moment().utc().format("YYYY-MM-DD")) && res["data"].some(e => e.site_id === this.props.reducer.playgroundId)) {
-          this.setState({ submitted: true })
-          console.log('checkedIN')
-        } else {
-          this.setState({ submitted: false })
-        }
-      })
-      .catch((error) => {
-        console.log(error)
-      });
-    // })
-
+    .then(res => res.json())
+    .then(res => {  
+     
+      if (res["data"].some(e => e.checkin_datetime.substr(0,10) === moment().utc().format("YYYY-MM-DD")) && res["data"].some(e => e.site_id === this.props.reducer.playgroundId)){
+        this.setState({submitted: true})
+       
+      } else {
+        this.setState({submitted: false})
+      }
+    })
+    .catch((error) => {
+      console.log(error)
+    });
+   // })
   }
-
 
   preCheckedIn = (email) => {
 
@@ -379,10 +377,7 @@ console.log(this.props.reducer.userId)
       try {
         //get location
         let location = await this.getCurrentLoc();
-        console.log(parseFloat(location[0].coords.latitude));
-        console.log(parseFloat(location[0].coords.longitude));
-        console.log(this.props.reducer.playgroundLat)
-        console.log(this.props.reducer.playgroundLon)
+
         //test how far away the user is
         let distance = await this.calculateDistance(
           parseFloat(location[0].coords.latitude),

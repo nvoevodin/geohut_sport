@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import {StyleSheet,Modal, TouchableOpacity,View,ActivityIndicator, Switch} from 'react-native';
-import {Container, Header, Content, ListItem, List, Icon, Button, Left,Input, Body, Title,Text, Form,Textarea} from 'native-base';
+import {Container, Header, Content, ListItem, List, Icon, Button, Left,Input, Body, Title,Text, Form,Textarea, Right,Tab,Tabs} from 'native-base';
 import { connect } from 'react-redux';
-
+import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 
 
 
@@ -14,7 +14,7 @@ class YourGroup extends Component {
     
 
             submittedAnimation: false,
-            members:["i"]
+            members:["none here"]
         
         
     }
@@ -22,7 +22,7 @@ class YourGroup extends Component {
     componentDidMount() {
 
         console.log('first skometing')
-        //this.getMembers()
+        this.getMembers()
           
       }
 
@@ -42,11 +42,12 @@ class YourGroup extends Component {
         .then((res) => res.json())
         .then((res) => {
 
-          fetch(`${global.x}/get_users/${JSON.parse(res.data[0]["JSON_EXTRACT(members, '$')"])}`)
+          fetch(`${global.x}/get_users/${res.data[0]["JSON_EXTRACT(members, '$')"]}`)
           .then((res) => res.json())
           .then((res) => {
               console.log(res.data)
           this.setState({members:res.data})
+          
           
           }).catch((error) => {
             console.log(error)
@@ -67,7 +68,7 @@ class YourGroup extends Component {
 
   render() {
 
-//console.log(this.state.groupId)
+console.log(this.state.members)
       
     return (
         <React.Fragment>
@@ -88,22 +89,35 @@ class YourGroup extends Component {
           <Body>
             <Title style = {{color:'black'}}>{this.props.title}</Title>
           </Body>
-          
+          <Right>
+            <TouchableOpacity onPress={this.getMembers}>
+          <MaterialCommunityIcons name="refresh" size={35} color="green" />
+          </TouchableOpacity>
+          </Right>
         </Header>
+        <Tabs tabBarUnderlineStyle={{backgroundColor:'grey'}}>
+        <Tab tabStyle ={{backgroundColor: '#e3e8e6'}} activeTextStyle={{color: 'grey', fontWeight: 'bold', fontSize:18}} activeTabStyle={{backgroundColor: '#e3e8e6'}} textStyle={{color: 'grey', fontWeight: 'normal'}} heading="Live Courts">
+        
         <List>
         
         {this.state.members.map((object,index) =>
           
           <ListItem  key = {index}>
   <Left>
-<Text>{object['email']}</Text>
+<Text>{object['first_name'] +' '+ object['last_name']}</Text>
   </Left>
   </ListItem>)}
 
   </List>
 
+  </Tab>
+        <Tab tabStyle ={{backgroundColor: '#e3e8e6'}} activeTextStyle={{color: 'grey', fontWeight: 'bold', fontSize:18}} activeTabStyle={{backgroundColor: '#e3e8e6'}} textStyle={{color: 'grey', fontWeight: 'normal'}} heading="Potential Courts">
 
 
+
+
+            </Tab>
+            </Tabs>
   
       </Container>
 
