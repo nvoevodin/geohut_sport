@@ -15,7 +15,8 @@ isAnanimous: false,
 preCheckStatus: false,
 userInfo:null,
 reportModal: false,
-userId:[]
+userId:[],
+tracking: true
 };
 
 const ourReducer = (state = INITIAL_STATE, action) => {
@@ -23,6 +24,12 @@ const ourReducer = (state = INITIAL_STATE, action) => {
 
   switch (action.type) {
 
+    case "TRACKING":
+                      return{
+                        ...state,
+                        tracking: action.value
+                      }
+                    break;
     
     case "MODAL_REPORT":
       return{
