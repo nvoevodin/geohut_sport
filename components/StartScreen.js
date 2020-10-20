@@ -94,6 +94,7 @@ class Help extends Component {
           
         this.props.storeUserId(res[0],res[1],res[2],res[3])
         } catch (e) {
+          console.log('start screen 1')
           console.log(e)
         }
       
@@ -112,6 +113,7 @@ class Help extends Component {
         
       this.props.storePlayground(res[0],res[1],res[2],res[3])
       } catch (e) {
+        console.log('start screen 2')
         console.log(e)
       }
     
@@ -130,7 +132,9 @@ class Help extends Component {
   console.log(val + 'ttt')
   try {
     this.props.setAnanimous(val)
-  } catch (e) {console.log(e)}
+  } catch (e) {
+    console.log('start screen 3')
+    console.log(e)}
  
 
 

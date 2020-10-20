@@ -41,37 +41,75 @@ class Login extends Component {
         AsyncStorage.getItem('user_info', async (error, result) => {
           var res = JSON.parse(result) 
     
-          
-          try {
+          // if(res !== null){
+          //   console.log('login')
+          //   console.log(res)
+          //   console.log(res.data[0]["uid"])
+          //   try{
+          //     console.log('fuckkkkkkkkkkkkkkkkkkk1')
+          //     this.props.storeUserId(res.data[0]["uid"],res.data[0]["first_name"], res.data[0]["last_name"], res.data[0]["email"])
+          //     console.log('fuckkkkkkkkkkkkkkkkkkk2')
+            
+          //   }catch(e){console.log('fuckkkkkkkkkkkkkkkkkkk')}
+          // } else {
+            try {
             
             
-            if(res === null | res[0] !== firebase.auth().currentUser.uid){
-              await fetch(`${global.x}/get_user/${firebase.auth().currentUser.uid}`)
-              .then((res) => res.json())
-              .then(async(res) => {
-    
-    
-                try {
-                console.log(res)
-                console.log('in log')
-                try{
+              if(res === undefined || res.length == 0){
+                await fetch(`${global.x}/get_user/${firebase.auth().currentUser.uid}`)
+                .then((res) => res.json())
+                .then(async(res) => {
+      
+      
+                  try {
+               
+                  try{
+                    
+                    this.props.storeUserId(res.data[0]["uid"],res.data[0]["first_name"], res.data[0]["last_name"], res.data[0]["email"])
+                  } catch (e){
+                    console.log('signup 1')
+                    console.log(e)}
                   
-                  this.props.storeUserId(res.data[0]["uid"],res.data[0]["first_name"], res.data[0]["last_name"], res.data[0]["email"])
-                } catch (e){console.log(e)}
+                   await  AsyncStorage.setItem('user_info', JSON.stringify([res.data[0]["uid"], res.data[0]["first_name"], res.data[0]["last_name"], res.data[0]["email"]]))
+                  } catch (e) {
+                    console.log('something wrong (storage)')
+                  }
                 
-                 await  AsyncStorage.setItem('user_info', JSON.stringify([res.data[0]["uid"], res.data[0]["first_name"], res.data[0]["last_name"], res.data[0]["email"]]))
-                } catch (e) {
-                  console.log('something wrong (storage)')
-                }
+                }).catch((error) => {
+                  console.log(error)
+                });
+      
+              } else if (res[0] !== firebase.auth().currentUser.uid){
+                await fetch(`${global.x}/get_user/${firebase.auth().currentUser.uid}`)
+                .then((res) => res.json())
+                .then(async(res) => {
+      
+      
+                  try {
               
-              }).catch((error) => {
-                console.log(error)
-              });
-    
-            }
-    
-         
-          } catch(e){console.log(e)}
+                  try{
+                    
+                    this.props.storeUserId(res.data[0]["uid"],res.data[0]["first_name"], res.data[0]["last_name"], res.data[0]["email"])
+                  } catch (e){console.log(e)}
+                  
+                   await  AsyncStorage.setItem('user_info', JSON.stringify([res.data[0]["uid"], res.data[0]["first_name"], res.data[0]["last_name"], res.data[0]["email"]]))
+                  } catch (e) {
+                    console.log('something wrong (storage)')
+                  }
+                
+                }).catch((error) => {
+                  console.log(error)
+                });
+  
+              }
+      
+           
+            } catch(e){console.log(e)}
+          
+
+
+
+
         })
       })
       .then(() => this.props.navigation.navigate('Home'))
