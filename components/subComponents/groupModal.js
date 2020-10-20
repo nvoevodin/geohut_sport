@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import {StyleSheet,Modal, TouchableOpacity,View,ActivityIndicator, Switch} from 'react-native';
-import {Container, Header, Content, ListItem, List, Icon, Button, Left,Input, Body, Title,Text, Form,Textarea} from 'native-base';
+import {Container, Header, Content, ListItem, List, Icon, Button, Left,Input, Body, Title,Text, Form,Textarea, Right} from 'native-base';
 import { connect } from 'react-redux';
-
+import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 
 
 
@@ -14,7 +14,7 @@ class YourGroup extends Component {
     
 
             submittedAnimation: false,
-            members:["i"]
+            members:["none here"]
         
         
     }
@@ -22,7 +22,7 @@ class YourGroup extends Component {
     componentDidMount() {
 
         console.log('first skometing')
-        //this.getMembers()
+        this.getMembers()
           
       }
 
@@ -45,7 +45,7 @@ class YourGroup extends Component {
           fetch(`${global.x}/get_users/${JSON.parse(res.data[0]["JSON_EXTRACT(members, '$')"])}`)
           .then((res) => res.json())
           .then((res) => {
-              console.log(res.data)
+              console.log(JSON.parse(res.data))
           this.setState({members:res.data})
           
           }).catch((error) => {
@@ -67,7 +67,7 @@ class YourGroup extends Component {
 
   render() {
 
-//console.log(this.state.groupId)
+console.log(this.state.members)
       
     return (
         <React.Fragment>
@@ -88,7 +88,11 @@ class YourGroup extends Component {
           <Body>
             <Title style = {{color:'black'}}>{this.props.title}</Title>
           </Body>
-          
+          <Right>
+            <TouchableOpacity onPress={this.getMembers}>
+          <MaterialCommunityIcons name="refresh" size={35} color="green" />
+          </TouchableOpacity>
+          </Right>
         </Header>
         <List>
         

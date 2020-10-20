@@ -31,7 +31,7 @@ const firebaseConfig ={
 firebase.initializeApp(firebaseConfig)
 
 
-global.x = 'http://192.168.2.6:3007'
+global.x = 'http://192.168.2.9:3007'
 //global.x = 'https://volleybuddy.metis-data.site'
 
 

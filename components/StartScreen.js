@@ -60,7 +60,7 @@ class Help extends Component {
 
   
 
-
+    this.setUser()
     this.setSite() 
     firebase.auth().onAuthStateChanged((user) =>  {
       if (user) {
@@ -77,6 +77,28 @@ class Help extends Component {
 
 
   }
+
+
+  setUser = async () =>{
+
+
+    //const value = await AsyncStorage.getItem('defaultCourt')
+  
+    
+    AsyncStorage.getItem('user_info', async (error, result) => {
+      var res = JSON.parse(result) 
+        try {
+
+
+          //console.log(res)
+          
+        this.props.storeUserId(res[0],res[1],res[2],res[3])
+        } catch (e) {
+          console.log(e)
+        }
+      
+      
+    })}
 
  setSite = async () =>{
 
@@ -95,6 +117,10 @@ class Help extends Component {
     
     
   })
+
+
+
+
 
 
 
@@ -202,7 +228,7 @@ const mapStateToProps = (state) => {
 
 const mapDispachToProps = dispatch => {
   return {
-
+    storeUserId: (id,fname,sname,email) => dispatch({ type: "STORE_USER_ID", value: id, value1:fname, value2:sname, value3:email}),
     storePlayground: (name,id,lat,lon) => dispatch({ type: "STORE_PLAYGROUND", value: name,value1: id, value2:lat,value3:lon}),
     setAnanimous: (x) => dispatch({ type: "SET_ANANIMOUS", value: x}),
 
