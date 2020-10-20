@@ -210,7 +210,7 @@ console.log(this.props.reducer.userId)
     const value = await AsyncStorage.getItem('user_info').then(req => JSON.parse(req))
     if (value !== null) {
       return {
-        "email": value[0],
+        "email": value[3],
         "first_name": value[1],
         "last_name": value[2]
       }
@@ -399,15 +399,9 @@ console.log(this.props.reducer.userId)
           fetch(
             // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
             `${global.x}/add?time=${
-<<<<<<< HEAD
-            moment().utc().format("YYYY-MM-DD HH:mm:ss").substr(0, 18) + "0"
-            }&site_id=${this.props.reducer.playgroundId}&first_name=${this.props.reducer.isAnanimous ? "Anonimous" : this.props.reducer.userInfo.firstName}
-            &last_name=${this.props.reducer.isAnanimous ? "Player" : this.props.reducer.userInfo.lastName}&user_id=${this.props.reducer.userInfo.user_id}`,
-=======
               moment().utc().format("YYYY-MM-DD HH:mm:ss").substr(0, 18) + "0"
             }&site_id=${this.props.reducer.playgroundId}&first_name=${this.props.reducer.isAnanimous?"Anonimous":this.props.reducer.userId[1]}
             &last_name=${this.props.reducer.isAnanimous?"Player":this.props.reducer.userId[2]}&user_id=${this.props.reducer.userId[3]}`,
->>>>>>> ee28b08be5a2483b2118fea448f2b2797f9777cd
             { method: "POST" }
           ).catch((error) => {
             console.log(error)
@@ -428,32 +422,6 @@ console.log(this.props.reducer.userId)
       }
       this.setState({ submittedAnimation: false });
     } else {
-<<<<<<< HEAD
-      console.log(this.props.reducer.playgroundId)
-      this.setState({ submittedAnimation: true });
-      await fetch(
-        // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
-        `${global.x}/update?site_id=${this.props.reducer.playgroundId}&user_id=${this.props.reducer.userInfo.user_id}`,
-        { method: "PUT" }
-      ).catch((error) => {
-        console.log(error)
-      })
-
-      await fetch(
-        // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
-        `${global.x}/addToStorage?site_id=${this.props.reducer.playgroundId}&user_id=${this.props.reducer.userInfo.user_id}`,
-        { method: "POST" }
-      ).catch((error) => {
-        console.log(error)
-      })
-      fetch(
-        // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
-        `${global.x}/delete?site_id=${this.props.reducer.playgroundId}&user_id=${this.props.reducer.userInfo.user_id}`,
-        { method: "DELETE" }
-      ).catch((error) => {
-        console.log(error)
-      })
-=======
 console.log(this.props.reducer.playgroundId)
 this.setState({ submittedAnimation: true });
 await fetch(
@@ -478,7 +446,6 @@ await fetch(
   ).catch((error) => {
     console.log(error)
   })
->>>>>>> ee28b08be5a2483b2118fea448f2b2797f9777cd
 
 
 
@@ -508,23 +475,6 @@ await fetch(
           },
           style: "cancel"
         },
-<<<<<<< HEAD
-        {
-          text: "OK", onPress: () => {
-            fetch(
-              // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
-              `${global.x}/cancelPreCheck?site_id=${this.props.reducer.playgroundId}&user_id=${this.props.reducer.userInfo.user_id}`,
-              { method: "DELETE" }
-            ).catch((error) => {
-              console.log(error)
-            })
-
-            this.props.cancelPreCheck()
-
-            alert('You canceled your pre-check.')
-          }
-        }
-=======
         { text: "OK", onPress: () => {
           fetch(
             // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
@@ -538,7 +488,6 @@ await fetch(
       
           alert('You canceled your pre-check.')
         } }
->>>>>>> ee28b08be5a2483b2118fea448f2b2797f9777cd
       ],
       { cancelable: false }
     );
@@ -564,13 +513,9 @@ await fetch(
 
   render() {
 
-<<<<<<< HEAD
-    //console.log(this.state)
-=======
     console.log(this.props.reducer.userId)
 
 //console.log(this.state)
->>>>>>> ee28b08be5a2483b2118fea448f2b2797f9777cd
     return (
       <React.Fragment>
 

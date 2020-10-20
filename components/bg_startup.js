@@ -183,7 +183,7 @@ const _storeCourts = async (key,value) => {
 
 export const configureBgTasks = ({ proximityMax, user, storePlayground, autoCheckin, autoCheckout }) => {
 
-  //console.log('starting tracking...', user)
+  console.log('starting tracking...', user)
   //console.log('proximityMax is:', proximityMax)
   //checkUserStatus().then(res=>console.log('******',res))
  
