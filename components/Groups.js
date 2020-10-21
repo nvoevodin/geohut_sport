@@ -17,7 +17,8 @@ class Groups extends Component {
      groups:[],
      groupTitle: '',
      groupId:'',
-     adminId:''
+     adminId:'',
+     joinedOrLeftGroup:false
     }
 
     componentDidMount() {
@@ -26,8 +27,14 @@ class Groups extends Component {
     }
 
 
-    componentDidUpdate(prevProps){
+
+
+    componentDidUpdate(prevProps, prevState){
       if(prevProps.reducer.playgroundId !== this.props.reducer.playgroundId){
+        this.getGroups()
+      }
+
+      if(prevState.joinedOrLeftGroup !== this.state.joinedOrLeftGroup){
         this.getGroups()
       }
 
@@ -70,21 +77,23 @@ class Groups extends Component {
       })
 
       alert(`You joined ${name} group` )
+      this.setState({joinedOrLeftGroup:!this.state.joinedOrLeftGroup})
 
     }
 
 
     leaveGroup = async (name,id) => {
      
-      // await fetch(
-      //   // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
-      //   `${global.x}/add_group_members?group_id=${id}&user_id=${this.props.reducer.userId[3]}`,
-      //   { method: "PUT" }
-      // ).catch((error) => {
-      //   console.log(error)
-      // })
+      await fetch(
+        // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
+        `${global.x}/remove_group_members?group_id=${id}&user_id=${this.props.reducer.userId[3]}`,
+        { method: "PUT" }
+      ).catch((error) => {
+        console.log(error)
+      })
 
       alert(`You left ${name} group` )
+      this.setState({joinedOrLeftGroup:!this.state.joinedOrLeftGroup})
 
     }
 
@@ -172,6 +181,42 @@ object["password"] == ''?
           </Tab>
       <Tab tabStyle ={{backgroundColor: '#5cb85c'}} activeTextStyle={{color: '#fff', fontWeight: 'bold', fontSize:18}} activeTabStyle={{backgroundColor: '#5cb85c'}} textStyle={{color: '#fff', fontWeight: 'normal'}} heading="Your Groups"
           >
+
+<Content>
+          <List>
+          
+          {this.state.groups.map((object,index) =>
+         
+          <ListItem  key = {index}>
+  <Left>
+  {JSON.parse(object.members).some(i => i === this.props.reducer.userId[3])?
+  <TouchableOpacity style = {{flexDirection:'row'}} onPress = {() => {{object["password"] == ''?this.selectGroup(object["group_name"], object["group_id"], object['admin_id']):alert("Private group.")}}}>
+
+<Text>{object["group_name"]}</Text>
+</TouchableOpacity>:null}
+</Left>
+
+<Right>
+  
+{JSON.parse(object.members).some(i => i === this.props.reducer.userId[3])?  
+  <TouchableOpacity onPress={() => {this.leaveGroup(object["group_name"], object["group_id"])}}>
+              <Text style = {{fontSize:18, fontWeight:'bold', color:'red'}}>Leave</Text>
+            </TouchableOpacity>:null}
+</Right>
+
+</ListItem>
+
+
+
+  )}
+          
+
+        
+      
+          </List>
+          </Content>
+
+
 
 
 
