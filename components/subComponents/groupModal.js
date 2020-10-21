@@ -3,7 +3,7 @@ import {StyleSheet,Modal, TouchableOpacity,View,ActivityIndicator, Switch} from 
 import {Container, Header, Content, ListItem, List, Icon, Button, Left,Input, Body, Title,Text, Form,Textarea, Right,Tab,Tabs} from 'native-base';
 import { connect } from 'react-redux';
 import { MaterialCommunityIcons } from '@expo/vector-icons'; 
-
+import { AntDesign } from '@expo/vector-icons';
 
 
 
@@ -68,8 +68,8 @@ class YourGroup extends Component {
 
   render() {
 
-console.log(this.state.members)
-      
+    console.log(this.props.admin)
+      console.log(this.props.reducer.userId[3])
     return (
         <React.Fragment>
         <Modal
@@ -96,7 +96,7 @@ console.log(this.state.members)
           </Right>
         </Header>
         <Tabs tabBarUnderlineStyle={{backgroundColor:'grey'}}>
-        <Tab tabStyle ={{backgroundColor: '#e3e8e6'}} activeTextStyle={{color: 'grey', fontWeight: 'bold', fontSize:18}} activeTabStyle={{backgroundColor: '#e3e8e6'}} textStyle={{color: 'grey', fontWeight: 'normal'}} heading="Live Courts">
+        <Tab tabStyle ={{backgroundColor: '#e3e8e6'}} activeTextStyle={{color: 'grey', fontWeight: 'bold', fontSize:18}} activeTabStyle={{backgroundColor: '#e3e8e6'}} textStyle={{color: 'grey', fontWeight: 'normal'}} heading="Members">
         
         <List>
         
@@ -111,12 +111,31 @@ console.log(this.state.members)
   </List>
 
   </Tab>
-        <Tab tabStyle ={{backgroundColor: '#e3e8e6'}} activeTextStyle={{color: 'grey', fontWeight: 'bold', fontSize:18}} activeTabStyle={{backgroundColor: '#e3e8e6'}} textStyle={{color: 'grey', fontWeight: 'normal'}} heading="Potential Courts">
+
+  {this.props.admin === this.props.reducer.userId[3] &&
+          <Tab tabStyle ={{backgroundColor: '#e3e8e6'}} activeTextStyle={{color: 'grey', fontWeight: 'bold', fontSize:18}} activeTabStyle={{backgroundColor: '#e3e8e6'}} textStyle={{color: 'grey', fontWeight: 'normal'}} heading="Admin">
+
+<List>
+        
+        {this.state.members.map((object,index) =>
+          
+          <ListItem  key = {index}>
+  <Left>
+<Text>{object['first_name'] +' '+ object['last_name']}</Text>
+  </Left>
+  <Right>
+    <TouchableOpacity onPress={() => {alert('Are you sure you want to remove this user from your group?')}}>
+  <AntDesign name="deleteuser" size={25} color="red" />
+  </TouchableOpacity>
+  </Right>
+  </ListItem>)}
+
+  </List>
 
 
+          </Tab>
+}
 
-
-            </Tab>
             </Tabs>
   
       </Container>
