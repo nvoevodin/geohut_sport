@@ -3,7 +3,7 @@ import {StyleSheet,Modal, TouchableOpacity, Alert} from 'react-native';
 import {Container, Header, Content, List, ListItem, Icon, Button, Left,Right, Body, Title,Text, Tab, Tabs,TabHeading} from 'native-base';
 import { connect } from 'react-redux';
 import { Entypo } from '@expo/vector-icons';
-import PageTemplate from './subComponents/Header'
+import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 import AsyncStorage from '@react-native-community/async-storage';
 import AddGroup from './subComponents/addGroup'
 import YourGroup from './subComponents/groupModal'
@@ -16,7 +16,9 @@ class Groups extends Component {
     state = {
      groups:[],
      groupTitle: '',
-     groupId:''
+     groupId:'',
+     adminId:'',
+     joinedOrLeftGroup:false
     }
 
     componentDidMount() {
@@ -25,8 +27,14 @@ class Groups extends Component {
     }
 
 
-    componentDidUpdate(prevProps){
+
+
+    componentDidUpdate(prevProps, prevState){
       if(prevProps.reducer.playgroundId !== this.props.reducer.playgroundId){
+        this.getGroups()
+      }
+
+      if(prevState.joinedOrLeftGroup !== this.state.joinedOrLeftGroup){
         this.getGroups()
       }
 
@@ -52,8 +60,8 @@ class Groups extends Component {
       this.props.openAddPlaygroundModal()
     }
 
-    selectGroup = (x,y) =>{
-      this.setState({groupTitle:x, groupId:y})
+    selectGroup = (x,y,z) =>{
+      this.setState({groupTitle:x, groupId:y, adminId:z})
       this.props.openYourPlaygroundModal()
     }
 
@@ -69,6 +77,23 @@ class Groups extends Component {
       })
 
       alert(`You joined ${name} group` )
+      this.setState({joinedOrLeftGroup:!this.state.joinedOrLeftGroup})
+
+    }
+
+
+    leaveGroup = async (name,id) => {
+     
+      await fetch(
+        // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
+        `${global.x}/remove_group_members?group_id=${id}&user_id=${this.props.reducer.userId[3]}`,
+        { method: "PUT" }
+      ).catch((error) => {
+        console.log(error)
+      })
+
+      alert(`You left ${name} group` )
+      this.setState({joinedOrLeftGroup:!this.state.joinedOrLeftGroup})
 
     }
 
@@ -80,7 +105,7 @@ class Groups extends Component {
   
       
     return (
-    
+     
 
 <Container>
 <Header style = {{backgroundColor:'#5cb85c',height: 70, paddingTop:0}}>
@@ -89,8 +114,12 @@ class Groups extends Component {
           </Left>
 
           <Right>
+
+          <TouchableOpacity onPress={this.getGroups}>
+          <MaterialCommunityIcons name="refresh" size={35} color="white" />
+          </TouchableOpacity>
           <TouchableOpacity onPress = {this.addGroup}>
-          <Entypo name="plus" size={30} color="white" />
+          <Entypo name="plus" size={35} color="white" />
           </TouchableOpacity>
           </Right>
         </Header>
@@ -116,14 +145,21 @@ class Groups extends Component {
           
           <ListItem  key = {index}>
   <Left>
-  <TouchableOpacity style = {{flexDirection:'row'}} onPress = {() => {{object["password"] == ''?this.selectGroup(object["group_name"], object["group_id"]):alert("Private group.")}}}>
+  <TouchableOpacity style = {{flexDirection:'row'}} onPress = {() => {{object["password"] == ''?this.selectGroup(object["group_name"], object["group_id"], object['admin_id']):alert("Private group.")}}}>
 
 <Text>{object["group_name"]}</Text>
 </TouchableOpacity>
 </Left>
 
 <Right>
-{object["password"] == ''?
+{JSON.parse(object.members).some(i => i === this.props.reducer.userId[3])?  
+  <TouchableOpacity onPress={() => {this.leaveGroup(object["group_name"], object["group_id"])}}>
+              <Text style = {{fontSize:18, fontWeight:'bold', color:'red'}}>Leave</Text>
+            </TouchableOpacity>:
+
+
+
+object["password"] == ''?
   <TouchableOpacity onPress={() => {this.joinGroup(object["group_name"], object["group_id"])}}>
               <Text style = {{fontSize:18, fontWeight:'bold', color:'green'}}>Join</Text>
             </TouchableOpacity>:<TouchableOpacity onPress={() => {this.requestToJoin}}>
@@ -146,12 +182,48 @@ class Groups extends Component {
       <Tab tabStyle ={{backgroundColor: '#5cb85c'}} activeTextStyle={{color: '#fff', fontWeight: 'bold', fontSize:18}} activeTabStyle={{backgroundColor: '#5cb85c'}} textStyle={{color: '#fff', fontWeight: 'normal'}} heading="Your Groups"
           >
 
+<Content>
+          <List>
+          
+          {this.state.groups.map((object,index) =>
+         
+          <ListItem  key = {index}>
+  <Left>
+  {JSON.parse(object.members).some(i => i === this.props.reducer.userId[3])?
+  <TouchableOpacity style = {{flexDirection:'row'}} onPress = {() => {{object["password"] == ''?this.selectGroup(object["group_name"], object["group_id"], object['admin_id']):alert("Private group.")}}}>
+
+<Text>{object["group_name"]}</Text>
+</TouchableOpacity>:null}
+</Left>
+
+<Right>
+  
+{JSON.parse(object.members).some(i => i === this.props.reducer.userId[3])?  
+  <TouchableOpacity onPress={() => {this.leaveGroup(object["group_name"], object["group_id"])}}>
+              <Text style = {{fontSize:18, fontWeight:'bold', color:'red'}}>Leave</Text>
+            </TouchableOpacity>:null}
+</Right>
+
+</ListItem>
+
+
+
+  )}
+          
+
+        
+      
+          </List>
+          </Content>
+
+
+
 
 
             </Tab>
             </Tabs>
           <AddGroup/>
-          <YourGroup title = {this.state.groupTitle} id = {this.state.groupId}/>
+          <YourGroup title = {this.state.groupTitle} id = {this.state.groupId} admin = {this.state.adminId}/>
       </Container>
 
 

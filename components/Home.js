@@ -780,11 +780,13 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     paddingBottom: 5,
     backgroundColor: "#4aa0cf",
-    shadowColor: "black", // IOS
-    shadowOffset: { height: 4, width: 0 }, // IOS
-    shadowOpacity: 0.5, // IOS
-    shadowRadius: 1, //IOS
-    elevation: 15, // Android
+    borderWidth: 3,
+    borderColor: "white",
+     shadowColor: "white", // IOS
+    // shadowOffset: { height: 4, width: 0 }, // IOS
+    // shadowOpacity: 0.5, // IOS
+     shadowRadius: 0, //IOS
+     elevation: 0, // Android
     zIndex: 9999,
   },
   bubble1: {
