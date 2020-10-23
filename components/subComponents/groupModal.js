@@ -60,6 +60,29 @@ class YourGroup extends Component {
         });
       }
 
+      getWaitlist = () =>{
+        fetch(`${global.x}/get_group_members/${this.props.id}`)
+        .then((res) => res.json())
+        .then((res) => {
+
+          fetch(`${global.x}/get_users/${res.data[0]["JSON_EXTRACT(waiting, '$')"]}`)
+          .then((res) => res.json())
+          .then((res) => {
+              console.log(res.data)
+          this.setState({members:res.data})
+          
+          
+          }).catch((error) => {
+            console.log(error)
+          });
+            
+        //this.setState({members:JSON.parse(res.data[0]["JSON_EXTRACT(members, '$')"])})
+        
+        }).catch((error) => {
+          console.log(error)
+        });
+      }
+
 
  
 

@@ -50,6 +50,7 @@ class Groups extends Component {
       }).catch((error) => {
         console.log(error)
       });
+      console.log('getting groups')
   
 
   
@@ -81,6 +82,25 @@ class Groups extends Component {
 
     }
 
+    requestToJoin = async (name,id) => {
+      console.log(this.props.reducer.userId)
+      await fetch(
+        // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
+        `${global.x}/add_to_waitlist?group_id=${id}&user_id=${this.props.reducer.userId[3]}`,
+        { method: "PUT" }
+      ).catch((error) => {
+        console.log(error)
+      })
+
+      alert(`You joined ${name} group` )
+      this.setState({joinedOrLeftGroup:!this.state.joinedOrLeftGroup})
+
+    }
+
+    requested = () => {
+      alert('Already requested! Wait for admin to approve you!')
+    }
+
 
     leaveGroup = async (name,id) => {
      
@@ -95,6 +115,26 @@ class Groups extends Component {
       alert(`You left ${name} group` )
       this.setState({joinedOrLeftGroup:!this.state.joinedOrLeftGroup})
 
+    }
+
+    deleteGroup = (group_id) =>{
+      fetch(
+        // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
+        `${global.x}/deleteGroup?group_id=${group_id}`,
+        { method: "DELETE" }
+      ).catch((error) => {
+        console.log(error)
+      })
+      
+      alert('You deleted your group!')
+      this.setState({joinedOrLeftGroup:!this.state.joinedOrLeftGroup})
+    }
+
+
+    changeState = () =>{
+
+      console.log('change state')
+      this.setState({joinedOrLeftGroup:!this.state.joinedOrLeftGroup})
     }
 
     
@@ -145,14 +185,23 @@ class Groups extends Component {
           
           <ListItem  key = {index}>
   <Left>
-  <TouchableOpacity style = {{flexDirection:'row'}} onPress = {() => {{object["password"] == ''?this.selectGroup(object["group_name"], object["group_id"], object['admin_id']):alert("Private group.")}}}>
+  <TouchableOpacity style = {{flexDirection:'row'}} onPress = {() => {{object["password"] == '' || object['admin_id'] === this.props.reducer.userId[3]?this.selectGroup(object["group_name"], object["group_id"], object['admin_id']):alert("Private group.")}}}>
 
 <Text>{object["group_name"]}</Text>
 </TouchableOpacity>
 </Left>
 
 <Right>
-{JSON.parse(object.members).some(i => i === this.props.reducer.userId[3])?  
+
+{object['admin_id'] === this.props.reducer.userId[3]?
+<TouchableOpacity onPress={() => {this.deleteGroup(object["group_id"])}}>
+              <Text style = {{fontSize:18, fontWeight:'bold', color:'red'}}>Delete</Text>
+            </TouchableOpacity>:
+JSON.parse(object.waiting).some(i => i === this.props.reducer.userId[3])?  
+  <TouchableOpacity onPress={() => {this.requested}}>
+              <Text style = {{fontSize:18, fontWeight:'bold', color:'blue'}}>Requested</Text>
+            </TouchableOpacity>:
+            JSON.parse(object.members).some(i => i === this.props.reducer.userId[3])?  
   <TouchableOpacity onPress={() => {this.leaveGroup(object["group_name"], object["group_id"])}}>
               <Text style = {{fontSize:18, fontWeight:'bold', color:'red'}}>Leave</Text>
             </TouchableOpacity>:
@@ -162,8 +211,8 @@ class Groups extends Component {
 object["password"] == ''?
   <TouchableOpacity onPress={() => {this.joinGroup(object["group_name"], object["group_id"])}}>
               <Text style = {{fontSize:18, fontWeight:'bold', color:'green'}}>Join</Text>
-            </TouchableOpacity>:<TouchableOpacity onPress={() => {this.requestToJoin}}>
-            <Text style = {{fontSize:18, fontWeight:'bold', color:'red'}}>Request</Text>
+            </TouchableOpacity>:<TouchableOpacity onPress={() => {this.requestToJoin(object["group_name"], object["group_id"])}}>
+            <Text style = {{fontSize:18, fontWeight:'bold', color:'green'}}>Request</Text>
             </TouchableOpacity>}
 </Right>
 
@@ -222,8 +271,8 @@ object["password"] == ''?
 
             </Tab>
             </Tabs>
-          <AddGroup/>
-          <YourGroup title = {this.state.groupTitle} id = {this.state.groupId} admin = {this.state.adminId}/>
+          <AddGroup changeState = {this.changeState}/>
+          <YourGroup  title = {this.state.groupTitle} id = {this.state.groupId} admin = {this.state.adminId}/>
       </Container>
 
 
