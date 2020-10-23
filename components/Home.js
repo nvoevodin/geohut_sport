@@ -10,11 +10,11 @@ import {
 } from "react-native";
 
 
-import { Button,Right,Left, Header,Title } from "native-base";
+import { Button, Right, Left, Header, Title } from "native-base";
 
 import * as firebase from "firebase";
 import { Entypo } from "@expo/vector-icons";
- 
+
 
 
 import * as Permissions from 'expo-permissions';
@@ -31,8 +31,8 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import notificationFunction from "./functions/notifications"
 
 //TRACKING - FAUSTO
-//import { configureBgTasks } from './bg';
-//const TASK_FETCH_LOCATION = 'TASK_FETCH_LOCATION';
+import { configureBgTasks } from './bg_startup';
+const TASK_FETCH_LOCATION = 'background-location-task';
 
 const moment = require("moment");
 import AsyncStorage from '@react-native-community/async-storage';
@@ -45,26 +45,20 @@ import AsyncStorage from '@react-native-community/async-storage';
 
 
 class Home extends Component {
-  
+
   uid = firebase.auth().currentUser.uid;
 
   state = {
-    finished:false,
+    finished: false,
     submitted: false,
     presubmitted: false,
     proximity: null,
     hasLocationPermission: null,
-    proximityMax: 200,
+    proximityMax: 100,
     siteLocation: { latitude: null, longitude: null },
     submittedAnimation: false,
     animatedValue: new Animated.Value(70),
-     //FAUSTO - USING TLC FOR NOW
-     volleyballCourt: {
-      //latitude: 40.6,
-      //longitude: -73.5
-      latitude: 40.705030,//40.601,//40.7634642,
-      longitude: -74.011550//-73.9290698
-    }
+    tracking: this.props.reducer.tracking
   };
 
   async componentDidMount() {
@@ -91,21 +85,47 @@ console.log('new state')
 
     //CHECKS IF ALREADY CHECKED IN
     this.checkedIn(this.props.reducer.userId[3]);
-     
+
     //   } catch(e){console.log(e)}
     // });
- 
+
 
     //ADDING GEO TRACKING - FAUSTO
     //const {setEnterRegion} = this.props;
     //configureBgTasks({ setEnterRegion });
-   
+
     //this.startBackgroundUpdate();
     //this.startGeofence();
 
- //EXECUTES LOCATION PERMISSIONS
- this.getLocationsPermissions();
+    //EXECUTES LOCATION PERMISSIONS
+    //this.getLocationsPermissions();
+    const { status } = await Location.requestPermissionsAsync();
+    if (status === 'granted') {
+      console.log('location permissions are granted...')
+    }
 
+    const asyncTracking = await AsyncStorage.getItem('vpAutoTracking');
+    if (asyncTracking !== null) {
+      // We have data!!
+      //return asyncTracking
+      console.log('tracking status: ', asyncTracking)
+      this.props.setTracking(JSON.parse(asyncTracking));
+    } else {
+      //this._storeTracking('vpAutoTracking', 'true')
+      console.log('HELLOOOOOO ITS EMPTTYYYYYYY')
+      this.props.setTracking(true);
+    }
+
+    //fire background tracking - user daya is pulled from local storage with backup being db
+    this.pullUserInfo().then(user => {
+      if (this.props.reducer.tracking == true) {
+        const { storePlayground } = this.props;
+        this.configureBackground(this.state.proximityMax ,user, storePlayground);
+        console.log('tracking reducer is TRUE!!!!!!!!')
+      } else {
+        console.log('tracking reducer is FALSE!!!')
+      }
+    });
 
   }
 
@@ -114,57 +134,107 @@ console.log('new state')
     if(prevProps.reducer.playgroundId !== this.props.reducer.playgroundId || prevProps.reducer.userId[3] !== this.props.reducer.userId[3]){
       console.log('updating')
 
-        //READS FROM FIREBASE AND SETS EMAIL AND WORKID IN REDUX
-        this.readFireBase(this.props.reducer.userId[1],this.props.reducer.userId[2],this.props.reducer.userId[3]);
-           //CHECKS IF ALREADY PRECHECKED IN
-    this.preCheckedIn(this.props.reducer.userId[3]);
+      //READS FROM FIREBASE AND SETS EMAIL AND WORKID IN REDUX
+      this.readFireBase(this.props.reducer.userId[1], this.props.reducer.userId[2], this.props.reducer.userId[3]);
+      //CHECKS IF ALREADY PRECHECKED IN
+      this.preCheckedIn(this.props.reducer.userId[3]);
 
-    //CHECKS IF ALREADY CHECKED IN
-    this.checkedIn(this.props.reducer.userId[3]);
+      //CHECKS IF ALREADY CHECKED IN
+      this.checkedIn(this.props.reducer.userId[3]);
+    } else if (this.props.reducer.tracking == false & prevProps.reducer.tracking == true) {
+      console.log('stop tracking now')
+    } else if (this.props.reducer.tracking == true & prevProps.reducer.tracking == false) {
+      //fire background tracking - user daya is pulled from local storage with backup being db
+      this.pullUserInfo().then(user => {
+        if (this.props.reducer.tracking == true) {
+          const { storePlayground } = this.props;
+          this.configureBackground(this.state.proximityMax ,user, storePlayground);
+          console.log('tracking reducer is TRUE!!!!!!!!')
+        } else {
+          console.log('tracking reducer is FALSE!!!')
+        }
+      });
     }
 
   }
 
 
 
-//define and start geofence -FAUSTO
-startGeofence = async () => {
-  console.log('starting geofencing test ...')
-  //let x = 
-  Location.startGeofencingAsync('TASK_CHECK_GEOFENCE',
-    [
-    {
-      identifier: 'court',
-      latitude: this.state.volleyballCourt.latitude,
-      longitude: this.state.volleyballCourt.longitude,
-      radius: 20,
-      notifyOnEnter: true,
-      notifyOnExit: true,
-     }
-     ]
-    )
-};
+  autoTrackingCheckin = () => {
+    console.log('passed function works!!!!!!!')
+    this.setState({ submitted: true });
+    //this.setState({ submittedAnimation: true })
+  }
 
-//start tracking in background -FAUSTO
-startBackgroundUpdate = async () => {
-  Location.startLocationUpdatesAsync(TASK_FETCH_LOCATION, {
-    accuracy: Location.Accuracy.Highest,
-    distanceInterval: 1, // minimum change (in meters) betweens updates
-    deferredUpdatesInterval: 1000, // minimum interval (in milliseconds) between updates
-    // foregroundService is how you get the task to be updated as often as would be if the app was open
-    foregroundService: {
-      notificationTitle: 'Using your location',
-      notificationBody: 'To turn off, go back to the app and switch something off.',
-    },
-  });
-}
+  autoTrackingCheckout = () => {
+    console.log('passed function works!!!!!!!')
+    this.setState({ submitted: false });
+    //this.setState({ submittedAnimation: false })
+  }
+
+  configureBackground = async (proximityMax ,user, storePlayground, autoCheckout = this.autoTrackingCheckout, autoCheckin = this.autoTrackingCheckin) => {
+    console.log('FIRING BACKGROUND...')
+    //start tracking in background
+    const startBackgroundUpdate = async () => {
+
+      await Location.startLocationUpdatesAsync(TASK_FETCH_LOCATION, {
+        accuracy: Location.Accuracy.Balanced,
+        timeInterval: 1000,
+        //distanceInterval: 1, // minimum change (in meters) betweens updates
+        //deferredUpdatesInterval: 1000, // minimum interval (in milliseconds) between updates
+        // foregroundService is how you get the task to be updated as often as would be if the app was open
+        foregroundService: {
+          notificationTitle: 'Using your location for VolleyPal',
+          notificationBody: 'To turn off, go back to the app and toggle tracking.',
+        },
+      });
 
 
+    }
 
-checkedIn = (email) =>{
+    setTimeout(function () {
+      try {
+        console.log('user info: ', user)
+        configureBgTasks({proximityMax ,user, storePlayground, autoCheckin, autoCheckout })
+        startBackgroundUpdate();
+      }
+      catch (error) {
+        console.log(error)
+      }
 
-  //firebase.database().ref('UsersList/'+ this.uid + '/info').once('value', snapshot => {
-        
+    }, 3000);
+  }
+
+  //FUNCTION: GET USER DATA
+  pullUserInfo = async () => {
+    const value = await AsyncStorage.getItem('user_info').then(req => JSON.parse(req))
+    if (value !== null) {
+      return {
+        "email": value[3],
+        "first_name": value[1],
+        "last_name": value[2]
+      }
+    } else {
+      console.log('pulling information......')
+      let response = await fetch(`${global.x}/get_user/${firebase.auth().currentUser.uid}`)
+        .then(res => res.json())
+        .then(res => {
+          //console.log('res',res) 
+          return res["data"][0]
+        })
+        .catch((error) => {
+          console.log(error)
+        });
+      return response
+    }
+  }
+
+
+
+  checkedIn = (email) => {
+
+    //firebase.database().ref('UsersList/'+ this.uid + '/info').once('value', snapshot => {
+
     //let data = snapshot.val()
 
  
@@ -184,52 +254,49 @@ checkedIn = (email) =>{
       console.log(error)
     });
    // })
+  }
 
-}
+  preCheckedIn = (email) => {
 
-
-preCheckedIn = (email) =>{
- 
     //firebase.database().ref('UsersList/'+ this.uid + '/info').once('value', snapshot => {
-          
-      //let data = snapshot.val()
-  
-   
-  
-      fetch(`${global.x}/precheckcheck/${email}`)
+
+    //let data = snapshot.val()
+
+
+
+    fetch(`${global.x}/precheckcheck/${email}`)
       .then(res => res.json())
-      .then(res => {  
-       
-        if (res["data"].some(e => e.site_id === this.props.reducer.playgroundId)){
+      .then(res => {
+
+        if (res["data"].some(e => e.site_id === this.props.reducer.playgroundId)) {
           this.props.storePreCheck()
-          
+
         } else {
           this.props.cancelPreCheck()
-          
+
         }
       })
       .catch((error) => {
         console.log(error)
       });
-      //})
-  
+    //})
+
   }
 
 
 
-
   //FUNCTION: READS FIREBASE AND SETS DATA INTO REDUX
-  readFireBase = (first_name,last_name,email) => {
+  readFireBase = (first_name, last_name, email) => {
     //firebase.database().ref('UsersList/'+ this.uid + '/info').once('value', snapshot => {
-        
-      //let data = snapshot.val()
-        //console.log('user data: ',data)
-        this.props.setUserData({
-          firstName: first_name,
-          lastName: last_name,
-          user_id: email
-        });
-      //})
+
+    //let data = snapshot.val()
+    console.log('userid info: ', first_name)
+    this.props.setUserData({
+      firstName: first_name,
+      lastName: last_name,
+      user_id: email
+    });
+    //})
   }
 
 
@@ -239,7 +306,8 @@ preCheckedIn = (email) =>{
     let status;
     status = await Permissions.getAsync(Permissions.LOCATION);
     if (status.status !== "granted") {
-      status = await Permissions.askAsync(Permissions.LOCATION)};
+      status = await Permissions.askAsync(Permissions.LOCATION)
+    };
     if (status.status !== "granted") {
       this.setState({
         errorMessage: "Permission to access location was denied",
@@ -273,7 +341,7 @@ preCheckedIn = (email) =>{
   };
 
   //FUNCTION: CALCULATES DISTANCE INCLUDES TRY CATCH FOR ERRORS
-  calculateDistance = async (start_x,start_y, end_x,end_y) => {
+  calculateDistance = async (start_x, start_y, end_x, end_y) => {
     try {
       let distance = await getDistance(
         {
@@ -284,11 +352,11 @@ preCheckedIn = (email) =>{
           latitude: end_x,
           longitude: end_y,
         },
-        (accuracy = 100)
+        //(accuracy = 100)
       );
-    
+
       return distance
-      
+
     } catch (error) {
       alert('Something went wrong, please logout, log back in and try again')
     }
@@ -297,10 +365,14 @@ preCheckedIn = (email) =>{
 
   //FUNCTION: HANDLES MAIN CHECKIN
   handleButton = async () => {
-   
-if (this.props.reducer.playgroundId === ''){
-  Alert.alert("Select your court first.");
-} else if (this.state.submitted === false) {
+
+    if (this.props.reducer.playgroundId === '') {
+      Alert.alert("Select your court first.");
+    } else if (this.props.reducer.tracking == true & this.state.submitted == true) {
+      Alert.alert('No need to check out. You will be checked out Automatically')
+    } else if (this.props.reducer.tracking == true & this.state.submitted == false) {
+      Alert.alert('No need to check in You will be checked in Automatically')
+    } else if (this.state.submitted === false) {
       this.setState({ submittedAnimation: true });
       try {
         //get location
@@ -336,7 +408,7 @@ if (this.props.reducer.playgroundId === ''){
           //show checkin as done
 
           this.setState({ submitted: true });
-        } else {
+        } else if (distance > this.state.proximityMax & this.props.reducer.tracking == false ) {
           //console.log('something went wrong');
           Alert.alert("Please move closer to your site and try again.");
         }
@@ -375,7 +447,7 @@ await fetch(
 
 
 
-  this.setState({ submittedAnimation: false });
+      this.setState({ submittedAnimation: false });
       this.setState({ submitted: false });
 
       Alert.alert(
@@ -384,7 +456,7 @@ await fetch(
     }
   };
 
-  cancelPrecheck =async()=>{
+  cancelPrecheck = async () => {
 
 
     Alert.alert(
@@ -420,16 +492,16 @@ await fetch(
 
   }
 
-  playgroudAlert = () =>{
+  playgroudAlert = () => {
     Alert.alert('Select a Court First!')
 
   }
 
-  submittedAlert = () =>{
+  submittedAlert = () => {
     Alert.alert('Cant Pre-Check While Still Playing!')
   }
 
-  
+
 
 
 
@@ -442,41 +514,42 @@ await fetch(
     return (
       <React.Fragment>
 
-<Header style = {{backgroundColor:'#5cb85c',height: 70, paddingTop:0}}>
-        <Left>
-        <Title style = {{color:'white', fontSize: 30}}>Home</Title>
+        <Header style={{ backgroundColor: '#5cb85c', height: 70, paddingTop: 0 }}>
+          <Left>
+            <Title style={{ color: 'white', fontSize: 30 }}>Home</Title>
           </Left>
 
           <Right>
-          <TouchableOpacity onPress = {this.logout}>
-          <MaterialCommunityIcons name="exit-run" size={30} color="white" />
-          </TouchableOpacity>
+            <TouchableOpacity onPress={this.logout}>
+              <MaterialCommunityIcons name="exit-run" size={30} color="white" />
+            </TouchableOpacity>
           </Right>
         </Header>
 
         {/* <PageTemplate title={"Home"} logout={this.logout} /> */}
         <View style={styles.container}>
           <Button style={styles.bubble} onPress={() => {
-                  this.props.onModalOne()}}>
-        
-        <Text style = {{color:'white', fontWeight:'bold', fontSize:18}}>Courts </Text>
+            this.props.onModalOne()
+          }}>
+
+            <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 18 }}>Courts </Text>
             <MaterialCommunityIcons name="target" size={32} color="white" />
-           
-          
-          
+
+
+
           </Button>
 
-          <Button style ={{position: "absolute", top: "3%", right:'6%',borderRadius:55, height:55, width:55}}
-                    full
-                    rounded
-                    success
-                    onPress={onShare}
-                    >
+          <Button style={{ position: "absolute", top: "3%", right: '6%', borderRadius: 55, height: 55, width: 55 }}
+            full
+            rounded
+            success
+            onPress={onShare}
+          >
 
-<Entypo name="share" size={28} color="white" />
-                    </Button>
-          
-      
+            <Entypo name="share" size={28} color="white" />
+          </Button>
+
+
 
           <View style={styles.container}>
             <TouchableOpacity
@@ -504,12 +577,12 @@ await fetch(
               {this.state.submitted == false ? (
                 <Entypo name="location" size={60} color="white" />
               ) : (
-                //<Entypo name="check" size={70} color="white" />
-                <MaterialCommunityIcons name="exit-run" size={60} color="white" />
-              )}
+                  //<Entypo name="check" size={70} color="white" />
+                  <MaterialCommunityIcons name="exit-run" size={60} color="white" />
+                )}
               {this.state.submitted == false ? (
-              <Text style = {{color:'white', fontSize:15}}>Check In</Text>)
-              : ( <Text style = {{color:'white', fontSize:15}}>Check Out</Text>
+                <Text style={{ color: 'white', fontSize: 15 }}>Check In</Text>)
+                : (<Text style={{ color: 'white', fontSize: 15 }}>Check Out</Text>
                 )}
             </TouchableOpacity>
             {/*<ImageBackground source={background} style={styles.image}> </ImageBackground>*/}
@@ -554,54 +627,54 @@ await fetch(
                 />
               </Animatable.View>
             ) : (
-              <Animatable.View animation="zoomOut">
-                <Animated.Image
-                  source={background}
-                  resizeMode="cover"
-                  style={{
-                    zIndex: 0,
-                    justifyContent: "center",
-                    width: 70,
-                    height: 70,
-                    opacity: 0.2,
-                    transform: [
-                      {
-                        translateX: this.state.animatedValue.interpolate({
-                          inputRange: [0, 70],
-                          outputRange: [0, 1],
-                        }),
-                      },
-                      {
-                        translateY: this.state.animatedValue.interpolate({
-                          inputRange: [0, 70],
-                          outputRange: [0, 1],
-                        }),
-                      },
-                      {
-                        scaleX: this.state.animatedValue.interpolate({
-                          inputRange: [1, 15],
-                          outputRange: [0, 1],
-                        }),
-                      },
-                      {
-                        scaleY: this.state.animatedValue.interpolate({
-                          inputRange: [1, 15],
-                          outputRange: [0, 1],
-                        }),
-                      },
-                    ],
-                  }}
-                />
-              </Animatable.View>
-            )}
+                <Animatable.View animation="zoomOut">
+                  <Animated.Image
+                    source={background}
+                    resizeMode="cover"
+                    style={{
+                      zIndex: 0,
+                      justifyContent: "center",
+                      width: 70,
+                      height: 70,
+                      opacity: 0.2,
+                      transform: [
+                        {
+                          translateX: this.state.animatedValue.interpolate({
+                            inputRange: [0, 70],
+                            outputRange: [0, 1],
+                          }),
+                        },
+                        {
+                          translateY: this.state.animatedValue.interpolate({
+                            inputRange: [0, 70],
+                            outputRange: [0, 1],
+                          }),
+                        },
+                        {
+                          scaleX: this.state.animatedValue.interpolate({
+                            inputRange: [1, 15],
+                            outputRange: [0, 1],
+                          }),
+                        },
+                        {
+                          scaleY: this.state.animatedValue.interpolate({
+                            inputRange: [1, 15],
+                            outputRange: [0, 1],
+                          }),
+                        },
+                      ],
+                    }}
+                  />
+                </Animatable.View>
+              )}
           </View>
-          <View><Text style = {{fontSize: 24,fontStyle: 'italic'}}>{this.props.reducer.playgroundName}</Text></View>
+          <View><Text style={{ fontSize: 24, fontStyle: 'italic' }}>{this.props.reducer.playgroundName}</Text></View>
 
           <Button
             style={{
               margin: 10,
               backgroundColor:
-              this.props.reducer.preCheckStatus == false ? "#ebf2f2" : '#5cb85c',
+                this.props.reducer.preCheckStatus == false ? "#ebf2f2" : '#5cb85c',
               shadowColor: "black", // IOS
               shadowOffset: { height: 4, width: 0 }, // IOS
               shadowOpacity: 0.4, // IOS
@@ -610,17 +683,17 @@ await fetch(
             full
             rounded
             onPress={
-              this.props.reducer.playgroundId === ''? this.playgroudAlert:
-              this.state.submitted === true?this.submittedAlert:
-              this.props.reducer.preCheckStatus == false?
-              this.props.onModalTwo:this.cancelPrecheck}
+              this.props.reducer.playgroundId === '' ? this.playgroudAlert :
+                this.state.submitted === true ? this.submittedAlert :
+                  this.props.reducer.preCheckStatus == false ?
+                    this.props.onModalTwo : this.cancelPrecheck}
           >
             {this.props.reducer.preCheckStatus == false ?
-            <Text style={{ color: "black", fontWeight: "bold" }}>
-              Pre-CheckIn
-            </Text> : 
-            <Text style={{ color: "white", fontWeight: "bold" }}>
-              Cancel PreCheck
+              <Text style={{ color: "black", fontWeight: "bold" }}>
+                Pre-CheckIn
+            </Text> :
+              <Text style={{ color: "white", fontWeight: "bold" }}>
+                Cancel PreCheck
             </Text>}
           </Button>
 
@@ -635,9 +708,9 @@ await fetch(
             </View>
           )}
         </View>
-        <PlaygroundModal checkIfChecked = {() => this.checkedIn()} checkIfPreChecked = {() => this.preCheckedIn()}/>
-        
-        <PreCheckModal/>
+        <PlaygroundModal checkIfChecked={() => this.checkedIn()} checkIfPreChecked={() => this.preCheckedIn()} />
+
+        <PreCheckModal />
       </React.Fragment>
     );
   }
@@ -646,20 +719,22 @@ await fetch(
 
 
 const mapStateToProps = (state) => {
-    
+
   const { reducer } = state
   return { reducer }
 };
 
 const mapDispachToProps = dispatch => {
   return {
-    setEmailData: (y) => dispatch({ type: "SET_EMAIL_DATA", value: y}),
-    setUserData: (y) => dispatch({ type: "SET_USER_DATA", value: y}),
-    
-    onModalOne: () => dispatch({ type: "CLOSE_MODAL_1", value: true}),
-    onModalTwo: () => dispatch({ type: "CLOSE_MODAL_2", value: true}),
-    cancelPreCheck: () => dispatch({ type: "CANCEL_PRECHECK", value: false}),
-    storePreCheck: () => dispatch({ type: "STORE_PRECHECK", value: true})
+    setEmailData: (y) => dispatch({ type: "SET_EMAIL_DATA", value: y }),
+    setUserData: (y) => dispatch({ type: "SET_USER_DATA", value: y }),
+    onModalOne: () => dispatch({ type: "CLOSE_MODAL_1", value: true }),
+    onModalTwo: () => dispatch({ type: "CLOSE_MODAL_2", value: true }),
+    cancelPreCheck: () => dispatch({ type: "CANCEL_PRECHECK", value: false }),
+    storePreCheck: () => dispatch({ type: "STORE_PRECHECK", value: true }),
+    setTracking: (y) => dispatch({ type: "TRACKING", value: y }),
+    storePlayground: (name, id, lat, lon) => dispatch({ type: "STORE_PLAYGROUND", value: name, value1: id, value2: lat, value3: lon })
+
   };
 };
 

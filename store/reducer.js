@@ -16,6 +16,7 @@ preCheckStatus: false,
 userInfo:null,
 reportModal: false,
 userId:[],
+tracking: true,
 checkIns:[],
 preCheckIns:[]
 };
@@ -25,6 +26,12 @@ const ourReducer = (state = INITIAL_STATE, action) => {
 
   switch (action.type) {
 
+    case "TRACKING":
+                      return{
+                        ...state,
+                        tracking: action.value
+                      }
+                    break;
     
     case "MODAL_REPORT":
       return{
