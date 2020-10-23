@@ -36,7 +36,7 @@ class AddGroup extends Component {
         
         fetch(
             // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
-            `${global.x}/addGroup?admin_id=${this.props.reducer.userId[3]}&playground_id=${this.props.reducer.playgroundId}&group_name=${this.state.name}&password=${this.state.password}&member=${this.props.reducer.userId[3]}&waiting=${this.props.reducer.userId[3]+ 'Admin'}`,
+            `${global.x}/addGroup?admin_id=${this.props.reducer.userId[3]}&playground_id=${this.props.reducer.playgroundId}&group_name=${this.state.name}&password=${this.state.password}&member=${this.props.reducer.userId[3]}&waiting=${this.props.reducer.userId[3]}`,
             { method: "POST" }
           ).catch((error) => {
             console.log(error)

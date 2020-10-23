@@ -16,7 +16,9 @@ preCheckStatus: false,
 userInfo:null,
 reportModal: false,
 userId:[],
-tracking: true
+tracking: true,
+checkIns:[],
+preCheckIns:[]
 };
 
 const ourReducer = (state = INITIAL_STATE, action) => {

@@ -62,10 +62,11 @@ class Profile extends Component {
 
 
   componentDidMount() {
-    console.log(this.props.reducer.isAnanimous)
+   
     this.readUserData()
 
   }
+
 
   // getCheckinData =() => {
 
@@ -179,9 +180,12 @@ class Profile extends Component {
           </Left>
 
           <Right>
-            <TouchableOpacity onPress={this.logout}>
-              <MaterialCommunityIcons name="exit-run" size={30} color="white" />
-            </TouchableOpacity>
+          <TouchableOpacity onPress={this.readUserData}>
+          <MaterialCommunityIcons name="refresh" size={30} color="white" />
+          </TouchableOpacity>
+          <TouchableOpacity onPress = {this.logout}>
+          <MaterialCommunityIcons name="exit-run" size={30} color="white" />
+          </TouchableOpacity>
           </Right>
         </Header>
         <Content padder>

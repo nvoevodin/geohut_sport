@@ -14,7 +14,9 @@ class YourGroup extends Component {
     
 
             submittedAnimation: false,
-            members:["none here"]
+            members:["none here"],
+            waitlist:["none here"],
+            changedState: false
         
         
     }
@@ -23,14 +25,21 @@ class YourGroup extends Component {
 
         console.log('first skometing')
         this.getMembers()
-          
+        this.getWaitlist()
       }
 
-      componentDidUpdate(prevProps) {
+      componentDidUpdate(prevProps, prevState) {
         // Typical usage (don't forget to compare props):
-        if (this.props.id !== prevProps.id) {
+        if (this.props.id !== prevProps.id || prevState.changedState !== this.state.changedState) {
             this.getMembers()
+            this.getWaitlist()
         }
+      }
+
+
+      refreshPage = () =>{
+        this.getMembers()
+        this.getWaitlist()
       }
 
 
@@ -42,10 +51,12 @@ class YourGroup extends Component {
         .then((res) => res.json())
         .then((res) => {
 
+       
+
           fetch(`${global.x}/get_users/${res.data[0]["JSON_EXTRACT(members, '$')"]}`)
           .then((res) => res.json())
           .then((res) => {
-              console.log(res.data)
+              //console.log(res.data)
           this.setState({members:res.data})
           
           
@@ -61,6 +72,7 @@ class YourGroup extends Component {
       }
 
       getWaitlist = () =>{
+        console.log('calling waitlist')
         fetch(`${global.x}/get_group_members/${this.props.id}`)
         .then((res) => res.json())
         .then((res) => {
@@ -68,8 +80,8 @@ class YourGroup extends Component {
           fetch(`${global.x}/get_users/${res.data[0]["JSON_EXTRACT(waiting, '$')"]}`)
           .then((res) => res.json())
           .then((res) => {
-              console.log(res.data)
-          this.setState({members:res.data})
+             
+          this.setState({waitlist:res.data})
           
           
           }).catch((error) => {
@@ -84,15 +96,48 @@ class YourGroup extends Component {
       }
 
 
- 
+      addToGroup = (user_id) => {
+       fetch(
+          // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
+          `${global.x}/remove_from_waitlist?group_id=${this.props.id}&user_id=${user_id}`,
+          { method: "PUT" }
+        ).catch((error) => {
+          console.log(error)
+        })
+
+        fetch(
+          // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
+          `${global.x}/add_group_members?group_id=${this.props.id}&user_id=${user_id}`,
+          { method: "PUT" }
+        ).catch((error) => {
+          console.log(error)
+        })
+
+        alert('Added!')
+
+        this.setState({changedState: !this.state.changedState})
+
+
+      }
+
+      removeFromGroup = (user_id) => {
+        fetch(
+          // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
+          `${global.x}/remove_group_members?group_id=${this.props.id}&user_id=${user_id}`,
+          { method: "PUT" }
+        ).catch((error) => {
+          console.log(error)
+        })
+        alert('Removed!')
+        this.setState({changedState: !this.state.changedState})
+      }
 
 
 
 
   render() {
 
-    console.log(this.props.admin)
-      console.log(this.props.reducer.userId[3])
+
     return (
         <React.Fragment>
         <Modal
@@ -113,7 +158,7 @@ class YourGroup extends Component {
             <Title style = {{color:'black'}}>{this.props.title}</Title>
           </Body>
           <Right>
-            <TouchableOpacity onPress={this.getMembers}>
+            <TouchableOpacity onPress={this.refreshPage}>
           <MaterialCommunityIcons name="refresh" size={35} color="green" />
           </TouchableOpacity>
           </Right>
@@ -139,19 +184,47 @@ class YourGroup extends Component {
           <Tab tabStyle ={{backgroundColor: '#e3e8e6'}} activeTextStyle={{color: 'grey', fontWeight: 'bold', fontSize:18}} activeTabStyle={{backgroundColor: '#e3e8e6'}} textStyle={{color: 'grey', fontWeight: 'normal'}} heading="Admin">
 
 <List>
+<ListItem itemDivider>
+              <Text style ={{fontWeight:'bold',fontSize:18}}>Waitlist</Text>
+            </ListItem>   
+        {this.state.waitlist.map((object,index) =>
+
         
-        {this.state.members.map((object,index) =>
-          
+       
           <ListItem  key = {index}>
   <Left>
 <Text>{object['first_name'] +' '+ object['last_name']}</Text>
   </Left>
   <Right>
-    <TouchableOpacity onPress={() => {alert('Are you sure you want to remove this user from your group?')}}>
-  <AntDesign name="deleteuser" size={25} color="red" />
-  </TouchableOpacity>
+  {object['email'] === this.props.admin?<Text>Admin</Text>:
+    <TouchableOpacity 
+    onPress={() => this.addToGroup(object['email']) }
+    >
+<AntDesign name="adduser" size={30} color="green"/>  
+</TouchableOpacity>}
   </Right>
-  </ListItem>)}
+        </ListItem>)}
+        <ListItem itemDivider>
+              <Text style ={{fontWeight:'bold',fontSize:18}}>Members</Text>
+            </ListItem> 
+            {this.state.members.map((object,index) =>
+
+        
+       
+<ListItem  key = {index}>
+<Left>
+<Text>{object['first_name'] +' '+ object['last_name']}</Text>
+</Left>
+<Right>
+{object['email'] === this.props.admin?<Text>Admin</Text>:
+<TouchableOpacity 
+onPress={() => this.removeFromGroup(object['email']) }
+
+>
+<AntDesign name="deleteuser" size={30} color="red"/>  
+</TouchableOpacity>}
+</Right>
+</ListItem>)}
 
   </List>
 

@@ -92,7 +92,7 @@ class Groups extends Component {
         console.log(error)
       })
 
-      alert(`You joined ${name} group` )
+      alert(`You requested to join the ${name} group` )
       this.setState({joinedOrLeftGroup:!this.state.joinedOrLeftGroup})
 
     }
@@ -185,7 +185,7 @@ class Groups extends Component {
           
           <ListItem  key = {index}>
   <Left>
-  <TouchableOpacity style = {{flexDirection:'row'}} onPress = {() => {{object["password"] == '' || object['admin_id'] === this.props.reducer.userId[3]?this.selectGroup(object["group_name"], object["group_id"], object['admin_id']):alert("Private group.")}}}>
+  <TouchableOpacity style = {{flexDirection:'row'}} onPress = {() => {{object["password"] == '' || object['admin_id'] === this.props.reducer.userId[3] || JSON.parse(object.members).some(i => i === this.props.reducer.userId[3])?this.selectGroup(object["group_name"], object["group_id"], object['admin_id']):alert("Private group.")}}}>
 
 <Text>{object["group_name"]}</Text>
 </TouchableOpacity>
@@ -198,8 +198,8 @@ class Groups extends Component {
               <Text style = {{fontSize:18, fontWeight:'bold', color:'red'}}>Delete</Text>
             </TouchableOpacity>:
 JSON.parse(object.waiting).some(i => i === this.props.reducer.userId[3])?  
-  <TouchableOpacity onPress={() => {this.requested}}>
-              <Text style = {{fontSize:18, fontWeight:'bold', color:'blue'}}>Requested</Text>
+  <TouchableOpacity onPress={this.requested}>
+              <Text style = {{fontSize:18, fontWeight:'bold', color:'blue'}}>Waiting</Text>
             </TouchableOpacity>:
             JSON.parse(object.members).some(i => i === this.props.reducer.userId[3])?  
   <TouchableOpacity onPress={() => {this.leaveGroup(object["group_name"], object["group_id"])}}>
@@ -247,7 +247,11 @@ object["password"] == ''?
 
 <Right>
   
-{JSON.parse(object.members).some(i => i === this.props.reducer.userId[3])?  
+{object['admin_id'] === this.props.reducer.userId[3]?
+<TouchableOpacity onPress={() => {this.deleteGroup(object["group_id"])}}>
+              <Text style = {{fontSize:18, fontWeight:'bold', color:'red'}}>Delete</Text>
+            </TouchableOpacity>:
+            JSON.parse(object.members).some(i => i === this.props.reducer.userId[3])?  
   <TouchableOpacity onPress={() => {this.leaveGroup(object["group_name"], object["group_id"])}}>
               <Text style = {{fontSize:18, fontWeight:'bold', color:'red'}}>Leave</Text>
             </TouchableOpacity>:null}

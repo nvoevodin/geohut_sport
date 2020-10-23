@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { StyleSheet, Modal,Text } from 'react-native';
 import {Container,  Form, Input, Item, Button, Label} from 'native-base';
-import * as firebase from 'firebase';
-
+import AsyncStorage from '@react-native-community/async-storage';
+import { connect } from 'react-redux';
 
 
 class changeInfo extends Component {
@@ -12,19 +12,41 @@ class changeInfo extends Component {
     state = {
         firstName: '',
         lastName: ''
-    }  
+    }
     
-    submitInfo = (firstName,lastName,uid) => {
+    
+    
+    submitInfo = async (firstName,lastName,uid) => {
+
         console.log(firstName,lastName);
-        firebase.database().ref('UsersList/' + uid + '/info/').update({
-            firstName,
-            lastName
-        })
+        // firebase.database().ref('UsersList/' + uid + '/info/').update({
+        //     firstName,
+        //     lastName
+        // })
+
+       await fetch(
+            // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
+            `${global.x}/update_user_info?first_name=${firstName}&last_name=${lastName}&uid=${uid}`,
+            { method: "PUT" }
+          ).catch((error) => {
+            console.log(error)
+          })
+
+          try{
+          await  AsyncStorage.setItem('user_info', JSON.stringify([uid, firstName, lastName, this.props.reducer.userId[3]]))
+          console.log('as')
+          await this.props.storeUserId(uid, firstName, lastName, this.props.reducer.userId[3])
+        } catch (e) {
+          console.log(e)
+        }
+
+        alert('Name changed.')
           
           this.props.showModal()
     }
 
     render() {
+        console.log(this.props.reducer.userId[0])
         return (
         
             <Modal
@@ -65,7 +87,7 @@ class changeInfo extends Component {
                     full
                     rounded
                     success
-                    onPress={()=> this.submitInfo(this.state.firstName, this.state.lastName, firebase.auth().currentUser.uid)}>
+                    onPress={()=> this.submitInfo(this.state.firstName, this.state.lastName, this.props.reducer.userId[0])}>
 
                         <Text style = {{color:'white'}}>Submit</Text>
                     </Button>
@@ -93,8 +115,21 @@ class changeInfo extends Component {
     }
 }
 
-export default changeInfo;
-//onPress={this.forgotPassword(this.state.email)} 
+const mapStateToProps = (state) => {
+    
+    const { reducer } = state
+    return { reducer }
+  };
+  
+  const mapDispachToProps = dispatch => {
+    return {
+  
+      storeUserId: (id,fname,sname,email) => dispatch({ type: "STORE_USER_ID", value: id, value1:fname, value2:sname, value3:email})
+  
+    };
+  };
+  
+  export default connect(mapStateToProps, mapDispachToProps)(changeInfo);
 
 const styles = StyleSheet.create({
     
