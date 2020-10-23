@@ -61,10 +61,11 @@ alert("If you have any questions, would like to provide feedback, or would like 
 
 
   componentDidMount() {
-    console.log(this.props.reducer.isAnanimous)
+   
     this.readUserData()
     
   }
+
 
   // getCheckinData =() => {
   
@@ -142,6 +143,9 @@ question = () => {
           </Left>
 
           <Right>
+          <TouchableOpacity onPress={this.readUserData}>
+          <MaterialCommunityIcons name="refresh" size={30} color="white" />
+          </TouchableOpacity>
           <TouchableOpacity onPress = {this.logout}>
           <MaterialCommunityIcons name="exit-run" size={30} color="white" />
           </TouchableOpacity>

@@ -71,7 +71,7 @@ class Home extends Component {
 
 
 console.log(this.props.reducer.userId)
-
+console.log('new state')
 
     //CHECK IS USER IS VERIFIED
     if (firebase.auth().currentUser.emailVerified == false) {
@@ -111,7 +111,7 @@ console.log(this.props.reducer.userId)
 
 
   componentDidUpdate(prevProps){
-    if(prevProps.reducer.playgroundId !== this.props.reducer.playgroundId){
+    if(prevProps.reducer.playgroundId !== this.props.reducer.playgroundId || prevProps.reducer.userId[3] !== this.props.reducer.userId[3]){
       console.log('updating')
 
         //READS FROM FIREBASE AND SETS EMAIL AND WORKID IN REDUX
