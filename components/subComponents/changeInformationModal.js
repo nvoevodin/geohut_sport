@@ -13,6 +13,15 @@ class changeInfo extends Component {
         firstName: '',
         lastName: ''
     }
+
+
+    updateFName = (firstName) => {
+        this.setState({ firstName: firstName.trim() });
+      }
+    
+      updateLName = (lastName) => {
+        this.setState({ lastName: lastName.trim() });
+      }
     
     
     
@@ -46,7 +55,7 @@ class changeInfo extends Component {
     }
 
     render() {
-        console.log(this.props.reducer.userId[0])
+       
         return (
         
             <Modal
@@ -70,7 +79,7 @@ class changeInfo extends Component {
                         <Input
                         autoCorrect={false}
                         autoCapitalize='none'
-                        onChangeText={firstName => this.setState({ firstName })}
+                        onChangeText={(firstName) => this.updateFName(firstName)}
                     value={this.state.firstName}/>
                     </Item>
 
@@ -79,7 +88,7 @@ class changeInfo extends Component {
                         <Input
                         autoCorrect={false}
                         autoCapitalize='none'
-                        onChangeText={lastName => this.setState({ lastName })}
+                        onChangeText={(lastName) => this.updateFName(lastName)}
                     value={this.state.lastName}/>
                     </Item>
 

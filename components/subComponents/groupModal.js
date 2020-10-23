@@ -16,7 +16,9 @@ class YourGroup extends Component {
             submittedAnimation: false,
             members:["none here"],
             waitlist:["none here"],
-            changedState: false
+            changedState: false,
+            players:[],
+            preChecks:[]
         
         
     }
@@ -26,6 +28,7 @@ class YourGroup extends Component {
         console.log('first skometing')
         this.getMembers()
         this.getWaitlist()
+        this.getPlayersAndCourts()
       }
 
       componentDidUpdate(prevProps, prevState) {
@@ -34,6 +37,29 @@ class YourGroup extends Component {
             this.getMembers()
             this.getWaitlist()
         }
+      }
+
+
+      getPlayersAndCourts = () => {
+      
+        fetch(`${global.x}/players/${this.props.reducer.playgroundId}`)
+        .then((res) => res.json())
+        .then((res) => {
+            
+        this.setState({players:res.data})
+        }).catch((error) => {
+          console.log(error)
+        });
+    
+    
+        fetch(`${global.x}/pre_checks/${this.props.reducer.playgroundId}`)
+        .then((res) => res.json())
+        .then((res) => {
+            
+        this.setState({preChecks:res.data})
+        }).catch((error) => {
+          console.log(error)
+        });
       }
 
 
@@ -137,7 +163,7 @@ class YourGroup extends Component {
 
   render() {
 
-
+console.log(this.state)
     return (
         <React.Fragment>
         <Modal

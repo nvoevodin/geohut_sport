@@ -14,6 +14,27 @@ class SignUp extends Component {
     lastName: "",
   };
 
+
+  updateFName = (firstName) => {
+    this.setState({ firstName: firstName.trim() });
+  }
+
+  updateLName = (lastName) => {
+    this.setState({ lastName: lastName.trim() });
+  }
+
+  updateEmail = (email) => {
+    this.setState({ email: email.trim() });
+  }
+
+  updatePassword = (password) => {
+    this.setState({ password: password.trim() });
+  }
+
+
+
+
+
   // when a user signs up they will have a record added to the user table in realtime database
   addUser = (uid, firstName, lastName, email) => {
 
@@ -116,6 +137,8 @@ class SignUp extends Component {
   };
 
   render() {
+
+    
     
     return (
       <Container style={styles.container}>
@@ -130,7 +153,7 @@ class SignUp extends Component {
             <Label>First Name</Label>
             <Input
               autoCorrect={false}
-              onChangeText={(firstName) => this.setState({ firstName })}
+              onChangeText={(firstName) => this.updateFName(firstName)}
               
             />
           </Item>
@@ -140,7 +163,7 @@ class SignUp extends Component {
             <Input
               secureTextEntry={false}
               autoCorrect={false}
-              onChangeText={(lastName) => this.setState({ lastName })}
+              onChangeText={(lastName) => this.updateLName(lastName)}
               
             />
           </Item>
@@ -151,7 +174,7 @@ class SignUp extends Component {
             <Input
               autoCorrect={false}
               autoCapitalize="none"
-              onChangeText={(email) => this.setState({ email })}
+              onChangeText={(email) => this.updateEmail(email)}
               
             />
           </Item>
@@ -162,7 +185,7 @@ class SignUp extends Component {
               secureTextEntry={true}
               autoCorrect={false}
               autoCapitalize="none"
-              onChangeText={(password) => this.setState({ password })}
+              onChangeText={(password) => this.updatePassword(password)}
               
             />
           </Item>

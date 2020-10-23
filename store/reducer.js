@@ -15,9 +15,7 @@ isAnanimous: false,
 preCheckStatus: false,
 userInfo:null,
 reportModal: false,
-userId:[],
-checkIns:[],
-preCheckIns:[]
+userId:[]
 };
 
 const ourReducer = (state = INITIAL_STATE, action) => {
