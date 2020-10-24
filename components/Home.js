@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 
-
+import * as BackgroundFetch from 'expo-background-fetch';
 import { Button, Right, Left, Header, Title } from "native-base";
 
 import * as firebase from "firebase";
@@ -104,15 +104,17 @@ console.log('new state')
       console.log('location permissions are granted...')
     }
 
+    //BackgroundFetch.unregisterTaskAsync('TASK_FETCH_LOCATION');
+
     const asyncTracking = await AsyncStorage.getItem('vpAutoTracking');
     if (asyncTracking !== null) {
       // We have data!!
       //return asyncTracking
-      console.log('tracking status: ', asyncTracking)
+      console.log('TRACKING STATUS: ', asyncTracking)
       this.props.setTracking(JSON.parse(asyncTracking));
     } else {
       //this._storeTracking('vpAutoTracking', 'true')
-      console.log('HELLOOOOOO ITS EMPTTYYYYYYY')
+      console.log('TRACKING STATUS IS EMPTY')
       this.props.setTracking(true);
     }
 
@@ -179,7 +181,7 @@ console.log('new state')
 
       await Location.startLocationUpdatesAsync(TASK_FETCH_LOCATION, {
         accuracy: Location.Accuracy.Balanced,
-        timeInterval: 1000,
+        timeInterval: 10000,
         //distanceInterval: 1, // minimum change (in meters) betweens updates
         //deferredUpdatesInterval: 1000, // minimum interval (in milliseconds) between updates
         // foregroundService is how you get the task to be updated as often as would be if the app was open

@@ -8,8 +8,9 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
 //import Layout from '../constants/Layout';
 import AsyncStorage from '@react-native-community/async-storage';
-
+import * as BackgroundFetch from 'expo-background-fetch';
 import { connect } from 'react-redux';
+const TASK_FETCH_LOCATION = 'background-location-task';
 
 class Profile extends Component {
 
@@ -88,7 +89,7 @@ class Profile extends Component {
     } else {
       Alert.alert('Starting Automatic Background Tracking')
     }
-
+    BackgroundFetch.unregisterTaskAsync('TASK_FETCH_LOCATION');
     try {
       AsyncStorage.setItem('vpAutoTracking', JSON.stringify(!this.state.tracking))
     } catch (e) {
@@ -170,6 +171,9 @@ class Profile extends Component {
   question = () => {
     alert("If you are anonimous, your name will not be displayed in the CheckIn and Pre-CheckIn lists in the Players tab")
   }
+  questionLocation = () => {
+    alert("Permitting location tracking allows volleypal to check you in and out automatically. We do not store location data.")
+  }
   render() {
 
     return (
@@ -219,7 +223,7 @@ class Profile extends Component {
             </CardItem>
             <CardItem>
               <Left>
-                <Text style={styles.cartTitles}>Anonimous: </Text>
+                <Text style={styles.cartTitles}>Anonymous: </Text>
                 {this.state.isEnabled ? <Text>Yes</Text> : <Text>No</Text>}
                 <TouchableOpacity onPress={this.question}>
                   <AntDesign style={{ marginLeft: 10 }} name="questioncircleo" size={24} color="black" />
@@ -241,7 +245,7 @@ class Profile extends Component {
               <Left>
                 <Text style={styles.cartTitles}>Location Tracking: </Text>
                 {this.state.tracking ? <Text>Yes</Text> : <Text>No</Text>}
-                <TouchableOpacity onPress={this.question}>
+                <TouchableOpacity onPress={this.questionLocation}>
                   <AntDesign style={{ marginLeft: 10 }} name="questioncircleo" size={24} color="black" />
                 </TouchableOpacity>
               </Left>

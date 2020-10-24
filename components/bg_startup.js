@@ -221,14 +221,14 @@ export const configureBgTasks = ({ proximityMax, user, storePlayground, autoChec
       })
 
       //***TEMP SEND TO TABLE */  
-      let sqlStamp = moment().utcOffset('-0400').format("YYYY-MM-DD HH:mm:ss").substr(0,18)+'0';
-      fetch(
+      //let sqlStamp = moment().utcOffset('-0400').format("YYYY-MM-DD HH:mm:ss").substr(0,18)+'0';
+      //fetch(
         // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
-        `${global.x}/addTracking?datetime=${sqlStamp}&latitude=${locations[0].coords.latitude}&longitude=${locations[0].coords.longitude}`,
-        { method: "POST" }
-        ).catch((error) => {
-          console.log(error)
-        })
+      //  `${global.x}/addTracking?datetime=${sqlStamp}&latitude=${locations[0].coords.latitude}&longitude=${locations[0].coords.longitude}`,
+      //  { method: "POST" }
+      //  ).catch((error) => {
+      //    console.log(error)
+      //  })
     
        //using email and information check in or checkout
         //_retrieveData('email')

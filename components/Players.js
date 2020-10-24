@@ -11,6 +11,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 class Players extends Component {
 
+
     state = {
          players: [],
          preChecks: [],
