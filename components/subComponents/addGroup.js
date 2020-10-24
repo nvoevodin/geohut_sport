@@ -22,6 +22,15 @@ class AddGroup extends Component {
     }
 
 
+    courtName = (name) => {
+      this.setState({ name: name.trim() });
+    }
+
+    courtPassword = (password) => {
+      this.setState({ password: password.trim() });
+    }
+
+
     toggleSwitch = () => {
 
         
@@ -84,7 +93,7 @@ class AddGroup extends Component {
            <Text style = {{textAlign:'center',fontSize:20, marginTop:'10%', marginBottom:'3%'}}>Name</Text>
 
             <Textarea underline blurOnSubmit={true} placeholder='Name the group. Something like: Net Number 1.'
-            onChangeText={(name) => this.setState({ name })}
+            onChangeText={(name) => this.groupName(name)}
             />
 
 <Text style = {{textAlign:'center',fontSize:20, marginTop:'10%', marginBottom:'3%'}}>Password?</Text>
@@ -108,7 +117,7 @@ class AddGroup extends Component {
               autoCorrect={false}
               autoCapitalize="none"
               
-              onChangeText={(password) => this.setState({ password })}
+              onChangeText={(password) => this.groupName(password)}
               
             />
           </Item> }

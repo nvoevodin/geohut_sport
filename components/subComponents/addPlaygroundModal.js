@@ -21,6 +21,15 @@ class AddPlayground extends Component {
     }
 
 
+    courtName = (Name) => {
+      this.setState({ Name: Name.trim() });
+    }
+
+    courtAddress= (Address) => {
+      this.setState({ Address: Address.trim() });
+    }
+
+
     calculateDistance = (start_x,start_y, end_x,end_y, name) => {
       try {
         let distance = getDistance(
@@ -152,7 +161,7 @@ return(distance)
            <Text style = {{textAlign:'center',fontSize:20, marginTop:'10%', marginBottom:'3%'}}>Name</Text>
 
             <Textarea underline blurOnSubmit={true} placeholder='Name the playground. Use the most recognized name. Ex.: Central Park Beach Volleyball Playground'
-            onChangeText={(Name) => this.setState({ Name })}
+            onChangeText={(Name) => this.courtName(Name)}
             />
           
     
@@ -160,7 +169,7 @@ return(distance)
             <Text style = {{textAlign:'center',fontSize:20, marginTop:'10%', marginBottom:'3%'}}>Address</Text>
 
 <Textarea underline blurOnSubmit={true} placeholder='Use the closest known address to the playground. Ex.: Central Park West, New York, NY 10019'
-onChangeText={(Address) => this.setState({ Address })}
+onChangeText={(Address) => this.courtAddress(Address)}
 />
     
 

@@ -77,7 +77,15 @@ class Groups extends Component {
         console.log(error)
       })
 
-      alert(`You joined ${name} group` )
+      try {
+        this.props.setAnanimous(true)
+        AsyncStorage.setItem('anonimous', 'true')
+      } catch (e) {
+        console.log(e)
+        console.log('something wrong (storage)')
+      }
+
+      alert(`You joined ${name} group. You became anonimous to everybody outside of the groups that you join or request to join. You can turn this feature off in the Profile tab.` )
       this.setState({joinedOrLeftGroup:!this.state.joinedOrLeftGroup})
 
     }
@@ -92,7 +100,16 @@ class Groups extends Component {
         console.log(error)
       })
 
-      alert(`You requested to join the ${name} group` )
+
+      try {
+        this.props.setAnanimous(true)
+        AsyncStorage.setItem('anonimous', 'true')
+      } catch (e) {
+        console.log(e)
+        console.log('something wrong (storage)')
+      }
+
+      alert(`You requested to join the ${name} group. You became anonimous to everybody outside of the groups that you join or request to join. You can turn this feature off in the Profile tab.` )
       this.setState({joinedOrLeftGroup:!this.state.joinedOrLeftGroup})
 
     }
@@ -294,6 +311,7 @@ const mapStateToProps = (state) => {
 
   const mapDispachToProps = dispatch => {
     return {
+      setAnanimous: (x) => dispatch({ type: "SET_ANANIMOUS", value: x }),
       openAddPlaygroundModal: () => dispatch({ type: "OPEN_CLOSE_ADD_GROUP_MODAL", value: true}),
       openYourPlaygroundModal: (x) => dispatch({ type: "OPEN_CLOSE_YOUR_GROUP_MODAL", value: true})
      

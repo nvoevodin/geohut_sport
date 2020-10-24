@@ -129,11 +129,11 @@ class Help extends Component {
 
   var value = await AsyncStorage.getItem('anonimous')
   val = (value === 'true')
-  console.log(val + 'ttt')
+  
   try {
     this.props.setAnanimous(val)
   } catch (e) {
-    console.log('start screen 3')
+    
     console.log(e)}
  
 

@@ -69,6 +69,14 @@ class Profile extends Component {
   }
 
 
+  componentDidUpdate(prevProps, prevState) {
+    // Typical usage (don't forget to compare props):
+    if (prevProps.reducer.isAnanimous !== this.props.reducer.isAnanimous) {
+      this.readUserData()
+    }
+  }
+
+
   // getCheckinData =() => {
 
   //   fetch(`https://geohut.metis-data.site/historycheckins/${this.props.reducer.userInfo.workId}`)
@@ -117,7 +125,7 @@ class Profile extends Component {
 
     await AsyncStorage.getItem('user_info', (error, result) => {
       var res = JSON.parse(result)
-      console.log('lskjdfhgfdsgkdjlsflkdsjfgdsfg')
+      console.log('reading user data')
       try {
         this.setState({
           firstName: res[1],
@@ -175,7 +183,7 @@ class Profile extends Component {
     alert("Permitting location tracking allows volleypal to check you in and out automatically. We do not store location data.")
   }
   render() {
-
+    console.log(this.props.reducer.isAnanimous)
     return (
       <React.Fragment>
         <Header style={{ backgroundColor: '#5cb85c', height: 70, paddingTop: 0 }}>
@@ -224,7 +232,7 @@ class Profile extends Component {
             <CardItem>
               <Left>
                 <Text style={styles.cartTitles}>Anonymous: </Text>
-                {this.state.isEnabled ? <Text>Yes</Text> : <Text>No</Text>}
+                {this.props.reducer.isAnanimous ? <Text>Yes</Text> : <Text>No</Text>}
                 <TouchableOpacity onPress={this.question}>
                   <AntDesign style={{ marginLeft: 10 }} name="questioncircleo" size={24} color="black" />
                 </TouchableOpacity>
@@ -232,10 +240,10 @@ class Profile extends Component {
               <Right>
                 <Switch
                   trackColor={{ false: '#767577', true: '#81b0ff' }}
-                  thumbColor={this.state.isEnabled ? '#f5dd4b' : '#f4f3f4'}
+                  thumbColor={this.props.reducer.isAnanimous ? '#f5dd4b' : '#f4f3f4'}
                   ios_backgroundColor="#3e3e3e"
                   onValueChange={this.toggleSwitch}
-                  value={this.state.isEnabled}
+                  value={this.props.reducer.isAnanimous}
                 />
               </Right>
             </CardItem>

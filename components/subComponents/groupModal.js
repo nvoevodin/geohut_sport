@@ -4,7 +4,7 @@ import {Container, Header, Content, ListItem, List, Icon, Button, Left,Input, Bo
 import { connect } from 'react-redux';
 import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 import { AntDesign } from '@expo/vector-icons';
-
+import moment from "moment";
 
 
 
@@ -25,7 +25,7 @@ class YourGroup extends Component {
 
     componentDidMount() {
 
-        console.log('first skometing')
+      
         this.getMembers()
         this.getWaitlist()
         this.getPlayersAndCourts()
@@ -162,8 +162,8 @@ class YourGroup extends Component {
 
 
   render() {
-
 console.log(this.state)
+
     return (
         <React.Fragment>
         <Modal
@@ -193,14 +193,54 @@ console.log(this.state)
         <Tab tabStyle ={{backgroundColor: '#e3e8e6'}} activeTextStyle={{color: 'grey', fontWeight: 'bold', fontSize:18}} activeTabStyle={{backgroundColor: '#e3e8e6'}} textStyle={{color: 'grey', fontWeight: 'normal'}} heading="Members">
         
         <List>
+        <ListItem itemDivider>
+          <Left>
+          <Text style ={{fontWeight:'bold',fontSize:10}}>Player</Text>
+          </Left>
+          <Body>
+          <Text style ={{fontWeight:'bold',fontSize:10}}>Arriving</Text>
+          </Body>
+          <Right>
+          <Text style ={{fontWeight:'bold',fontSize:10}}>At Court</Text>
+          </Right>
+              
+            </ListItem>   
         
         {this.state.members.map((object,index) =>
+
+ 
           
           <ListItem  key = {index}>
   <Left>
-<Text>{object['first_name'] +' '+ object['last_name']}</Text>
+<Text style = {{fontSize:11}} >{object['first_name'] +' '+ object['last_name']}</Text>
   </Left>
-  </ListItem>)}
+
+  <Body>
+  {this.state.preChecks.map((x,j) =>
+
+   
+ 
+x['user_id'] === object['email']?  
+<Text style = {{fontSize:11}} key = {j}>{moment(x["pre_checkin_datetime"]).format('LT')}</Text>:null
+
+)}
+  </Body>
+  
+  <Right>
+  
+      
+  {this.state.players.map((x,j) =>
+
+   
+ 
+    x['user_id'] === object['email']?  
+  <Text style = {{fontSize:11}} key = {j}>{moment(x["checkin_datetime"]).format('LT')}</Text>:null
+   
+  )}
+
+  </Right>
+ 
+  </ListItem> )}
 
   </List>
 
