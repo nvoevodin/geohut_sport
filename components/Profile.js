@@ -248,8 +248,11 @@ class Profile extends Component {
               </Right>
             </CardItem>
 
-            {/**LOCATION TRACKING TOGGLE */}
-            <CardItem>
+        
+{/**
+ * 
+ * 
+ *   <CardItem>
               <Left>
                 <Text style={styles.cartTitles}>Location Tracking: </Text>
                 {this.state.tracking ? <Text>Yes</Text> : <Text>No</Text>}
@@ -267,6 +270,15 @@ class Profile extends Component {
                 />
               </Right>
             </CardItem>
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ */}        
+             
+          
           </Card>
 
           <Button style={{ margin: 10, marginTop: 40 }}
