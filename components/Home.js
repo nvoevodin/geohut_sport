@@ -119,15 +119,15 @@ console.log('new state')
     }
 
     //fire background tracking - user daya is pulled from local storage with backup being db
-    this.pullUserInfo().then(user => {
-      if (this.props.reducer.tracking == true) {
-        const { storePlayground } = this.props;
-        this.configureBackground(this.state.proximityMax ,user, storePlayground);
-        console.log('tracking reducer is TRUE!!!!!!!!')
-      } else {
-        console.log('tracking reducer is FALSE!!!')
-      }
-    });
+    //this.pullUserInfo().then(user => {
+    //  if (this.props.reducer.tracking == true) {
+    //    const { storePlayground } = this.props;
+    //    this.configureBackground(this.state.proximityMax ,user, storePlayground);
+    //    console.log('tracking reducer is TRUE!!!!!!!!')
+    //  } else {
+    //    console.log('tracking reducer is FALSE!!!')
+    //  }
+    //});
 
   }
 
