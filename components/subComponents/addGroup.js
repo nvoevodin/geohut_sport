@@ -22,15 +22,6 @@ class AddGroup extends Component {
     }
 
 
-    courtName = (name) => {
-      this.setState({ name: name.trim() });
-    }
-
-    courtPassword = (password) => {
-      this.setState({ password: password.trim() });
-    }
-
-
     toggleSwitch = () => {
 
         
@@ -45,7 +36,7 @@ class AddGroup extends Component {
         
         fetch(
             // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
-            `${global.x}/addGroup?admin_id=${this.props.reducer.userId[3]}&playground_id=${this.props.reducer.playgroundId}&group_name=${this.state.name}&password=${this.state.password}&member=${this.props.reducer.userId[3]}&waiting=${this.props.reducer.userId[3]}`,
+            `${global.x}/addGroup?admin_id=${this.props.reducer.userId[3]}&playground_id=${this.props.reducer.playgroundId}&group_name=${this.state.name.trim()}&password=${this.state.password.trim()}&member=${this.props.reducer.userId[3]}&waiting=${this.props.reducer.userId[3]}`,
             { method: "POST" }
           ).catch((error) => {
             console.log(error)
@@ -93,7 +84,7 @@ class AddGroup extends Component {
            <Text style = {{textAlign:'center',fontSize:20, marginTop:'10%', marginBottom:'3%'}}>Name</Text>
 
             <Textarea underline blurOnSubmit={true} placeholder='Name the group. Something like: Net Number 1.'
-            onChangeText={(name) => this.groupName(name)}
+            onChangeText={(name) => this.setState({ name })}
             />
 
 <Text style = {{textAlign:'center',fontSize:20, marginTop:'10%', marginBottom:'3%'}}>Password?</Text>
@@ -117,7 +108,7 @@ class AddGroup extends Component {
               autoCorrect={false}
               autoCapitalize="none"
               
-              onChangeText={(password) => this.groupName(password)}
+              onChangeText={(password) => this.setState({ password })}
               
             />
           </Item> }

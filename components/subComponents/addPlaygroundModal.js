@@ -120,7 +120,7 @@ return(distance)
 
   render() {
 
-  console.log(this.state.location)
+
       
     return (
         <React.Fragment>
