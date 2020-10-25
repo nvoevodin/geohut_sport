@@ -19,6 +19,41 @@ class Profile extends Component {
   }
 
 
+
+  deleteAccount = async () =>{
+
+    Alert.alert(
+      `Delete account.`,
+      `Are you sure you want to delete your account?`,
+      [
+        {
+          text: "No",
+          onPress: () => {
+    
+          },
+          style: "cancel"
+        },
+        { text: "Yes", onPress: () => {
+
+          this.logout()
+    
+          firebase.auth().currentUser.delete().then(function () {
+
+alert('You deleted your account.')
+
+            
+     
+          }).catch(function (error) {
+            console.error({error})
+          })
+        } }
+      ],
+      { cancelable: false }
+    );
+
+  }
+
+
   logout = () => {
     firebase.auth().signOut()
       .catch(error => console.log(error))
@@ -138,43 +173,9 @@ class Profile extends Component {
 
 
 
-
-    //firebase.database().ref('UsersList/'+ this.uid + '/info').once('value', snapshot => {
-
-    //let data = snapshot.val()
-
-
-
-
-    //     fetch(`https://geohut.metis-data.site/checkins/${this.props.reducer.userInfo.workId}`)
-    //     .then(res => res.json())
-    //     .then(res => {
-    //       console.log(res.data)
-
-    // this.setState({total:res.data[0]['total']})
-
-    //     }).catch(error => this.setState({totalWeek: 0}))
-
-
-
-
-    //     fetch(`https://geohut.metis-data.site/checkinsWeek/${this.props.reducer.userInfo.workId}`)
-    //     .then(res => res.json())
-    //     .then(res => {
-    //       console.log(res.data)
-    // this.setState({totalWeek:res.data[0]['count_ins']})
-
-    //     }).catch(error => {
-
-
-    //       this.setState({totalWeek: 0})})
-    //})
-
   }
 
-  // showHistory = () => {
-  //   this.setState({ showHistory : !this.state.showHistory })
-  // }
+
 
   question = () => {
     alert("If you are anonimous, your name will not be displayed in the CheckIn and Pre-CheckIn lists in the Players tab")
@@ -275,6 +276,14 @@ class Profile extends Component {
             primary
             onPress={this.showModal}>
             <Text style={{ color: 'white' }}>Change Info</Text>
+          </Button>
+
+          <Button style={{ margin: 10, marginTop: 40 }}
+            full
+            rounded
+            danger
+            onPress={this.deleteAccount}>
+            <Text style={{ color: 'white' }}>Delete My Account</Text>
           </Button>
 
 

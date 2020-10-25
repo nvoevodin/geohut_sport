@@ -1,5 +1,5 @@
 import * as TaskManager from 'expo-task-manager';
-import { Alert } from "react-native";
+
 import { getDistance } from "geolib";
 import { AsyncStorage } from 'react-native';
 //import * as firebase from "firebase";
@@ -59,7 +59,7 @@ const checkUserStatus = async (user_id) => {
   let response = await fetch(`${global.x}/checkincheck/${user_id}`)
     .then(res => res.json())
     .then(res => { 
-      console.log('res',res["data"]) 
+      //console.log('res',res["data"]) 
       return res["data"]
     })
     .catch((error) => {

@@ -235,11 +235,6 @@ console.log('new state')
 
   checkedIn = (email) => {
 
-    //firebase.database().ref('UsersList/'+ this.uid + '/info').once('value', snapshot => {
-
-    //let data = snapshot.val()
-
- 
 
     fetch(`${global.x}/checkincheck/${email}`)
     .then(res => res.json())
@@ -259,11 +254,6 @@ console.log('new state')
   }
 
   preCheckedIn = (email) => {
-
-    //firebase.database().ref('UsersList/'+ this.uid + '/info').once('value', snapshot => {
-
-    //let data = snapshot.val()
-
 
 
     fetch(`${global.x}/precheckcheck/${email}`)
@@ -289,9 +279,7 @@ console.log('new state')
 
   //FUNCTION: READS FIREBASE AND SETS DATA INTO REDUX
   readFireBase = (first_name, last_name, email) => {
-    //firebase.database().ref('UsersList/'+ this.uid + '/info').once('value', snapshot => {
 
-    //let data = snapshot.val()
     console.log('userid info: ', first_name)
     this.props.setUserData({
       firstName: first_name,

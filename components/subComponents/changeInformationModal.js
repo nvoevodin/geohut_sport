@@ -27,11 +27,6 @@ class changeInfo extends Component {
     
     submitInfo = async (firstName,lastName,uid) => {
 
-        console.log(firstName,lastName);
-        // firebase.database().ref('UsersList/' + uid + '/info/').update({
-        //     firstName,
-        //     lastName
-        // })
 
        await fetch(
             // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...

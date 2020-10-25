@@ -58,19 +58,6 @@ class SignUp extends Component {
       console.log('something wrong (storage)')
     }
 
-
-
-    firebase
-      .database()
-      .ref("UsersList/" + uid + "/info/")
-      .set({
-        
-        firstName,
-        lastName,
-        email,
-      })
-      .then((data) => {})
-      .catch((error) => {alert(error)});
   };
 
   //CHECKS EMAIL AGAINST ALLOWED USERS, CREATES NEW USER, ADDS USERS INFO TO FIREBASE, CHECKS FOR ERRORS
