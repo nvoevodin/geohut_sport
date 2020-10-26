@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {StyleSheet,Modal, TouchableOpacity, Alert} from 'react-native';
+import {StyleSheet,Modal, TouchableOpacity, Alert,View} from 'react-native';
 import {Container, Header, Content, List, ListItem, Icon, Button, Left,Right, Body, Title,Text, Tab, Tabs,TabHeading} from 'native-base';
 import { connect } from 'react-redux';
 import { Entypo } from '@expo/vector-icons';
@@ -199,10 +199,14 @@ class Groups extends Component {
           <List>
           
           {this.state.groups.map((object,index) =>
-          
-          <ListItem  key = {index}>
+
+
+          <View key = {index}>
+            {object["status"] === 'hidden' && JSON.parse(object.members).some(i => i !== this.props.reducer.userId[3])?null:
+          <ListItem  >
+            
   <Left>
-  <TouchableOpacity style = {{flexDirection:'row'}} onPress = {() => {{object["password"] == '' || object['admin_id'] === this.props.reducer.userId[3] || JSON.parse(object.members).some(i => i === this.props.reducer.userId[3])?this.selectGroup(object["group_name"], object["group_id"], object['admin_id']):alert("Private group.")}}}>
+  <TouchableOpacity style = {{flexDirection:'row'}} onPress = {() => {{object["status"] === 'private' || object['admin_id'] === this.props.reducer.userId[3] || JSON.parse(object.members).some(i => i === this.props.reducer.userId[3])?this.selectGroup(object["group_name"], object["group_id"], object['admin_id']):alert("Private group.")}}}>
 
 <Text>{object["group_name"]}</Text>
 </TouchableOpacity>
@@ -233,8 +237,8 @@ object["password"] == ''?
             </TouchableOpacity>}
 </Right>
 
-</ListItem>
-
+</ListItem>}
+</View>
 
 
 )}

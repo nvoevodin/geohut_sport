@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import {StyleSheet,Modal, TouchableOpacity,View,ActivityIndicator, Switch} from 'react-native';
-import {Container, Header, Content, Item, Label, Icon, Button, Left,Input, Body, Title,Text, Form,Textarea} from 'native-base';
+import {Container, Header, CheckBox, ListItem, Label, Icon, Button, Left,Input, Body, Title,Text, Form,Textarea} from 'native-base';
 import { connect } from 'react-redux';
-
+import { AntDesign } from '@expo/vector-icons';
 
 
 
@@ -16,12 +16,22 @@ class AddGroup extends Component {
             submittedAnimation: false,
             isEnabled: false,
             submittedAnimation: false,
-            password: ''
+            password: '',
+            status:'public'
         
         
     }
 
+    groupStatus = (x) =>{
+      this.setState({status:x})
 
+    }
+
+    question = () => {
+      alert("Select one of the three group types. 1) Public Group - anybody can join a public group or see who is in a public group. 2) Private Group - anybody can apply to join a private group, and it is up to the creator of the group to approve or deny access. Outsiders can not see who is in a private group. 3) Hidden Group - an invisible private group. Players can join hidden group only by invite from an admin.")
+    }
+
+    
     toggleSwitch = () => {
 
         
@@ -36,7 +46,7 @@ class AddGroup extends Component {
         
         fetch(
             // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
-            `${global.x}/addGroup?admin_id=${this.props.reducer.userId[3]}&playground_id=${this.props.reducer.playgroundId}&group_name=${this.state.name.trim()}&password=${this.state.password.trim()}&member=${this.props.reducer.userId[3]}&waiting=${this.props.reducer.userId[3]}`,
+            `${global.x}/addGroup?admin_id=${this.props.reducer.userId[3]}&playground_id=${this.props.reducer.playgroundId}&group_name=${this.state.name.trim()}&status=${this.state.status}&member=${this.props.reducer.userId[3]}&waiting=${this.props.reducer.userId[3]}&invited=${this.props.reducer.userId[3]}`,
             { method: "POST" }
           ).catch((error) => {
             console.log(error)
@@ -86,10 +96,52 @@ class AddGroup extends Component {
             <Textarea underline blurOnSubmit={true} placeholder='Name the group. Something like: Net Number 1.'
             onChangeText={(name) => this.setState({ name })}
             />
+                   { this.state.name < 4   && 
+          <Text style = {{color:'red', width: '80%', textAlign:'center', marginLeft: '10%'}}>Name is too short.</Text>
+          }  
 
-<Text style = {{textAlign:'center',fontSize:20, marginTop:'10%', marginBottom:'3%'}}>Password?</Text>
+<Text style = {{textAlign:'center',fontSize:20, marginTop:'10%', marginBottom:'5%'}}>Group Status</Text>
+<View style={{justiftyContent:"center", alignItems:"center"}}>
+<TouchableOpacity onPress={this.question}>
+                  <AntDesign name="questioncircleo" size={35} color="black" />
+                </TouchableOpacity>
+</View>
 
-<View style = {{flexDirection:'row'}}>
+<ListItem style ={{marginTop:'3%'}}>
+  <Left>
+  <TouchableOpacity onPress={() =>this.groupStatus('public')}>
+    <Text>Public Group</Text>
+    </TouchableOpacity>
+    </Left>
+<Body>
+{this.state.status === 'public'?<AntDesign name="check" size={24} color="green" />:null}
+</Body>
+
+</ListItem>
+<ListItem>
+  <Left>
+  <TouchableOpacity onPress={() =>this.groupStatus('private')}>
+    <Text>Private Group</Text>
+    </TouchableOpacity>
+    </Left>
+<Body>
+{this.state.status === 'private'?<AntDesign name="check" size={24} color="green" />:null}
+</Body>
+
+</ListItem>
+<ListItem>
+  <Left>
+  <TouchableOpacity onPress={() =>this.groupStatus('hidden')}>
+    <Text>Hidden Group</Text>
+    </TouchableOpacity>
+    </Left>
+<Body>
+{this.state.status === 'hidden'?<AntDesign name="check" size={24} color="green" />:null}
+</Body>
+
+</ListItem>
+
+{/* <View style = {{flexDirection:'row'}}>
     
 <Switch
         trackColor={{ false: '#767577', true: '#81b0ff' }}
@@ -119,7 +171,7 @@ class AddGroup extends Component {
          
        { (this.state.isEnabled && this.state.password.length < 4 )  && 
           <Text style = {{color:'red', width: '80%', marginLeft: '10%', marginTop: '2%'}}>Can be simple, but at least 4 characters.</Text>
-          } 
+          }  */}
 
 
           
@@ -136,6 +188,7 @@ onChangeText={(Address) => this.setState({ Address })}
           </Form>
 
 <Button style ={{margin: 10,marginTop:80}}
+disabled={this.state.name < 4?true:false}
                     full
                     rounded
                     success
