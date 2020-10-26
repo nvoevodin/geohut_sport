@@ -35,16 +35,30 @@ class Profile extends Component {
         },
         { text: "Yes", onPress: () => {
 
+          AsyncStorage.removeItem('user_info')
+
+          fetch(
+            // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
+            `${global.x}/delete_user?uid=${this.props.reducer.userId[0]}`,
+            { method: "DELETE" }
+          ).catch((error) => {
+            console.log(error)
+          })
+
           this.logout()
     
           firebase.auth().currentUser.delete().then(function () {
+
+
+            
+
 
 alert('You deleted your account.')
 
             
      
           }).catch(function (error) {
-            console.error({error})
+            alert('Important action! Log into the app again and try one more time.')
           })
         } }
       ],
@@ -100,6 +114,8 @@ alert('You deleted your account.')
   componentDidMount() {
    
     this.readUserData()
+
+
 
   }
 
@@ -184,7 +200,7 @@ alert('You deleted your account.')
     alert("Permitting location tracking allows volleypal to check you in and out automatically. We do not store location data.")
   }
   render() {
-    console.log(this.props.reducer.isAnanimous)
+    
     return (
       <React.Fragment>
         <Header style={{ backgroundColor: '#5cb85c', height: 70, paddingTop: 0 }}>

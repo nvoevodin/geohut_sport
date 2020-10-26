@@ -154,6 +154,40 @@ class Groups extends Component {
       this.setState({joinedOrLeftGroup:!this.state.joinedOrLeftGroup})
     }
 
+
+    joinHiddenGroup = async (name,id) => {
+      console.log(this.props.reducer.userId[3])
+      fetch(
+        // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
+        `${global.x}/remove_from_invited?group_id=${id}&user_id=${this.props.reducer.userId[3]}`,
+        { method: "PUT" }
+      ).catch((error) => {
+        console.log(error)
+      })
+
+      fetch(
+        // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
+        `${global.x}/add_group_members?group_id=${id}&user_id=${this.props.reducer.userId[3]}`,
+        { method: "PUT" }
+      ).catch((error) => {
+        console.log(error)
+      })
+
+
+
+      try {
+        this.props.setAnanimous(true)
+        AsyncStorage.setItem('anonimous', 'true')
+      } catch (e) {
+        console.log(e)
+        console.log('something wrong (storage)')
+      }
+
+      alert(`You joined ${name} group. You became anonimous to everybody outside of the groups that you join or request to join. You can turn this feature off in the Profile tab.` )
+      this.setState({joinedOrLeftGroup:!this.state.joinedOrLeftGroup})
+
+    }
+
     
 
 
@@ -202,9 +236,10 @@ class Groups extends Component {
 
 
           <View key = {index}>
-            {object["status"] === 'hidden' && JSON.parse(object.members).some(i => i !== this.props.reducer.userId[3])?null:
-          <ListItem  >
-            
+            {(object["status"] == 'hidden' && JSON.parse(object.invited).some(i => i === this.props.reducer.userId[3])) || (object["status"] == 'hidden' && JSON.parse(object.members).some(i => i === this.props.reducer.userId[3])) || object["status"] != 'hidden'?
+         
+          <ListItem>
+
   <Left>
   <TouchableOpacity style = {{flexDirection:'row'}} onPress = {() => {{object["status"] === 'private' || object['admin_id'] === this.props.reducer.userId[3] || JSON.parse(object.members).some(i => i === this.props.reducer.userId[3])?this.selectGroup(object["group_name"], object["group_id"], object['admin_id']):alert("Private group.")}}}>
 
@@ -226,10 +261,14 @@ JSON.parse(object.waiting).some(i => i === this.props.reducer.userId[3])?
   <TouchableOpacity onPress={() => {this.leaveGroup(object["group_name"], object["group_id"])}}>
               <Text style = {{fontSize:18, fontWeight:'bold', color:'red'}}>Leave</Text>
             </TouchableOpacity>:
+                        JSON.parse(object.invited).some(i => i === this.props.reducer.userId[3])?  
+                        <TouchableOpacity onPress={() => {this.joinHiddenGroup(object["group_name"], object["group_id"])}}>
+              <Text style = {{fontSize:18, fontWeight:'bold', color:'green'}}>Join</Text>
+            </TouchableOpacity>:
 
 
 
-object["password"] == ''?
+object["password"] == 'public'?
   <TouchableOpacity onPress={() => {this.joinGroup(object["group_name"], object["group_id"])}}>
               <Text style = {{fontSize:18, fontWeight:'bold', color:'green'}}>Join</Text>
             </TouchableOpacity>:<TouchableOpacity onPress={() => {this.requestToJoin(object["group_name"], object["group_id"])}}>
@@ -237,7 +276,7 @@ object["password"] == ''?
             </TouchableOpacity>}
 </Right>
 
-</ListItem>}
+</ListItem>:null}
 </View>
 
 

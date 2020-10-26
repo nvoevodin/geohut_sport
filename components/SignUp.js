@@ -96,7 +96,7 @@ class SignUp extends Component {
                 );
                 Alert.alert(
                   "SUCCESS!",
-                  "We just emailed you a verification link.",
+                  "We just emailed you a verification link. It might take a few minutes to arrive into your mailbox. It might go into your spam sometimes.",
                   [{ text: "OK" }],
                   { cancelable: false }
                 )

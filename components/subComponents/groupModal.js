@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {StyleSheet,Modal, TouchableOpacity,View,ActivityIndicator, Switch} from 'react-native';
-import {Container, Header, Content, ListItem, List, Icon, Button, Left,Input, Body, Title,Text, Form,Textarea, Right,Tab,Tabs} from 'native-base';
+import {Container, Header, Content, ListItem, List, Icon, Button, Left,Input, Item, Label, Body, Title,Text, Form,Textarea, Right,Tab,Tabs} from 'native-base';
 import { connect } from 'react-redux';
 import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 import { AntDesign } from '@expo/vector-icons';
@@ -16,9 +16,12 @@ class YourGroup extends Component {
             submittedAnimation: false,
             members:["none here"],
             waitlist:["none here"],
+            invited:["none here"],
             changedState: false,
             players:[],
-            preChecks:[]
+            preChecks:[],
+            invitePrompt:false,
+            email:''
         
         
     }
@@ -28,6 +31,7 @@ class YourGroup extends Component {
       
         this.getMembers()
         this.getWaitlist()
+        this.getInvited()
         this.getPlayersAndCourts()
       }
 
@@ -36,6 +40,7 @@ class YourGroup extends Component {
         if (this.props.id !== prevProps.id || prevState.changedState !== this.state.changedState) {
             this.getMembers()
             this.getWaitlist()
+            this.getInvited()
         }
       }
 
@@ -66,6 +71,7 @@ class YourGroup extends Component {
       refreshPage = () =>{
         this.getMembers()
         this.getWaitlist()
+        this.getInvited()
       }
 
 
@@ -121,6 +127,30 @@ class YourGroup extends Component {
         });
       }
 
+      getInvited = () =>{
+        console.log('calling waitlist')
+        fetch(`${global.x}/get_group_members/${this.props.id}`)
+        .then((res) => res.json())
+        .then((res) => {
+
+          fetch(`${global.x}/get_users/${res.data[0]["JSON_EXTRACT(invited, '$')"]}`)
+          .then((res) => res.json())
+          .then((res) => {
+             
+          this.setState({invited:res.data})
+          
+          
+          }).catch((error) => {
+            console.log(error)
+          });
+            
+        //this.setState({members:JSON.parse(res.data[0]["JSON_EXTRACT(members, '$')"])})
+        
+        }).catch((error) => {
+          console.log(error)
+        });
+      }
+
 
       addToGroup = (user_id) => {
        fetch(
@@ -159,10 +189,36 @@ class YourGroup extends Component {
       }
 
 
+      openInvite = () => {
+        this.setState({invitePrompt:true})
+      }
+
+      sendInvite = () => {
+
+        fetch(
+          // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
+          `${global.x}/invite_group_members?group_id=${this.props.id}&user_id=${this.state.email}`,
+          { method: "PUT" }
+        ).catch((error) => {
+          console.log(error)
+        })
+
+        alert('Invited!')
+
+  
+
+        this.setState({invitePrompt:false})
+      }
+
+      updateEmail = (email) => {
+        this.setState({ email: email.trim() });
+      }
+
+
 
 
   render() {
-console.log(this.state)
+//console.log(this.state)
 
     return (
         <React.Fragment>
@@ -251,7 +307,70 @@ x['user_id'] === object['email']?
 
 <List>
 <ListItem itemDivider>
-              <Text style ={{fontWeight:'bold',fontSize:18}}>Waitlist</Text>
+  <Left>
+<Text style ={{fontWeight:'bold',fontSize:18}}>Invited</Text>
+  </Left>
+              
+              <TouchableOpacity onPress={this.openInvite}>
+    <Text style = {{color:'green', fontWeight:'bold', fontSize:18, marginRight:'2.6%'}}>Invite</Text>
+  </TouchableOpacity>
+
+  
+            </ListItem>  
+
+              {this.state.invitePrompt && 
+<ListItem>
+  <Left>
+  <Item floatingLabel>
+            <Label>Type an email here</Label>
+            <Input
+              secureTextEntry={false}
+              autoCorrect={false}
+              autoCapitalize="none"
+              onChangeText={(email) => this.updateEmail(email)}
+              
+            />
+
+          </Item>
+  </Left>
+
+ 
+  
+  <TouchableOpacity onPress={this.sendInvite}>
+  <Icon name='arrow-forward' style = {{color:'black'}}/>
+  </TouchableOpacity>
+</ListItem>
+  
+
+  
+
+
+     
+          } 
+        {this.state.invited.map((object,index) =>
+
+        
+       
+          <ListItem  key = {index}>
+  <Left>
+<Text>{object['first_name'] +' '+ object['last_name']}</Text>
+  </Left>
+  <Right>
+  {object['email'] === this.props.admin?<Text>Admin</Text>:null
+//     <TouchableOpacity 
+//     onPress={() => this.addToGroup(object['email']) }
+//     >
+// <AntDesign name="adduser" size={30} color="green"/>  
+// </TouchableOpacity>
+}
+  </Right>
+        </ListItem>)}
+<ListItem itemDivider>
+  
+  <Text style ={{fontWeight:'bold',fontSize:18}}>Waitlist</Text>
+  
+
+              
             </ListItem>   
         {this.state.waitlist.map((object,index) =>
 
