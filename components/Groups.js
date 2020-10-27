@@ -68,7 +68,7 @@ class Groups extends Component {
 
 
     joinGroup = async (name,id) => {
-      console.log(this.props.reducer.userId)
+     
       await fetch(
         // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
         `${global.x}/add_group_members?group_id=${id}&user_id=${this.props.reducer.userId[3]}`,
@@ -150,13 +150,13 @@ class Groups extends Component {
 
     changeState = () =>{
 
-      console.log('change state')
+ 
       this.setState({joinedOrLeftGroup:!this.state.joinedOrLeftGroup})
     }
 
 
     joinHiddenGroup = async (name,id) => {
-      console.log(this.props.reducer.userId[3])
+    
       fetch(
         // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
         `${global.x}/remove_from_invited?group_id=${id}&user_id=${this.props.reducer.userId[3]}`,

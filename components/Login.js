@@ -40,6 +40,8 @@ class Login extends Component {
       .then(() => {
         AsyncStorage.getItem('user_info', async (error, result) => {
           var res = JSON.parse(result) 
+console.log('storage')
+          console.log(res)
     
           // if(res !== null){
           //   console.log('login')
@@ -128,7 +130,21 @@ class Login extends Component {
                   console.log(error)
                 });
   
-              }
+              } else {
+
+                await fetch(`${global.x}/get_user/${firebase.auth().currentUser.uid}`)
+                .then((res) => res.json())
+                .then(async(res) => {
+      
+      
+                
+              
+                  try{
+                    
+                    this.props.storeUserId(res.data[0]["uid"],res.data[0]["first_name"], res.data[0]["last_name"], res.data[0]["email"])
+                  } catch (e){console.log(e)}
+
+              })}
       
            
             } catch(e){console.log(e)}
@@ -153,7 +169,6 @@ class Login extends Component {
 
     render(){
 
-        
         return (
             <Container style = {styles.container}>
                 <Form>

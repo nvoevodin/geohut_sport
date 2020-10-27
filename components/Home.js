@@ -64,8 +64,7 @@ class Home extends Component {
   async componentDidMount() {
 
 
-console.log(this.props.reducer.userId)
-console.log('new state')
+
 
     //CHECK IS USER IS VERIFIED
     if (firebase.auth().currentUser.emailVerified == false) {
@@ -78,7 +77,7 @@ console.log('new state')
       this.logout();
     }
 
-    console.log(this.props.reducer.userId)
+   
         this.readFireBase(this.props.reducer.userId[1],this.props.reducer.userId[2],this.props.reducer.userId[3]);
            //CHECKS IF ALREADY PRECHECKED IN
     this.preCheckedIn(this.props.reducer.userId[3]);
@@ -106,17 +105,17 @@ console.log('new state')
 
     //BackgroundFetch.unregisterTaskAsync('TASK_FETCH_LOCATION');
 
-    const asyncTracking = await AsyncStorage.getItem('vpAutoTracking');
-    if (asyncTracking !== null) {
-      // We have data!!
-      //return asyncTracking
-      console.log('TRACKING STATUS: ', asyncTracking)
-      this.props.setTracking(JSON.parse(asyncTracking));
-    } else {
-      //this._storeTracking('vpAutoTracking', 'true')
-      console.log('TRACKING STATUS IS EMPTY')
-      this.props.setTracking(true);
-    }
+    // const asyncTracking = await AsyncStorage.getItem('vpAutoTracking');
+    // if (asyncTracking !== null) {
+    //   // We have data!!
+    //   //return asyncTracking
+    //   console.log('TRACKING STATUS: ', asyncTracking)
+    //   this.props.setTracking(JSON.parse(asyncTracking));
+    // } else {
+    //   //this._storeTracking('vpAutoTracking', 'true')
+    //   console.log('TRACKING STATUS IS EMPTY')
+    //   this.props.setTracking(true);
+    // }
 
     //fire background tracking - user daya is pulled from local storage with backup being db
     //this.pullUserInfo().then(user => {
@@ -143,93 +142,94 @@ console.log('new state')
 
       //CHECKS IF ALREADY CHECKED IN
       this.checkedIn(this.props.reducer.userId[3]);
-    } else if (this.props.reducer.tracking == false & prevProps.reducer.tracking == true) {
-      console.log('stop tracking now')
-    } else if (this.props.reducer.tracking == true & prevProps.reducer.tracking == false) {
-      //fire background tracking - user daya is pulled from local storage with backup being db
-      this.pullUserInfo().then(user => {
-        if (this.props.reducer.tracking == true) {
-          const { storePlayground } = this.props;
-          this.configureBackground(this.state.proximityMax ,user, storePlayground);
-          console.log('tracking reducer is TRUE!!!!!!!!')
-        } else {
-          console.log('tracking reducer is FALSE!!!')
-        }
-      });
-    }
+    } 
+    // else if (this.props.reducer.tracking == false & prevProps.reducer.tracking == true) {
+    //   console.log('stop tracking now')
+    // } else if (this.props.reducer.tracking == true & prevProps.reducer.tracking == false) {
+    //   //fire background tracking - user daya is pulled from local storage with backup being db
+    //   this.pullUserInfo().then(user => {
+    //     if (this.props.reducer.tracking == true) {
+    //       const { storePlayground } = this.props;
+    //       this.configureBackground(this.state.proximityMax ,user, storePlayground);
+    //       console.log('tracking reducer is TRUE!!!!!!!!')
+    //     } else {
+    //       console.log('tracking reducer is FALSE!!!')
+    //     }
+    //   });
+    // }
 
   }
 
 
 
-  autoTrackingCheckin = () => {
-    console.log('passed function works!!!!!!!')
-    this.setState({ submitted: true });
-    //this.setState({ submittedAnimation: true })
-  }
+  // autoTrackingCheckin = () => {
+  //   console.log('passed function works!!!!!!!')
+  //   this.setState({ submitted: true });
+  //   //this.setState({ submittedAnimation: true })
+  // }
 
-  autoTrackingCheckout = () => {
-    console.log('passed function works!!!!!!!')
-    this.setState({ submitted: false });
-    //this.setState({ submittedAnimation: false })
-  }
+  // autoTrackingCheckout = () => {
+  //   console.log('passed function works!!!!!!!')
+  //   this.setState({ submitted: false });
+  //   //this.setState({ submittedAnimation: false })
+  // }
 
-  configureBackground = async (proximityMax ,user, storePlayground, autoCheckout = this.autoTrackingCheckout, autoCheckin = this.autoTrackingCheckin) => {
-    console.log('FIRING BACKGROUND...')
-    //start tracking in background
-    const startBackgroundUpdate = async () => {
+  // configureBackground = async (proximityMax ,user, storePlayground, autoCheckout = this.autoTrackingCheckout, autoCheckin = this.autoTrackingCheckin) => {
+  //   console.log('FIRING BACKGROUND...')
+  //   //start tracking in background
+  //   const startBackgroundUpdate = async () => {
 
-      await Location.startLocationUpdatesAsync(TASK_FETCH_LOCATION, {
-        accuracy: Location.Accuracy.Balanced,
-        timeInterval: 10000,
-        //distanceInterval: 1, // minimum change (in meters) betweens updates
-        //deferredUpdatesInterval: 1000, // minimum interval (in milliseconds) between updates
-        // foregroundService is how you get the task to be updated as often as would be if the app was open
-        foregroundService: {
-          notificationTitle: 'Using your location for VolleyPal',
-          notificationBody: 'To turn off, go back to the app and toggle tracking.',
-        },
-      });
+  //     await Location.startLocationUpdatesAsync(TASK_FETCH_LOCATION, {
+  //       accuracy: Location.Accuracy.Balanced,
+  //       timeInterval: 10000,
+  //       //distanceInterval: 1, // minimum change (in meters) betweens updates
+  //       //deferredUpdatesInterval: 1000, // minimum interval (in milliseconds) between updates
+  //       // foregroundService is how you get the task to be updated as often as would be if the app was open
+  //       foregroundService: {
+  //         notificationTitle: 'Using your location for VolleyPal',
+  //         notificationBody: 'To turn off, go back to the app and toggle tracking.',
+  //       },
+  //     });
 
 
-    }
+  //   }
 
-    setTimeout(function () {
-      try {
-        console.log('user info: ', user)
-        configureBgTasks({proximityMax ,user, storePlayground, autoCheckin, autoCheckout })
-        startBackgroundUpdate();
-      }
-      catch (error) {
-        console.log(error)
-      }
+  //   setTimeout(function () {
+  //     try {
+  //       console.log('user info: ', user)
+  //       configureBgTasks({proximityMax ,user, storePlayground, autoCheckin, autoCheckout })
+  //       startBackgroundUpdate();
+  //     }
+  //     catch (error) {
+  //       console.log(error)
+  //     }
 
-    }, 3000);
-  }
+  //   }, 3000);
+  // }
 
   //FUNCTION: GET USER DATA
-  pullUserInfo = async () => {
-    const value = await AsyncStorage.getItem('user_info').then(req => JSON.parse(req))
-    if (value !== null) {
-      return {
-        "email": value[3],
-        "first_name": value[1],
-        "last_name": value[2]
-      }
-    } else {
-      console.log('pulling information......')
-      let response = await fetch(`${global.x}/get_user/${firebase.auth().currentUser.uid}`)
-        .then(res => res.json())
-        .then(res => {
-          //console.log('res',res) 
-          return res["data"][0]
-        })
-        .catch((error) => {
-          console.log(error)
-        });
-      return response
-    }
-  }
+  // pullUserInfo = async () => {
+  //   const value = await AsyncStorage.getItem('user_info').then(req => JSON.parse(req))
+  //   if (value !== null) {
+  //     return {
+  //       "email": value[3],
+  //       "first_name": value[1],
+  //       "last_name": value[2]
+  //     }
+  //   } else {
+  //     console.log('pulling information......')
+  //     let response = await fetch(`${global.x}/get_user/${firebase.auth().currentUser.uid}`)
+  //       .then(res => res.json())
+  //       .then(res => {
+  //         //console.log('res',res) 
+  //         return res["data"][0]
+  //       })
+  //       .catch((error) => {
+  //         console.log(error)
+  //       });
+  //     return response
+  //   }
+  // }
 
 
 
@@ -358,11 +358,13 @@ console.log('new state')
 
     if (this.props.reducer.playgroundId === '') {
       Alert.alert("Select your court first.");
-    } else if (this.props.reducer.tracking == true & this.state.submitted == true) {
-      Alert.alert('No need to check out. You will be checked out Automatically')
-    } else if (this.props.reducer.tracking == true & this.state.submitted == false) {
-      Alert.alert('No need to check in You will be checked in Automatically')
-    } else if (this.state.submitted === false) {
+     } 
+    //else if (this.props.reducer.tracking == true & this.state.submitted == true) {
+    //   Alert.alert('No need to check out. You will be checked out Automatically')
+    // } else if (this.props.reducer.tracking == true & this.state.submitted == false) {
+    //   Alert.alert('No need to check in You will be checked in Automatically')
+    // } 
+    else if (this.state.submitted === false) {
       this.setState({ submittedAnimation: true });
       try {
         //get location
@@ -498,9 +500,7 @@ await fetch(
 
   render() {
 
-    console.log(this.props.reducer.userId)
 
-//console.log(this.state)
     return (
       <React.Fragment>
 

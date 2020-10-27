@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import {createBottomTabNavigator} from 'react-navigation-tabs'
 import { createAppContainer, createSwitchNavigator } from 'react-navigation';
 import { Ionicons } from '@expo/vector-icons';
-import { AntDesign } from '@expo/vector-icons'; 
+import { FontAwesome5 } from '@expo/vector-icons'; 
 
 import * as firebase from 'firebase';
 
@@ -96,8 +96,8 @@ const bottomTabNavigator = createBottomTabNavigator(
       screen: Players,
       navigationOptions: {
         tabBarIcon: ({ tintColor }) => (
-          // <Icon name="comments" size={25} color={tintColor} />
-          <Ionicons name="ios-people" size={25} color={tintColor} />
+          <FontAwesome5 name="volleyball-ball" size={23} color={tintColor} />
+          //<Ionicons name="ios-people" size={25} color={tintColor} />
         )
       }
     },
@@ -106,8 +106,8 @@ const bottomTabNavigator = createBottomTabNavigator(
       screen: Groups,
       navigationOptions: {
         tabBarIcon: ({ tintColor }) => (
-          // <Icon name="comments" size={25} color={tintColor} />
-          <AntDesign name="addusergroup" size={25} color={tintColor} />
+          <Ionicons name="md-people" size={25} color={tintColor} />
+         
           //<Ionicons name="ios-people" size={25} color={tintColor} />
         )
       }

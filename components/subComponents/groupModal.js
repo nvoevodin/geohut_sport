@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {StyleSheet,Modal, TouchableOpacity,View,ActivityIndicator, Switch} from 'react-native';
-import {Container, Header, Content, ListItem, List, Icon, Button, Left,Input, Item, Label, Body, Title,Text, Form,Textarea, Right,Tab,Tabs} from 'native-base';
+import {Container, Header, Content, ListItem, List, Icon, Button, Left,Input, Item, Label, Body, Title,Text, Right,Tab,Tabs} from 'native-base';
 import { connect } from 'react-redux';
 import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 import { AntDesign } from '@expo/vector-icons';
@@ -72,6 +72,7 @@ class YourGroup extends Component {
         this.getMembers()
         this.getWaitlist()
         this.getInvited()
+        this.getPlayersAndCourts()
       }
 
 
@@ -218,7 +219,7 @@ class YourGroup extends Component {
 
 
   render() {
-//console.log(this.state)
+console.log(this.state.players)
 
     return (
         <React.Fragment>

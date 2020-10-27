@@ -35,31 +35,41 @@ class Profile extends Component {
         },
         { text: "Yes", onPress: () => {
 
-          AsyncStorage.removeItem('user_info')
+         AsyncStorage.removeItem('user_info')
 
-          fetch(
-            // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
-            `${global.x}/delete_user?uid=${this.props.reducer.userId[0]}`,
-            { method: "DELETE" }
-          ).catch((error) => {
-            console.log(error)
-          })
+            fetch(
+              // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
+              `${global.x}/delete_user?uid=${this.props.reducer.userId[0]}`,
+              { method: "DELETE" }
+            ).catch((error) => {
+              console.log(error)
+            })
+
+
+          firebase.auth().currentUser.delete().then(function() {
+            alert('deleted')
+          }).catch(function(error) {
+            alert('error')
+          });
+
 
           this.logout()
+          
     
-          firebase.auth().currentUser.delete().then(function () {
+//           firebase.auth().currentUser.delete().then(function () {
+//             
 
 
-            
 
 
-alert('You deleted your account.')
+// alert('You deleted your account.')
 
             
      
-          }).catch(function (error) {
-            alert('Important action! Log into the app again and try one more time.')
-          })
+//           }).catch(function (error) {
+//             console.log(error)
+//             alert('Important action! Log into the app again and try one more time.')
+//           })
         } }
       ],
       { cancelable: false }
