@@ -167,7 +167,7 @@ console.log(this.state.reportar)
           
             <CardItem key = {index} style = {{flex:1}}>
               <Left>
-              <Text style = {{fontSize:11}}>{object["first_name"]} {object["last_name"]}</Text>  
+              <Text style = {{fontSize:11}}>{object["first_name"].trim()} {object["last_name"].trim()}</Text>  
               </Left>
               <Text style = {{fontSize:11}}>{moment(object["checkin_datetime"]).format('LT')}</Text>
               
@@ -203,9 +203,9 @@ console.log(this.state.reportar)
         
             <CardItem key = {index}>
               <Left>
-              <Text style = {{fontSize:11}} >{object["first_name"]} {object["last_name"]}</Text>  
+              <Text style = {{fontSize:11}} >{object["first_name"].trim()} {object["last_name"].trim()}</Text>  
               </Left>
-              <Right><Text style = {{fontSize:11}}>{moment(object["pre_checkin_datetime"]).format('LT')}</Text></Right>
+             <Text style = {{fontSize:11}}>{moment(object["pre_checkin_datetime"]).format('LT')}</Text>
               
             
               
