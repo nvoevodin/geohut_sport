@@ -31,17 +31,17 @@ const firebaseConfig ={
 firebase.initializeApp(firebaseConfig)
 
 
-global.x = 'http://192.168.2.10:3007'
-//global.x = 'https://volleybuddy.metis-data.site'
+//global.x = 'http://192.168.2.10:3007'
+global.x = 'https://volleybuddy.metis-data.site'
 
 
 import Home from './components/Home'
-import Help from './components/Help'
+//import Help from './components/Help'
 import Profile from './components/Profile'
 import Login from './components/Login'
 import SignUp from './components/SignUp'
 import StartScreen from './components/StartScreen'
-import PageTemplate from './components/subComponents/Header'
+//import PageTemplate from './components/subComponents/Header'
 import Players from './components/Players'
 import Groups from './components/Groups'
 
