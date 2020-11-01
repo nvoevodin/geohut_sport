@@ -241,7 +241,7 @@ class Groups extends Component {
           <ListItem>
 
   <Left>
-  <TouchableOpacity style = {{flexDirection:'row'}} onPress = {() => {{object["status"] === 'private' || object['admin_id'] === this.props.reducer.userId[3] || JSON.parse(object.members).some(i => i === this.props.reducer.userId[3])?this.selectGroup(object["group_name"], object["group_id"], object['admin_id']):alert("Private group.")}}}>
+  <TouchableOpacity style = {{flexDirection:'row'}} onPress = {() => {{object["status"] === 'public' || object['admin_id'] === this.props.reducer.userId[3] || JSON.parse(object.members).some(i => i === this.props.reducer.userId[3])?this.selectGroup(object["group_name"], object["group_id"], object['admin_id']):alert("Private group.")}}}>
 
 <Text>{object["group_name"]}</Text>
 </TouchableOpacity>
@@ -268,7 +268,7 @@ JSON.parse(object.waiting).some(i => i === this.props.reducer.userId[3])?
 
 
 
-object["password"] == 'public'?
+object["status"] == 'public'?
   <TouchableOpacity onPress={() => {this.joinGroup(object["group_name"], object["group_id"])}}>
               <Text style = {{fontSize:18, fontWeight:'bold', color:'green'}}>Join</Text>
             </TouchableOpacity>:<TouchableOpacity onPress={() => {this.requestToJoin(object["group_name"], object["group_id"])}}>
@@ -299,7 +299,7 @@ object["password"] == 'public'?
           <ListItem  key = {index}>
   <Left>
   {JSON.parse(object.members).some(i => i === this.props.reducer.userId[3])?
-  <TouchableOpacity style = {{flexDirection:'row'}} onPress = {() => {{object["password"] == ''?this.selectGroup(object["group_name"], object["group_id"], object['admin_id']):alert("Private group.")}}}>
+  <TouchableOpacity style = {{flexDirection:'row'}} onPress = {() => {{object["status"] == 'public'?this.selectGroup(object["group_name"], object["group_id"], object['admin_id']):alert("Private group.")}}}>
 
 <Text>{object["group_name"]}</Text>
 </TouchableOpacity>:null}

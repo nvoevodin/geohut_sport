@@ -14,7 +14,7 @@ import { Button, Right, Left, Header, Title } from "native-base";
 
 import * as firebase from "firebase";
 import { Entypo } from "@expo/vector-icons";
-
+import { FontAwesome5 } from '@expo/vector-icons';  
 
 
 import * as Permissions from 'expo-permissions';
@@ -26,9 +26,10 @@ import background from "../assets/background.png";
 import { connect } from "react-redux";
 import PlaygroundModal from "./subComponents/playgroundModal"
 import PreCheckModal from "./subComponents/preCheckModal"
+import WeatherReport from "./subComponents/weatherModal"
 import onShare from "./subComponents/shareButton"
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import notificationFunction from "./functions/notifications"
+//import notificationFunction from "./functions/notifications"
 
 //TRACKING - FAUSTO
 import { configureBgTasks } from './bg_startup';
@@ -64,7 +65,7 @@ class Home extends Component {
   async componentDidMount() {
 
 
-
+    //notificationFunction()
 
     //CHECK IS USER IS VERIFIED
     if (firebase.auth().currentUser.emailVerified == false) {
@@ -97,11 +98,11 @@ class Home extends Component {
     //this.startGeofence();
 
     //EXECUTES LOCATION PERMISSIONS
-    //this.getLocationsPermissions();
-    const { status } = await Location.requestPermissionsAsync();
-    if (status === 'granted') {
-      console.log('location permissions are granted...')
-    }
+    this.getLocationsPermissions();
+    // const { status } = await Location.requestPermissionsAsync();
+    // if (status === 'granted') {
+    //   console.log('location permissions are granted...')
+    // }
 
     //BackgroundFetch.unregisterTaskAsync('TASK_FETCH_LOCATION');
 
@@ -400,7 +401,9 @@ class Home extends Component {
           //show checkin as done
 
           this.setState({ submitted: true });
-        } else if (distance > this.state.proximityMax & this.props.reducer.tracking == false ) {
+        } else if (distance > this.state.proximityMax 
+          // & this.props.reducer.tracking == false 
+          ) {
           //console.log('something went wrong');
           Alert.alert("Please move closer to your site and try again.");
         }
@@ -495,7 +498,9 @@ await fetch(
 
 
 
-
+  onWeather = () =>{
+    this.props.onModalWeather()
+  }
 
 
   render() {
@@ -522,21 +527,31 @@ await fetch(
             this.props.onModalOne()
           }}>
 
-            <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 18 }}>Courts </Text>
-            <MaterialCommunityIcons name="target" size={32} color="white" />
+            <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>Courts </Text>
+            <MaterialCommunityIcons name="target" size={30} color="white" />
 
 
 
           </Button>
 
-          <Button style={{ position: "absolute", top: "3%", right: '6%', borderRadius: 55, height: 55, width: 55 }}
+          <Button style={{ position: "absolute", top: "3%", left: '5%', borderRadius: 50, height: 45, width: 'auto', padding: 8 }}
+            full
+            rounded
+            warning
+            onPress={()=>this.props.reducer.playgroundId?this.onWeather():alert('No court selected!')}
+          >
+<Text style={{ color: 'white', fontWeight: 'bold', fontSize: 13 }}>Weather </Text>
+<FontAwesome5 name={this.props.reducer.weather === 'Bad'?"frown":this.props.reducer.weather === 'Acceptable'?"meh":this.props.reducer.weather === 'Good'?"smile":this.props.reducer.weather === 'Perfect'?"grin-stars":"question-circle"} size={25} color="white" />
+          </Button>
+
+          <Button style={{ position: "absolute", top: "3%", right: '6%', borderRadius: 50, height: 45, width: 45 }}
             full
             rounded
             success
             onPress={onShare}
           >
 
-            <Entypo name="share" size={28} color="white" />
+            <Entypo name="share" size={25} color="white" />
           </Button>
 
 
@@ -550,8 +565,8 @@ await fetch(
                 borderColor: "rgba(0,0,0,0.2)",
                 alignItems: "center",
                 justifyContent: "center",
-                width: 170,
-                height: 170,
+                width: 155,
+                height: 155,
                 backgroundColor:
                   this.state.submitted == false ? '#5cb85c' : "#eb6e3d",
                 borderRadius: 100,
@@ -565,10 +580,10 @@ await fetch(
               onPress={this.handleButton}
             >
               {this.state.submitted == false ? (
-                <Entypo name="location" size={60} color="white" />
+                <Entypo name="location" size={45} color="white" />
               ) : (
                   //<Entypo name="check" size={70} color="white" />
-                  <MaterialCommunityIcons name="exit-run" size={60} color="white" />
+                  <MaterialCommunityIcons name="exit-run" size={45} color="white" />
                 )}
               {this.state.submitted == false ? (
                 <Text style={{ color: 'white', fontSize: 15 }}>Check In</Text>)
@@ -584,19 +599,19 @@ await fetch(
                   style={{
                     zIndex: 0,
                     justifyContent: "center",
-                    width: 70,
-                    height: 70,
+                    width: 65,
+                    height: 65,
                     opacity: 0.2,
                     transform: [
                       {
                         translateX: this.state.animatedValue.interpolate({
-                          inputRange: [0, 70],
+                          inputRange: [0, 65],
                           outputRange: [0, 1],
                         }),
                       },
                       {
                         translateY: this.state.animatedValue.interpolate({
-                          inputRange: [0, 70],
+                          inputRange: [0, 65],
                           outputRange: [0, 1],
                         }),
                       },
@@ -624,25 +639,25 @@ await fetch(
                     style={{
                       zIndex: 0,
                       justifyContent: "center",
-                      width: 70,
-                      height: 70,
+                      width: 65,
+                      height: 65,
                       opacity: 0.2,
                       transform: [
                         {
                           translateX: this.state.animatedValue.interpolate({
-                            inputRange: [0, 70],
+                            inputRange: [0, 65],
                             outputRange: [0, 1],
                           }),
                         },
                         {
                           translateY: this.state.animatedValue.interpolate({
-                            inputRange: [0, 70],
+                            inputRange: [0, 65],
                             outputRange: [0, 1],
                           }),
                         },
                         {
                           scaleX: this.state.animatedValue.interpolate({
-                            inputRange: [1, 15],
+                            inputRange: [1, 65],
                             outputRange: [0, 1],
                           }),
                         },
@@ -701,6 +716,7 @@ await fetch(
         <PlaygroundModal checkIfChecked={() => this.checkedIn()} checkIfPreChecked={() => this.preCheckedIn()} />
 
         <PreCheckModal />
+        <WeatherReport />
       </React.Fragment>
     );
   }
@@ -716,6 +732,7 @@ const mapStateToProps = (state) => {
 
 const mapDispachToProps = dispatch => {
   return {
+    onModalWeather: () => dispatch({ type: "MODAL_WEATHER", value: true}),
     setEmailData: (y) => dispatch({ type: "SET_EMAIL_DATA", value: y }),
     setUserData: (y) => dispatch({ type: "SET_USER_DATA", value: y }),
     onModalOne: () => dispatch({ type: "CLOSE_MODAL_1", value: true }),
@@ -762,13 +779,13 @@ const styles = StyleSheet.create({
     top: "-4.6%",
     alignItems: "center",
     justifyContent: "center",
-    width: "14%",
+    width: "16%",
     height: "9%",
-    marginLeft: "33%",
-    marginRight: "33%",
+    marginLeft: "32%",
+    marginRight: "32%",
     padding: 5,
     borderRadius: 50,
-    paddingBottom: 5,
+    //paddingBottom: 5,
     backgroundColor: "#4aa0cf",
     borderWidth: 3,
     borderColor: "white",

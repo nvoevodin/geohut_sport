@@ -15,8 +15,10 @@ isAnanimous: false,
 preCheckStatus: false,
 userInfo:null,
 reportModal: false,
+reportWeatherModal: false,
 userId:[],
-tracking: true
+tracking: true,
+weather:null
 };
 
 const ourReducer = (state = INITIAL_STATE, action) => {
@@ -35,6 +37,20 @@ const ourReducer = (state = INITIAL_STATE, action) => {
       return{
         ...state,
         reportModal: action.value,
+      }
+    break;
+
+    case "MODAL_WEATHER":
+      return{
+        ...state,
+        reportWeatherModal: action.value,
+      }
+    break;
+
+    case "SET_WEATHER":
+      return{
+        ...state,
+        weather: action.value,
       }
     break;
 

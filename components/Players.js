@@ -93,7 +93,7 @@ alertChecked = () => {
 // }
   render() {
 
-console.log(this.state.reportar)
+
       
     return (
       <Container>

@@ -1,9 +1,9 @@
 import {Notifications} from 'expo';
 import * as Permissions from 'expo-permissions';
-
+const moment = require("moment");
 const notificationFunction = async function() {
 
-    
+  await Permissions.getAsync(Permissions.NOTIFICATIONS)
 //console.log(moment.utc("2020-10-15T18:16:00").local().valueOf())
     const notification = {
         title: 'Hi there!',
@@ -13,13 +13,13 @@ const notificationFunction = async function() {
       };
       //moment.utc("2020-10-15T18:30:00").local().valueOf() + 10000
       const options = {
-        time: (new Date("2020-10-15T10:16:00")).getTime() + 10000, // Schedule it in 10 seconds
+        time: (new Date()).getTime() + 10000, // Schedule it in 10 seconds
         repeat: 'day', // Repeat it daily
       };
-      
+      //time: (new Date("2020-10-15T10:16:00")).getTime() + 10000, // Schedule it in 10 seconds
       // ... somewhere before scheduling notifications ...
-      const { status_notes } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
-      if (status_notes !== 'granted') {
+      let result = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+      if (result !== 'granted') {
 
         console.log('not granted')
         await Permissions.askAsync(Permissions.NOTIFICATIONS);
@@ -32,6 +32,7 @@ const notificationFunction = async function() {
         // foreground, you can listen to the event like this:
          Notifications.addListener(() => {
            console.log('triggered!');
+        
          });
 
 

@@ -11,7 +11,7 @@ class SignUp extends Component {
     password: "",
     errorMessage: null,
     firstName: "",
-    lastName: "",
+    lastName: ""
   };
 
 
@@ -97,9 +97,10 @@ class SignUp extends Component {
                 Alert.alert(
                   "SUCCESS!",
                   "We just emailed you a verification link. It might take a few minutes to arrive into your mailbox. It might go into your spam sometimes.",
-                  [{ text: "OK" }],
+                  [{ text: "OK", onPress: () => {this.props.navigation.navigate("StartScreen")} }],
                   { cancelable: false }
                 )
+                
               }
 
             })
@@ -199,7 +200,7 @@ class SignUp extends Component {
             full
             rounded
             primary
-            onPress={this.goBack}
+            onPress={() => this.goBack()}
           >
             <Text style={{ color: "white" }}>Go Back</Text>
           </Button>
