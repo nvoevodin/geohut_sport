@@ -20,20 +20,21 @@ const permissionNotFunc = async function() {
     return false;
   }
 
-  helpers.notificationFunction()
+  await helpers.notificationFunction()
 
 
-  // try {
-  //   AsyncStorage.setItem('notifications', JSON.stringify(true))
-  // } catch (e) {
-  //   console.log(e)
-  //   console.log('something wrong (storage)')
-  // }
+  try {
+    AsyncStorage.setItem('notifications', JSON.stringify(true))
+  } catch (e) {
+    console.log(e)
+    console.log('something wrong (storage)')
+  }
 
 
   console.log('granted')
   return true;
 };
+
 
 
 export default permissionNotFunc

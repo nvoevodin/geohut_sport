@@ -11,16 +11,21 @@ const helpers = {
             }),
           });
 
-         const trigger = Platform.OS === 'ios'?{
+          const trigger = {
+            seconds: 20,
+            repeats: true
+          }
+
+        //  const trigger = Platform.OS === 'ios'?{
             
-            repeats: true,
+        //     repeats: true,
             
       
-              hour: 11,
-              minute: 50
+        //       hour: 13,
+        //       minute: 13
         
             
-          }:{hour: 11,minute: 50,repeats: true,}
+        //   }:{hour: 13,minute: 13,repeats: true,}
 
           //const trigger = {hour: 11,minute: 13,repeats: true,};
 
@@ -36,7 +41,7 @@ const helpers = {
     cancelNotificationFunction: async function(){
         Notifications.cancelAllScheduledNotificationsAsync()
 
-        console.log('dismissed');
+        alert('Notifications Turned Off');
     }
 }
 

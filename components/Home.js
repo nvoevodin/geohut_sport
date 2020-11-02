@@ -34,7 +34,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 //TRACKING - FAUSTO
 import { configureBgTasks } from './bg_startup';
 const TASK_FETCH_LOCATION = 'background-location-task';
-
+import AsyncStorage from '@react-native-community/async-storage';
 const moment = require("moment");
 import PermissionNotFunc from './functions/notifications'
 
@@ -128,8 +128,14 @@ class Home extends Component {
     //    console.log('tracking reducer is FALSE!!!')
     //  }
     //});
-    const valu = await PermissionNotFunc();
-    console.log(valu)
+    
+    const firstNotif = await AsyncStorage.getItem('notifications')
+    if (firstNotif === null){
+      const valu = await PermissionNotFunc();
+    this.props.setNotifications(valu)
+    }
+
+    
 
   }
 
@@ -742,7 +748,8 @@ const mapDispachToProps = dispatch => {
     cancelPreCheck: () => dispatch({ type: "CANCEL_PRECHECK", value: false }),
     storePreCheck: () => dispatch({ type: "STORE_PRECHECK", value: true }),
     setTracking: (y) => dispatch({ type: "TRACKING", value: y }),
-    storePlayground: (name, id, lat, lon) => dispatch({ type: "STORE_PLAYGROUND", value: name, value1: id, value2: lat, value3: lon })
+    storePlayground: (name, id, lat, lon) => dispatch({ type: "STORE_PLAYGROUND", value: name, value1: id, value2: lat, value3: lon }),
+    setNotifications: (x) => dispatch({ type: "SET_NOTIFICATIONS", value: x }),
 
   };
 };

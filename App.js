@@ -4,7 +4,7 @@ import {createBottomTabNavigator} from 'react-navigation-tabs'
 import { createAppContainer, createSwitchNavigator } from 'react-navigation';
 import { Ionicons } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons'; 
-
+import { StatusBar } from 'expo-status-bar';
 import * as firebase from 'firebase';
 
 import { Provider } from 'react-redux';
@@ -73,6 +73,7 @@ export default class App extends Component {
     return (
       
       <Provider store={ store }>
+        <StatusBar hidden = {true} />
         <AppContainer/>
       </Provider>
     );

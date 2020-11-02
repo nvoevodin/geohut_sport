@@ -95,6 +95,20 @@ class Help extends Component {
   } catch (e) {
     
     console.log(e)}
+
+
+try{
+  var notificationStatus = await AsyncStorage.getItem('notifications')
+  val = (notificationStatus === 'true')
+  
+  try {
+    this.props.setNotifications(val)
+    console.log('notif set')
+  } catch (e) {
+    
+    console.log(e)}  
+} catch(e){console.log('no notif')}
+
  
 
 
@@ -194,6 +208,7 @@ const mapDispachToProps = dispatch => {
   return {
     storeUserId: (id,fname,sname,email) => dispatch({ type: "STORE_USER_ID", value: id, value1:fname, value2:sname, value3:email}),
     storePlayground: (name,id,lat,lon) => dispatch({ type: "STORE_PLAYGROUND", value: name,value1: id, value2:lat,value3:lon}),
+    setNotifications: (x) => dispatch({ type: "SET_NOTIFICATIONS", value: x }),
     setAnanimous: (x) => dispatch({ type: "SET_ANANIMOUS", value: x}),
 
   };

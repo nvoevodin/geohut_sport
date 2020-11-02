@@ -196,9 +196,9 @@ console.log('storage')
     render(){
 
       //new Date()).getTime() - moment(this.state.lastUpdated).valueOf() > 3560000
-      try{
-        console.log((new Date()).getTime() -moment(firebase.auth().currentUser.metadata.creationTime).valueOf())
-      }catch(e){console.log('not there')}
+      // try{
+      //   console.log((new Date()).getTime() -moment(firebase.auth().currentUser.metadata.creationTime).valueOf())
+      // }catch(e){console.log('not there')}
     
 
         return (

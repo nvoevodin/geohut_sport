@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { TouchableOpacity, StyleSheet, Text, View, Switch, Alert } from 'react-native';
 import { Button, Content, Card, CardItem, Body, Right, Left, Header, Title } from "native-base";
 import * as firebase from 'firebase';
-import PageTemplate from './subComponents/Header'
+
 import ChangeInfo from './subComponents/changeInformationModal'
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
@@ -10,6 +10,8 @@ import { AntDesign } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-community/async-storage';
 import * as BackgroundFetch from 'expo-background-fetch';
 import { connect } from 'react-redux';
+import helpers from './functions/localNotification'
+import PermissionNotFunc from './functions/notifications'
 const TASK_FETCH_LOCATION = 'background-location-task';
 
 class Profile extends Component {
@@ -125,6 +127,13 @@ class Profile extends Component {
     } catch (e) {
       console.log(e)
       console.log('something wrong (storage)')
+    }
+
+    if(this.state.isRunningNotification){
+      helpers.cancelNotificationFunction()
+    } else{
+      PermissionNotFunc();
+    //this.props.setNotifications(valu)
     }
 
   };
