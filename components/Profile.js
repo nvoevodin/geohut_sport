@@ -98,7 +98,8 @@ class Profile extends Component {
     showHistory: false,
     data: null,
     isEnabled: this.props.reducer.isAnanimous,
-    tracking: this.props.reducer.tracking
+    tracking: this.props.reducer.tracking,
+    isRunningNotification: this.props.reducer.isRunningNotification
   }
 
   toggleSwitch = () => {
@@ -107,6 +108,20 @@ class Profile extends Component {
     this.setState({ isEnabled: !this.state.isEnabled })
     try {
       AsyncStorage.setItem('anonimous', JSON.stringify(!this.state.isEnabled))
+    } catch (e) {
+      console.log(e)
+      console.log('something wrong (storage)')
+    }
+
+  };
+
+
+  toggleNotification = () => {
+
+    this.props.setNotifications(!this.state.isRunningNotification)
+    this.setState({ isRunningNotification: !this.state.isRunningNotification })
+    try {
+      AsyncStorage.setItem('notifications', JSON.stringify(!this.state.isRunningNotification))
     } catch (e) {
       console.log(e)
       console.log('something wrong (storage)')
@@ -275,6 +290,25 @@ class Profile extends Component {
               </Right>
             </CardItem>
 
+            <CardItem>
+              <Left>
+                <Text style={styles.cartTitles}>Notifications: </Text>
+                {this.props.reducer.isRunningNotification ? <Text>Yes</Text> : <Text>No</Text>}
+                <TouchableOpacity onPress={this.question}>
+                  <AntDesign style={{ marginLeft: 10 }} name="questioncircleo" size={24} color="black" />
+                </TouchableOpacity>
+              </Left>
+              <Right>
+                <Switch
+                  trackColor={{ false: '#767577', true: '#81b0ff' }}
+                  thumbColor={this.props.reducer.isRunningNotification ? '#f5dd4b' : '#f4f3f4'}
+                  ios_backgroundColor="#3e3e3e"
+                  onValueChange={this.toggleNotification}
+                  value={this.props.reducer.isRunningNotification}
+                />
+              </Right>
+            </CardItem>
+
         
 {/**
  * 
@@ -402,6 +436,7 @@ const mapStateToProps = (state) => {
 const mapDispachToProps = dispatch => {
   return {
     setAnanimous: (x) => dispatch({ type: "SET_ANANIMOUS", value: x }),
+    setNotifications: (x) => dispatch({ type: "SET_NOTIFICATIONS", value: x }),
     setTracking: (y) => dispatch({ type: "TRACKING", value: y})
   };
 };

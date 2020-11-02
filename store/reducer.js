@@ -18,7 +18,8 @@ reportModal: false,
 reportWeatherModal: false,
 userId:[],
 tracking: true,
-weather:null
+weather:null,
+isRunningNotification: false
 };
 
 const ourReducer = (state = INITIAL_STATE, action) => {
@@ -51,6 +52,13 @@ const ourReducer = (state = INITIAL_STATE, action) => {
       return{
         ...state,
         weather: action.value,
+      }
+    break;
+
+    case "SET_NOTIFICATIONS":
+      return{
+        ...state,
+        isRunningNotification: action.value,
       }
     break;
 

@@ -36,7 +36,7 @@ import { configureBgTasks } from './bg_startup';
 const TASK_FETCH_LOCATION = 'background-location-task';
 
 const moment = require("moment");
-import AsyncStorage from '@react-native-community/async-storage';
+import PermissionNotFunc from './functions/notifications'
 
 
 
@@ -128,6 +128,8 @@ class Home extends Component {
     //    console.log('tracking reducer is FALSE!!!')
     //  }
     //});
+    const valu = await PermissionNotFunc();
+    console.log(valu)
 
   }
 
