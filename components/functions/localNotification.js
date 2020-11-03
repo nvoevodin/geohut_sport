@@ -11,21 +11,21 @@ const helpers = {
             }),
           });
 
-          const trigger = {
-            seconds: 40,
-            repeats: true
-          }
+          // const trigger = {
+          //   seconds: 20,
+          //   repeats: true
+          // }
 
-        //  const trigger = Platform.OS === 'ios'?{
+         const trigger = Platform.OS === 'ios'?{
             
-        //     repeats: true,
+            repeats: true,
             
       
-        //       hour: 13,
-        //       minute: 13
+              hour: 11,
+              minute: 15
         
             
-        //   }:{hour: 13,minute: 13,repeats: true,}
+          }:{hour: 11,minute: 15,repeats: true,}
 
           //const trigger = {hour: 11,minute: 13,repeats: true,};
 
