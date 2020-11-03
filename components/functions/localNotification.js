@@ -12,7 +12,7 @@ const helpers = {
           });
 
           const trigger = {
-            seconds: 20,
+            seconds: 40,
             repeats: true
           }
 
