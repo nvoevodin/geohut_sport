@@ -7,7 +7,7 @@ import { AsyncStorage } from 'react-native';
 const TASK_FETCH_LOCATION = 'background-location-task';
 //const TASK_CHECK_GEOFENCE = 'TASK_CHECK_GEOFENCE';
 const moment = require("moment");
-const proximityMax = 1;
+const proximityMax = 250;
 
 // SEE IF A PERSON HAS CHECKED IN
 
@@ -90,10 +90,6 @@ const checkin = async (nearestSite, user_id, fname, lname, distance) => {
     } catch(error) {
       console.log(error);
     }
-
-   // } else {
-  //    console.log('too far from any site to check in')
-   // } 
 }
 
 //FUNCTION: HANDLE MAIN CHECKOUT
@@ -181,9 +177,10 @@ const _storeCourts = async (key,value) => {
 };
 
 
-export const configureBgTasks = ({ proximityMax, user, storePlayground, autoCheckin, autoCheckout }) => {
+export const configureBgTasks = ({ user, storePlayground, autoCheckin, autoCheckout, submitted }) => {
 
-  console.log('starting tracking...', user)
+  console.log('starting tracking...', user);
+  console.log('is this person checked in already?? ', submitted)
   //console.log('proximityMax is:', proximityMax)
   //checkUserStatus().then(res=>console.log('******',res))
  
@@ -233,7 +230,51 @@ export const configureBgTasks = ({ proximityMax, user, storePlayground, autoChec
        //using email and information check in or checkout
         //_retrieveData('email')
         //.then(user_id=>{
+
           map1.then(nearestSite => {
+            //using user data attempt to check in or checkout based on distance logic
+            //checkUserStatus(user.email)
+            //.then(res=>{
+              //condition 1. user is not signed in at a court and within proximityMax -->SIGN THEM IN
+              if (submitted===false & nearestSite.distance <= proximityMax ) {
+                //console.log(nearestSite.site_id, user_id, user.firstName, user.lastName, nearestSite.distance)
+                checkin(nearestSite.site_id, user.email, user.first_name, user.last_name, nearestSite.distance);
+                
+                //send value reducer - change color to check in
+                autoCheckin()
+                
+                //Alert.alert(`you were checked in at: ${nearestSite.distance}meters`)
+              }
+              //condition 2. user is not signed in at a court and outside proximityMax -->NO SIGN IN
+              else if (submitted===false & nearestSite.distance > proximityMax) {
+                console.log('do nothing');
+              } 
+              //condition 3. user is signed in at a court and still within proximityMax -->NO SIGN IN
+              else if (submitted===true > 0 & nearestSite.distance <= proximityMax) {
+                console.log('do nothing');
+              } 
+              //confition 4. user is signed in at a court and outside the proximityMax now -->SIGN OUT
+              else if (submitted === true & nearestSite.distance > proximityMax) {
+                checkout(nearestSite.site_id, user.email, nearestSite.distance)
+                //Alert.alert(`You were checked out at: ${nearestSite.distance}meters`)
+    
+                //send value reducer - change color to check in
+                //check_in(false);
+                autoCheckout()
+              }
+          //})
+          }) 
+
+     
+        //})
+    }
+})
+}
+
+
+
+/**
+ *  map1.then(nearestSite => {
             //using user data attempt to check in or checkout based on distance logic
             checkUserStatus(user.email)
             .then(res=>{
@@ -265,8 +306,7 @@ export const configureBgTasks = ({ proximityMax, user, storePlayground, autoChec
                 autoCheckout()
               }
           })
-          })  
-        //})
-    }
-})
-}
+          }) 
+ *      
+ * 
+ */
