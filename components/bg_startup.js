@@ -7,7 +7,6 @@ import { AsyncStorage } from 'react-native';
 const TASK_FETCH_LOCATION = 'background-location-task';
 //const TASK_CHECK_GEOFENCE = 'TASK_CHECK_GEOFENCE';
 const moment = require("moment");
-const proximityMax = 250;
 
 // SEE IF A PERSON HAS CHECKED IN
 
@@ -177,10 +176,10 @@ const _storeCourts = async (key,value) => {
 };
 
 
-export const configureBgTasks = ({ user, storePlayground, autoCheckin, autoCheckout, submitted }) => {
-
-  console.log('starting tracking...', user);
-  console.log('is this person checked in already?? ', submitted)
+export const configureBgTasks = ({ user, storePlayground, autoCheckin, autoCheckout, records }) => {
+  const proximityMax = 250;
+  //console.log('starting tracking...', user);
+  console.log('*******is this person checked in already?? ', records)
   //console.log('proximityMax is:', proximityMax)
   //checkUserStatus().then(res=>console.log('******',res))
  
@@ -236,7 +235,7 @@ export const configureBgTasks = ({ user, storePlayground, autoCheckin, autoCheck
             //checkUserStatus(user.email)
             //.then(res=>{
               //condition 1. user is not signed in at a court and within proximityMax -->SIGN THEM IN
-              if (submitted===false & nearestSite.distance <= proximityMax ) {
+              if ((records === undefined || records.length == 0) & nearestSite.distance <= proximityMax ) {
                 //console.log(nearestSite.site_id, user_id, user.firstName, user.lastName, nearestSite.distance)
                 checkin(nearestSite.site_id, user.email, user.first_name, user.last_name, nearestSite.distance);
                 
@@ -246,15 +245,15 @@ export const configureBgTasks = ({ user, storePlayground, autoCheckin, autoCheck
                 //Alert.alert(`you were checked in at: ${nearestSite.distance}meters`)
               }
               //condition 2. user is not signed in at a court and outside proximityMax -->NO SIGN IN
-              else if (submitted===false & nearestSite.distance > proximityMax) {
+              else if ((records === undefined || records.length == 0) & nearestSite.distance > proximityMax) {
                 console.log('do nothing');
               } 
               //condition 3. user is signed in at a court and still within proximityMax -->NO SIGN IN
-              else if (submitted===true > 0 & nearestSite.distance <= proximityMax) {
+              else if ((records !== undefined || records.length == 0) > 0 & nearestSite.distance <= proximityMax) {
                 console.log('do nothing');
               } 
               //confition 4. user is signed in at a court and outside the proximityMax now -->SIGN OUT
-              else if (submitted === true & nearestSite.distance > proximityMax) {
+              else if ((records !== undefined || records.length == 0) > 0 & nearestSite.distance > proximityMax) {
                 checkout(nearestSite.site_id, user.email, nearestSite.distance)
                 //Alert.alert(`You were checked out at: ${nearestSite.distance}meters`)
     
@@ -263,10 +262,15 @@ export const configureBgTasks = ({ user, storePlayground, autoCheckin, autoCheck
                 autoCheckout()
               }
           //})
-          }) 
+          })  
 
-     
-        //})
+
+        
+
+
+
+
+   
     }
 })
 }
@@ -308,5 +312,81 @@ export const configureBgTasks = ({ user, storePlayground, autoCheckin, autoCheck
           })
           }) 
  *      
- * 
+* 
  */
+
+
+
+ /**
+  * 
+  *                  map1.then(nearestSite => {
+            //using user data attempt to check in or checkout based on distance logic
+            //checkUserStatus(user.email)
+            //.then(res=>{
+              //condition 1. user is not signed in at a court and within proximityMax -->SIGN THEM IN
+              if (submitted==false & nearestSite.distance <= proximityMax ) {
+                //console.log(nearestSite.site_id, user_id, user.firstName, user.lastName, nearestSite.distance)
+                console.log('SIGNING U IN AUTOMATICALLY')
+                checkin(nearestSite.site_id, user.email, user.first_name, user.last_name, nearestSite.distance);
+                
+                //send value reducer - change color to check in
+                autoCheckin()
+                
+                //Alert.alert(`you were checked in at: ${nearestSite.distance}meters`)
+              }
+              //condition 2. user is not signed in at a court and outside proximityMax -->NO SIGN IN
+              else if (submitted==false & nearestSite.distance > proximityMax) {
+                console.log('TOO FAR AWAY');
+              } 
+              //condition 3. user is signed in at a court and still within proximityMax -->NO SIGN IN
+              else if (submitted==true & nearestSite.distance <= proximityMax) {
+                console.log('ALREADY SIGNED IN ');
+              } 
+              //confition 4. user is signed in at a court and outside the proximityMax now -->SIGN OUT
+              else if (submitted == true & nearestSite.distance > proximityMax) {
+                checkout(nearestSite.site_id, user.email, nearestSite.distance)
+                //Alert.alert(`You were checked out at: ${nearestSite.distance}meters`)
+    
+                //send value reducer - change color to check in
+                //check_in(false);
+                autoCheckout()
+              }
+          //})
+          }) 
+          
+  *
+  *
+  *           map1.then(nearestSite => {
+            //using user data attempt to check in or checkout based on distance logic
+            //checkUserStatus(user.email)
+            //.then(res=>{
+              //condition 1. user is not signed in at a court and within proximityMax -->SIGN THEM IN
+              if ((records === records || records.length == 0) & nearestSite.distance <= proximityMax ) {
+                //console.log(nearestSite.site_id, user_id, user.firstName, user.lastName, nearestSite.distance)
+                checkin(nearestSite.site_id, user.email, user.first_name, user.last_name, nearestSite.distance);
+                
+                //send value reducer - change color to check in
+                autoCheckin()
+                
+                //Alert.alert(`you were checked in at: ${nearestSite.distance}meters`)
+              }
+              //condition 2. user is not signed in at a court and outside proximityMax -->NO SIGN IN
+              else if ((records === undefined || records.length == 0) & nearestSite.distance > proximityMax) {
+                console.log('do nothing');
+              } 
+              //condition 3. user is signed in at a court and still within proximityMax -->NO SIGN IN
+              else if ((records !== undefined || records.length == 0) > 0 & nearestSite.distance <= proximityMax) {
+                console.log('do nothing');
+              } 
+              //confition 4. user is signed in at a court and outside the proximityMax now -->SIGN OUT
+              else if ((records !== undefined || records.length == 0) > 0 & nearestSite.distance > proximityMax) {
+                checkout(nearestSite.site_id, user.email, nearestSite.distance)
+                //Alert.alert(`You were checked out at: ${nearestSite.distance}meters`)
+    
+                //send value reducer - change color to check in
+                //check_in(false);
+                autoCheckout()
+              }
+          //})
+          })  
+  */
