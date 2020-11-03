@@ -8,11 +8,11 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
 //import Layout from '../constants/Layout';
 import AsyncStorage from '@react-native-community/async-storage';
-import * as BackgroundFetch from 'expo-background-fetch';
+import * as TaskManager from 'expo-task-manager';
 import { connect } from 'react-redux';
 import helpers from './functions/localNotification'
 import PermissionNotFunc from './functions/notifications'
-const TASK_FETCH_LOCATION = 'background-location-task';
+
 
 class Profile extends Component {
 
@@ -178,11 +178,15 @@ class Profile extends Component {
     this.setState({ tracking: !this.state.tracking })
 
     if (!this.state.tracking == false) {
+      //UNREGISTER TASK WHEN TURNING OFF
+      const TASK_FETCH_LOCATION = 'background-location-task';
+      TaskManager.unregisterTaskAsync(TASK_FETCH_LOCATION);
       Alert.alert('Stopping Automatic Background Tracking')
     } else {
       Alert.alert('Starting Automatic Background Tracking')
     }
-    BackgroundFetch.unregisterTaskAsync('TASK_FETCH_LOCATION');
+
+    //STORE IN ASYNC STORAGE THE NEW TRACKING STATUS
     try {
       AsyncStorage.setItem('vpAutoTracking', JSON.stringify(!this.state.tracking))
     } catch (e) {
@@ -301,6 +305,25 @@ class Profile extends Component {
 
             <CardItem>
               <Left>
+                <Text style={styles.cartTitles}>Location Tracking: </Text>
+                {this.state.tracking ? <Text>Yes</Text> : <Text>No</Text>}
+                <TouchableOpacity onPress={this.questionLocation}>
+                  <AntDesign style={{ marginLeft: 10 }} name="questioncircleo" size={24} color="black" />
+                </TouchableOpacity>
+              </Left>
+              <Right>
+                <Switch
+                  trackColor={{ false: '#767577', true: '#81b0ff' }}
+                  thumbColor={this.state.tracking ? '#f5dd4b' : '#f4f3f4'}
+                  ios_backgroundColor="#3e3e3e"
+                  onValueChange={this.toggleTracking}
+                  value={this.state.tracking}
+                />
+              </Right>
+            </CardItem>
+
+            <CardItem>
+              <Left>
                 <Text style={styles.cartTitles}>Notifications: </Text>
                 {this.props.reducer.isRunningNotification ? <Text>Yes</Text> : <Text>No</Text>}
                 <TouchableOpacity onPress={this.question}>
@@ -322,24 +345,7 @@ class Profile extends Component {
 {/**
  * 
  * 
- *   <CardItem>
-              <Left>
-                <Text style={styles.cartTitles}>Location Tracking: </Text>
-                {this.state.tracking ? <Text>Yes</Text> : <Text>No</Text>}
-                <TouchableOpacity onPress={this.questionLocation}>
-                  <AntDesign style={{ marginLeft: 10 }} name="questioncircleo" size={24} color="black" />
-                </TouchableOpacity>
-              </Left>
-              <Right>
-                <Switch
-                  trackColor={{ false: '#767577', true: '#81b0ff' }}
-                  thumbColor={this.state.tracking ? '#f5dd4b' : '#f4f3f4'}
-                  ios_backgroundColor="#3e3e3e"
-                  onValueChange={this.toggleTracking}
-                  value={this.state.tracking}
-                />
-              </Right>
-            </CardItem>
+ * 
  * 
  * 
  * 
