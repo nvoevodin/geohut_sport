@@ -114,11 +114,11 @@ class Home extends Component {
     if (asyncTracking !== null) {
       // We have data!!
       //return asyncTracking
-      console.log('tracking status: ', asyncTracking)
+      //console.log('tracking status: ', asyncTracking)
       this.props.setTracking(JSON.parse(asyncTracking));
     } else {
       //this._storeTracking('vpAutoTracking', 'true')
-      console.log('HELLOOOOOO ITS EMPTTYYYYYYY')
+      //console.log('HELLOOOOOO ITS EMPTTYYYYYYY')
       this.props.setTracking(true);
     }
 
@@ -127,9 +127,9 @@ class Home extends Component {
       if (this.props.reducer.tracking == true) {
         const { storePlayground } = this.props;
         this.configureBackground(this.state.proximityMax ,user, storePlayground);
-        console.log('tracking reducer is TRUE!!!!!!!!')
+        //console.log('tracking reducer is TRUE!!!!!!!!')
       } else {
-        console.log('tracking reducer is FALSE!!!')
+        //console.log('tracking reducer is FALSE!!!')
       }
     });
     
@@ -146,7 +146,7 @@ class Home extends Component {
 
   componentDidUpdate(prevProps){
     if(prevProps.reducer.playgroundId !== this.props.reducer.playgroundId || prevProps.reducer.userId[3] !== this.props.reducer.userId[3]){
-      console.log('updating')
+      //console.log('updating')
 
       //READS FROM FIREBASE AND SETS EMAIL AND WORKID IN REDUX
       this.readFireBase(this.props.reducer.userId[1], this.props.reducer.userId[2], this.props.reducer.userId[3]);
@@ -157,16 +157,16 @@ class Home extends Component {
       this.checkedIn(this.props.reducer.userId[3]);
     } 
      else if (this.props.reducer.tracking == false & prevProps.reducer.tracking == true) {
-       console.log('stop tracking now')
+       //console.log('stop tracking now')
      } else if (this.props.reducer.tracking == true & prevProps.reducer.tracking == false) {
        //fire background tracking - user daya is pulled from local storage with backup being db
        this.pullUserInfo().then(user => {
          if (this.props.reducer.tracking == true) {
            const { storePlayground } = this.props;
            this.configureBackground(this.state.proximityMax ,user, storePlayground);
-           console.log('tracking reducer is TRUE!!!!!!!!')
+           //console.log('tracking reducer is TRUE!!!!!!!!')
          } else {
-           console.log('tracking reducer is FALSE!!!')
+           //console.log('tracking reducer is FALSE!!!')
          }
        });
      }
@@ -176,19 +176,19 @@ class Home extends Component {
 
 
    autoTrackingCheckin = () => {
-     console.log('passed function works!!!!!!!')
+     //console.log('passed function works!!!!!!!')
      this.setState({ submitted: true });
      //this.setState({ submittedAnimation: true })
    }
 
    autoTrackingCheckout = () => {
-     console.log('passed function works!!!!!!!')
+     //console.log('passed function works!!!!!!!')
      this.setState({ submitted: false });
      //this.setState({ submittedAnimation: false })
    }
 
    configureBackground = async (proximityMax ,user, storePlayground, autoCheckout = this.autoTrackingCheckout, autoCheckin = this.autoTrackingCheckin, submitted=this.state.submitted) => {
-    console.log('FIRING BACKGROUND...')
+   // console.log('FIRING BACKGROUND...')
     //start tracking in background
     const startBackgroundUpdate = async () => {
      if(Platform.OS==='ios') {
@@ -222,7 +222,7 @@ class Home extends Component {
 
     setTimeout(function () {
       try {
-        console.log('user info: ', user)
+        //console.log('user info: ', user)
         configureBgTasks({proximityMax ,user, storePlayground, autoCheckin, autoCheckout, submitted })
         startBackgroundUpdate();
       }
@@ -244,7 +244,7 @@ class Home extends Component {
          "last_name": value[2]
        }
      } else {
-       console.log('pulling information......')
+       //console.log('pulling information......')
        let response = await fetch(`${global.x}/get_user/${firebase.auth().currentUser.uid}`)
          .then(res => res.json())
          .then(res => {

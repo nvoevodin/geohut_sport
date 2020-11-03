@@ -31,11 +31,17 @@ class WeatherReport extends Component {
 
     fetch(`${global.x}/pullTemperature/${this.props.reducer.playgroundId}`)
     .then((res) => res.json())
-    .then((res) => {
-        console.log(res.data[0]["weather"].split(','))
-        const weather = res.data[0]["weather"].split(',')
+    .then( async (res)  => {
+        
+        const weather = await res.data[0]["weather"].split(',')
+
         this.setState({temperature:parseFloat(weather[0]), conditions: weather[1], wind: parseFloat(weather[2]), lastUpdated:res.data[0]["weather_datetime"]})
         //console.log(JSON.parse("[" + res.data[0]["weather"] + "]"))
+
+        console.log('no error')
+        {weather !== null?(new Date()).getTime() - moment(res.data[0]["weather_datetime"]).valueOf() > 3560000?this.updateWeather():null:this.updateWeather()}
+        
+        console.log(parseFloat(weather[0]) > 95 || parseFloat(weather[0]) < 40 || weather[1] !== 'Clear' && weather[1] !== 'Clouds' || parseFloat(weather[2]) > 14)
         try{
             if(parseFloat(weather[0]) > 95 || parseFloat(weather[0]) < 40 || (weather[1] !== 'Clear' && weather[1] !== 'Clouds') || parseFloat(weather[2]) > 14) {
                 this.props.setWeather('Bad')
@@ -44,19 +50,21 @@ class WeatherReport extends Component {
               } else if ((parseFloat(weather[0]) <= 95 && parseFloat(weather[0]) >= 60) && (weather[1] === 'Clear' || weather[1] === 'Clouds') && parseFloat(weather[2]) < 7){
                 this.props.setWeather('Perfect')
                 this.setState({overall:'Perfect'})
-              } else if(parseFloat(weather[2]) <= 14 && parseFloat(weather[0]) >= 40) {
-                this.props.setWeather('Acceptable')
-                this.setState({overall:'Acceptable'})
               } else if(parseFloat(weather[2]) < 11 && (parseFloat(weather[0]) <= 95 && parseFloat(weather[0]) >= 50)){
                 this.props.setWeather('Good')
                 this.setState({overall:'Good'})
               }
+              else if(parseFloat(weather[2]) <= 14 && parseFloat(weather[0]) >= 40) {
+                this.props.setWeather('Acceptable')
+                this.setState({overall:'Acceptable'})
+              } 
 
         } catch(e){console.log(e)}
 
     //this.setState({players:res.data})
     }).catch((error) => {
-        this.setState({temperature:0, conditions: '', wind: 0, lastUpdated:null, overall:''})
+        //this.setState({temperature:0, conditions: '', wind: 0, lastUpdated:null, overall:''})
+        this.updateWeather()
       console.log('error')
     });
 
@@ -75,8 +83,12 @@ class WeatherReport extends Component {
             const weather = res.data[0]["weather"].split(',')
             this.setState({temperature:parseFloat(weather[0]), conditions: weather[1], wind: parseFloat(weather[2]), lastUpdated:res.data[0]["weather_datetime"]})
             //console.log(JSON.parse("[" + res.data[0]["weather"] + "]"))
+            {weather !== null?(new Date()).getTime() - moment(res.data[0]["weather_datetime"]).valueOf() > 3560000?this.updateWeather():null:this.updateWeather()}
+            console.log('weather')
+            console.log(weather)
+            console.log(parseFloat(weather[0]) > 95 || parseFloat(weather[0]) < 40 || weather[1] !== 'Clear' || weather[1] !== 'Clouds' || parseFloat(weather[2]) > 14)
             try{
-                if(parseFloat(weather[0]) > 95 || parseFloat(weather[0]) < 40 || weather[1] !== 'Clear' || weather[1] !== 'Clouds' || parseFloat(weather[2]) > 14) {
+                if(parseFloat(weather[0]) > 95 || parseFloat(weather[0]) < 40 || (weather[1] !== 'Clear' && weather[1] !== 'Clouds') || parseFloat(weather[2]) > 14) {
                     this.props.setWeather('Bad')
                     this.setState({overall:'Bad'})
 
@@ -95,7 +107,8 @@ class WeatherReport extends Component {
 
         //this.setState({players:res.data})
         }).catch((error) => {
-            this.setState({temperature:0, conditions: '', wind: 0, lastUpdated:null, overall:''})
+            //this.setState({temperature:0, conditions: '', wind: 0, lastUpdated:null, overall:''})
+            this.updateWeather()
           console.log('error')
         });
 
@@ -135,7 +148,7 @@ fetch(
 
   render() {
 
-
+//console.log(this.state)
 
    //console.log(moment(this.state.lastUpdated).valueOf())
 

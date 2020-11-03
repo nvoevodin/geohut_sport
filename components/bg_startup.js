@@ -26,7 +26,7 @@ const getCourts = async () => {
   if(value !== null) {
     return value
   } else {
-    console.log('retrieving courts...')
+    //console.log('retrieving courts...')
     let response = await fetch(`${global.x}/sites`)
     .then(res => res.json())
     .then(res => { 
@@ -73,7 +73,7 @@ const checkUserStatus = async (user_id) => {
 const checkin = async (nearestSite, user_id, fname, lname, distance) => {
 
     //if(distance < proximityMax) {
-      console.log('checking you IN via function...', distance)
+      //console.log('checking you IN via function...', distance)
       //Alert.alert(`you r checked in, distance is: ${distance}`)
       try {
         fetch(
@@ -96,7 +96,7 @@ const checkin = async (nearestSite, user_id, fname, lname, distance) => {
 const checkout = async (nearestSite, user_id, distance) => {
   
   //if(distance > proximityMax) {
-    console.log('checking you OUT via function...')        
+    //console.log('checking you OUT via function...')        
     //Alert.alert(`you r checked out, distance is: ${distance}`)
       //FIRST CHECK THE PERSON OUT
       try {
@@ -179,8 +179,8 @@ const _storeCourts = async (key,value) => {
 
 export const configureBgTasks = ({ user, storePlayground, autoCheckin, autoCheckout, submitted }) => {
 
-  console.log('starting tracking...', user);
-  console.log('is this person checked in already?? ', submitted)
+  //console.log('starting tracking...', user);
+  //console.log('is this person checked in already?? ', submitted)
   //console.log('proximityMax is:', proximityMax)
   //checkUserStatus().then(res=>console.log('******',res))
  
@@ -194,7 +194,7 @@ export const configureBgTasks = ({ user, storePlayground, autoCheckin, autoCheck
 
       //get location data from background
       const { locations } = data;
-      console.log(locations)
+      //console.log(locations)
 
       //check current distance against all sites, 
       //return the closest site and distance to current location
