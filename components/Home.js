@@ -110,28 +110,31 @@ class Home extends Component {
     //  console.log('location permissions are granted...')
    // }
 
-    const asyncTracking = await AsyncStorage.getItem('vpAutoTracking');
-    if (asyncTracking !== null) {
-      // We have data!!
-      //return asyncTracking
-      //console.log('tracking status: ', asyncTracking)
-      this.props.setTracking(JSON.parse(asyncTracking));
-    } else {
-      //this._storeTracking('vpAutoTracking', 'true')
-      //console.log('HELLOOOOOO ITS EMPTTYYYYYYY')
-      this.props.setTracking(true);
-    }
+    // const asyncTracking = await AsyncStorage.getItem('vpAutoTracking');
+    // if (asyncTracking !== null) {
+    //   // We have data!!
+    //   //return asyncTracking
+    //   console.log('tracking status: ', asyncTracking)
+    //   this.props.setTracking(JSON.parse(asyncTracking));
+    // } else {
+    //   //this._storeTracking('vpAutoTracking', 'true')
+    //   console.log('HELLOOOOOO ITS EMPTTYYYYYYY')
+    //   this.props.setTracking(true);
+    // }
 
-    //fire background tracking - user daya is pulled from local storage with backup being db
-    this.pullUserInfo().then(user => {
-      if (this.props.reducer.tracking == true) {
-        const { storePlayground } = this.props;
-        this.configureBackground(this.state.proximityMax ,user, storePlayground);
-        //console.log('tracking reducer is TRUE!!!!!!!!')
-      } else {
-        //console.log('tracking reducer is FALSE!!!')
-      }
-    });
+    // //fire background tracking - user daya is pulled from local storage with backup being db
+    // this.pullUserInfo().then(user => {
+    //   if (this.props.reducer.tracking == true) {
+    //     const { storePlayground } = this.props;
+    //     this.configureBackground(this.state.proximityMax ,user, storePlayground);
+    //     console.log('tracking reducer is TRUE!!!!!!!!')
+    //   } else {
+    //     console.log('tracking reducer is FALSE!!!')
+    //   }
+    // });
+
+    //refresh courts 
+    this.removeItemValue('courts');
     
     const firstNotif = await AsyncStorage.getItem('notifications')
     if (firstNotif === null){
@@ -160,15 +163,19 @@ class Home extends Component {
        //console.log('stop tracking now')
      } else if (this.props.reducer.tracking == true & prevProps.reducer.tracking == false) {
        //fire background tracking - user daya is pulled from local storage with backup being db
-       this.pullUserInfo().then(user => {
-         if (this.props.reducer.tracking == true) {
-           const { storePlayground } = this.props;
-           this.configureBackground(this.state.proximityMax ,user, storePlayground);
-           //console.log('tracking reducer is TRUE!!!!!!!!')
-         } else {
-           //console.log('tracking reducer is FALSE!!!')
-         }
-       });
+      //  this.pullUserInfo().then(user => {
+      //    if (this.props.reducer.tracking == true) {
+      //      const { storePlayground } = this.props;
+      //      this.configureBackground(this.state.proximityMax ,user, storePlayground);
+      //      console.log('tracking reducer is TRUE!!!!!!!!')
+      //    } else {
+      //      console.log('tracking reducer is FALSE!!!')
+      //    }
+      //  });
+      this.checkedIn(this.props.reducer.userId[3]);
+
+
+
      }
 
   }
@@ -187,8 +194,8 @@ class Home extends Component {
      //this.setState({ submittedAnimation: false })
    }
 
-   configureBackground = async (proximityMax ,user, storePlayground, autoCheckout = this.autoTrackingCheckout, autoCheckin = this.autoTrackingCheckin, submitted=this.state.submitted) => {
-   // console.log('FIRING BACKGROUND...')
+   configureBackground = async (user, storePlayground, records, autoCheckout = this.autoTrackingCheckout, autoCheckin = this.autoTrackingCheckin) => {
+    console.log('FIRING BACKGROUND...')
     //start tracking in background
     const startBackgroundUpdate = async () => {
      if(Platform.OS==='ios') {
@@ -219,18 +226,19 @@ class Home extends Component {
        });
      }
     }
-
+                      
     setTimeout(function () {
       try {
-        //console.log('user info: ', user)
-        configureBgTasks({proximityMax ,user, storePlayground, autoCheckin, autoCheckout, submitted })
+        console.log('user info: ', user)
+        console.log('records: ', records)
+        configureBgTasks({user, storePlayground, autoCheckin, autoCheckout, records})
         startBackgroundUpdate();
       }
       catch (error) {
         console.log(error)
       }
 
-    }, 3000);
+    }, 1500);
   }
 
 
@@ -260,24 +268,51 @@ class Home extends Component {
 
 
 
-  checkedIn = (email) => {
+  checkedIn = async (email) => {
 
 
-    fetch(`${global.x}/checkincheck/${email}`)
+    let records = await fetch(`${global.x}/checkincheck/${email}`)
     .then(res => res.json())
     .then(res => {  
-     
       if (res["data"].some(e => e.checkin_datetime.substr(0,10) === moment().utc().format("YYYY-MM-DD")) && res["data"].some(e => e.site_id === this.props.reducer.playgroundId)){
         this.setState({submitted: true})
-       
+        return res["data"]
       } else {
         this.setState({submitted: false})
+        return res["data"]
       }
     })
     .catch((error) => {
       console.log(error)
     });
-   // })
+
+   //ONCE WE HAVE SET STATE WE CAN NOW PASS STATE TO TRACKING AND FIRE
+   const asyncTracking = await AsyncStorage.getItem('vpAutoTracking');
+    if (asyncTracking !== null) {
+      // We have data!!
+      //return asyncTracking
+      console.log('tracking status: ', asyncTracking)
+      this.props.setTracking(JSON.parse(asyncTracking));
+    } else {
+      //this._storeTracking('vpAutoTracking', 'true')
+      console.log('HELLOOOOOO ITS EMPTTYYYYYYY')
+      this.props.setTracking(true);
+    }
+
+    //fire background tracking - user daya is pulled from local storage with backup being db
+    this.pullUserInfo().then(user => {
+      if (this.props.reducer.tracking == true) {
+        const { storePlayground } = this.props;
+        console.log('MY RECORDS: ', records)
+        this.configureBackground(user, storePlayground, records);
+        console.log('tracking reducer is TRUE!!!!!!!!')
+      } else {
+        console.log('tracking reducer is FALSE!!!')
+      }
+    });
+
+
+
   }
 
   preCheckedIn = (email) => {
@@ -527,6 +562,16 @@ await fetch(
   onWeather = () =>{
     this.props.onModalWeather()
   }
+
+  async removeItemValue(key) {
+    try {
+        await AsyncStorage.removeItem(key);
+        return true;
+    }
+    catch(exception) {
+        return false;
+    }
+}
 
 
   render() {
