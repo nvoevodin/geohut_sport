@@ -194,8 +194,8 @@ class Home extends Component {
      //this.setState({ submittedAnimation: false })
    }
 
-   configureBackground = async (user, storePlayground, records, autoCheckout = this.autoTrackingCheckout, autoCheckin = this.autoTrackingCheckin) => {
-    console.log('FIRING BACKGROUND...')
+   configureBackground = async (user, storePlayground, records, anonymous = this.props.reducer.isAnanimous, autoCheckout = this.autoTrackingCheckout, autoCheckin = this.autoTrackingCheckin) => {
+    console.log('FIRING BACKGROUND...');
     //start tracking in background
     const startBackgroundUpdate = async () => {
      if(Platform.OS==='ios') {
@@ -229,9 +229,10 @@ class Home extends Component {
                       
     setTimeout(function () {
       try {
-        console.log('user info: ', user)
-        console.log('records: ', records)
-        configureBgTasks({user, storePlayground, autoCheckin, autoCheckout, records})
+        //console.log('user info: ', user)
+        //console.log('records: ', records)
+        console.log('anonimity???',anonymous)
+        configureBgTasks({user, storePlayground, autoCheckin, autoCheckout, records, anonymous})
         startBackgroundUpdate();
       }
       catch (error) {
@@ -303,7 +304,7 @@ class Home extends Component {
     this.pullUserInfo().then(user => {
       if (this.props.reducer.tracking == true) {
         const { storePlayground } = this.props;
-        console.log('MY RECORDS: ', records)
+        //console.log('MY RECORDS: ', records)
         this.configureBackground(user, storePlayground, records);
         console.log('tracking reducer is TRUE!!!!!!!!')
       } else {

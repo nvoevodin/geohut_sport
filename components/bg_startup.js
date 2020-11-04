@@ -69,18 +69,19 @@ const checkUserStatus = async (user_id) => {
 
 
 //FUNCTION: HANDLE MAIN CHECKIN
-const checkin = async (nearestSite, user_id, fname, lname, distance) => {
+const checkin = async (nearestSite, user_id, fname, lname, distance, anonymous) => {
 
     //if(distance < proximityMax) {
       //console.log('checking you IN via function...', distance)
       //Alert.alert(`you r checked in, distance is: ${distance}`)
+      console.log('CHECKING IN....... THIS PERSON.......',anonymous)
       try {
         fetch(
           // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
           `${global.x}/add?time=${
             moment().utc().format("YYYY-MM-DD HH:mm:ss").substr(0, 18) + "0"
-          }&site_id=${nearestSite}&first_name=${fname}
-          &last_name=${lname}&user_id=${user_id}`,
+          }&site_id=${nearestSite}&first_name=${anonymous ? 'Anonymous' :fname}
+          &last_name=${anonymous ? 'Player' : lname }&user_id=${user_id}`,
           { method: "POST" }
         ).catch((error) => {
           console.log(error)
@@ -176,10 +177,11 @@ const _storeCourts = async (key,value) => {
 };
 
 
-export const configureBgTasks = ({ user, storePlayground, autoCheckin, autoCheckout, records }) => {
+export const configureBgTasks = ({ user, storePlayground, autoCheckin, autoCheckout, records, anonymous }) => {
   const proximityMax = 250;
   //console.log('starting tracking...', user);
-  console.log('*******is this person checked in already?? ', records)
+  //console.log('*******is this person checked in already?? ', records)
+  console.log('**********is this person anonymous???', anonymous)
   //console.log('proximityMax is:', proximityMax)
   //checkUserStatus().then(res=>console.log('******',res))
  
@@ -237,7 +239,7 @@ export const configureBgTasks = ({ user, storePlayground, autoCheckin, autoCheck
               //condition 1. user is not signed in at a court and within proximityMax -->SIGN THEM IN
               if ((records === undefined || records.length == 0) & nearestSite.distance <= proximityMax ) {
                 //console.log(nearestSite.site_id, user_id, user.firstName, user.lastName, nearestSite.distance)
-                checkin(nearestSite.site_id, user.email, user.first_name, user.last_name, nearestSite.distance);
+                checkin(nearestSite.site_id, user.email, user.first_name, user.last_name, nearestSite.distance, anonymous);
                 
                 //send value reducer - change color to check in
                 autoCheckin()

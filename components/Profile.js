@@ -232,7 +232,7 @@ class Profile extends Component {
 
 
   question = () => {
-    alert("If you are anonimous, your name will not be displayed in the CheckIn and Pre-CheckIn lists in the Players tab")
+    alert("If you are anonymous, your name will not be displayed in the CheckIn and Pre-CheckIn lists in the Players tab")
   }
   questionLocation = () => {
     alert("Permitting location tracking allows volleypal to check you in and out automatically. We do not store location data.")
