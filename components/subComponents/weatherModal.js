@@ -41,7 +41,7 @@ class WeatherReport extends Component {
         console.log('no error')
         {weather !== null?(new Date()).getTime() - moment(res.data[0]["weather_datetime"]).valueOf() > 3560000?this.updateWeather():null:this.updateWeather()}
         
-        console.log(parseFloat(weather[0]) > 95 || parseFloat(weather[0]) < 40 || weather[1] !== 'Clear' && weather[1] !== 'Clouds' || parseFloat(weather[2]) > 14)
+        //console.log(parseFloat(weather[0]) > 95 || parseFloat(weather[0]) < 40 || weather[1] !== 'Clear' && weather[1] !== 'Clouds' || parseFloat(weather[2]) > 14)
         try{
             if(parseFloat(weather[0]) > 95 || parseFloat(weather[0]) < 40 || (weather[1] !== 'Clear' && weather[1] !== 'Clouds') || parseFloat(weather[2]) > 14) {
                 this.props.setWeather('Bad')
@@ -84,9 +84,9 @@ class WeatherReport extends Component {
             this.setState({temperature:parseFloat(weather[0]), conditions: weather[1], wind: parseFloat(weather[2]), lastUpdated:res.data[0]["weather_datetime"]})
             //console.log(JSON.parse("[" + res.data[0]["weather"] + "]"))
             {weather !== null?(new Date()).getTime() - moment(res.data[0]["weather_datetime"]).valueOf() > 3560000?this.updateWeather():null:this.updateWeather()}
-            console.log('weather')
-            console.log(weather)
-            console.log(parseFloat(weather[0]) > 95 || parseFloat(weather[0]) < 40 || weather[1] !== 'Clear' || weather[1] !== 'Clouds' || parseFloat(weather[2]) > 14)
+            //console.log('weather')
+            //console.log(weather)
+            //console.log(parseFloat(weather[0]) > 95 || parseFloat(weather[0]) < 40 || weather[1] !== 'Clear' || weather[1] !== 'Clouds' || parseFloat(weather[2]) > 14)
             try{
                 if(parseFloat(weather[0]) > 95 || parseFloat(weather[0]) < 40 || (weather[1] !== 'Clear' && weather[1] !== 'Clouds') || parseFloat(weather[2]) > 14) {
                     this.props.setWeather('Bad')
@@ -95,13 +95,14 @@ class WeatherReport extends Component {
                   } else if ((parseFloat(weather[0]) <= 95 && parseFloat(weather[0]) >= 60) && (weather[1] === 'Clear' || weather[1] === 'Clouds') && parseFloat(weather[2]) < 7){
                     this.props.setWeather('Perfect')
                     this.setState({overall:'Perfect'})
-                  } else if(parseFloat(weather[2]) <= 14 && parseFloat(weather[0]) >= 40) {
-                    this.props.setWeather('Acceptable')
-                    this.setState({overall:'Acceptable'})
                   } else if(parseFloat(weather[2]) < 11 && (parseFloat(weather[0]) <= 95 && parseFloat(weather[0]) >= 50)){
                     this.props.setWeather('Good')
                     this.setState({overall:'Good'})
                   }
+                  else if(parseFloat(weather[2]) <= 14 && parseFloat(weather[0]) >= 40) {
+                    this.props.setWeather('Acceptable')
+                    this.setState({overall:'Acceptable'})
+                  } 
 
             } catch(e){console.log(e)}
 

@@ -22,6 +22,8 @@ class Profile extends Component {
 
 
 
+
+
   deleteAccount = async () =>{
 
     Alert.alert(
@@ -234,6 +236,11 @@ class Profile extends Component {
   question = () => {
     alert("If you are anonimous, your name will not be displayed in the CheckIn and Pre-CheckIn lists in the Players tab")
   }
+
+  notifQuestion = () => {
+    alert("If notifications annoy you, you can switch them off here.")
+  }
+
   questionLocation = () => {
     alert("Permitting location tracking allows volleypal to check you in and out automatically. We do not store location data.")
   }
@@ -326,7 +333,7 @@ class Profile extends Component {
               <Left>
                 <Text style={styles.cartTitles}>Notifications: </Text>
                 {this.props.reducer.isRunningNotification ? <Text>Yes</Text> : <Text>No</Text>}
-                <TouchableOpacity onPress={this.question}>
+                <TouchableOpacity onPress={this.notifQuestion}>
                   <AntDesign style={{ marginLeft: 10 }} name="questioncircleo" size={24} color="black" />
                 </TouchableOpacity>
               </Left>

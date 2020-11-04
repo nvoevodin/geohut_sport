@@ -142,7 +142,7 @@ confirmCourt = (site, lat, lon) => {
         style: "cancel"
       },
       { text: "OK", onPress: async () => {
-        console.log(site)
+        //console.log(site)
 
         const value = await AsyncStorage.getItem('confirmed')
 
@@ -156,14 +156,14 @@ confirmCourt = (site, lat, lon) => {
                   lat,
                   lon
                 );
-                console.log("distance: ", distance['distance']);
+                //console.log("distance: ", distance['distance']);
 
         if(distance['distance'] > 350) {
           alert('Cant confirm! Must be at the location!')
 
         } else if (value === site){
           
-          console.log(value)
+          //console.log(value)
           alert('Can only confirm once!')
         } else {
 

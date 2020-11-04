@@ -229,8 +229,8 @@ class Home extends Component {
                       
     setTimeout(function () {
       try {
-        console.log('user info: ', user)
-        console.log('records: ', records)
+        //console.log('user info: ', user)
+        //console.log('records: ', records)
         configureBgTasks({user, storePlayground, autoCheckin, autoCheckout, records})
         startBackgroundUpdate();
       }
@@ -291,11 +291,11 @@ class Home extends Component {
     if (asyncTracking !== null) {
       // We have data!!
       //return asyncTracking
-      console.log('tracking status: ', asyncTracking)
+      //console.log('tracking status: ', asyncTracking)
       this.props.setTracking(JSON.parse(asyncTracking));
     } else {
       //this._storeTracking('vpAutoTracking', 'true')
-      console.log('HELLOOOOOO ITS EMPTTYYYYYYY')
+      //console.log('HELLOOOOOO ITS EMPTTYYYYYYY')
       this.props.setTracking(true);
     }
 
@@ -303,11 +303,11 @@ class Home extends Component {
     this.pullUserInfo().then(user => {
       if (this.props.reducer.tracking == true) {
         const { storePlayground } = this.props;
-        console.log('MY RECORDS: ', records)
+        //console.log('MY RECORDS: ', records)
         this.configureBackground(user, storePlayground, records);
-        console.log('tracking reducer is TRUE!!!!!!!!')
+        //console.log('tracking reducer is TRUE!!!!!!!!')
       } else {
-        console.log('tracking reducer is FALSE!!!')
+        //console.log('tracking reducer is FALSE!!!')
       }
     });
 
@@ -342,7 +342,7 @@ class Home extends Component {
   //FUNCTION: READS FIREBASE AND SETS DATA INTO REDUX
   readFireBase = (first_name, last_name, email) => {
 
-    console.log('userid info: ', first_name)
+    //console.log('userid info: ', first_name)
     this.props.setUserData({
       firstName: first_name,
       lastName: last_name,
@@ -439,7 +439,7 @@ class Home extends Component {
           this.props.reducer.playgroundLat,
           this.props.reducer.playgroundLon
         );
-        console.log("distance: ", distance);
+        //console.log("distance: ", distance);
 
         //validate that location is close enough to the site (200 meters)
         if (distance <= this.state.proximityMax) {
@@ -473,7 +473,7 @@ class Home extends Component {
       }
       this.setState({ submittedAnimation: false });
     } else {
-console.log(this.props.reducer.playgroundId)
+//console.log(this.props.reducer.playgroundId)
 this.setState({ submittedAnimation: true });
 await fetch(
   // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...

@@ -192,6 +192,7 @@ try{
             source={require("../assets/companyLogo.png")}
           />
           <Text style={{ fontSize: 13, fontWeight: "bold" }}>VeryCool-Studio.com</Text>
+          <Text style={{ fontSize: 10, marginTop:10 }}>ver. 1.1.0</Text>
         </View>
       </Container>
     );

@@ -179,7 +179,7 @@ const _storeCourts = async (key,value) => {
 export const configureBgTasks = ({ user, storePlayground, autoCheckin, autoCheckout, records }) => {
   const proximityMax = 250;
   //console.log('starting tracking...', user);
-  console.log('*******is this person checked in already?? ', records)
+  //console.log('*******is this person checked in already?? ', records)
   //console.log('proximityMax is:', proximityMax)
   //checkUserStatus().then(res=>console.log('******',res))
  
@@ -246,11 +246,11 @@ export const configureBgTasks = ({ user, storePlayground, autoCheckin, autoCheck
               }
               //condition 2. user is not signed in at a court and outside proximityMax -->NO SIGN IN
               else if ((records === undefined || records.length == 0) & nearestSite.distance > proximityMax) {
-                console.log('do nothing');
+                //console.log('do nothing');
               } 
               //condition 3. user is signed in at a court and still within proximityMax -->NO SIGN IN
               else if ((records !== undefined || records.length == 0) > 0 & nearestSite.distance <= proximityMax) {
-                console.log('do nothing');
+                //console.log('do nothing');
               } 
               //confition 4. user is signed in at a court and outside the proximityMax now -->SIGN OUT
               else if ((records !== undefined || records.length == 0) > 0 & nearestSite.distance > proximityMax) {
