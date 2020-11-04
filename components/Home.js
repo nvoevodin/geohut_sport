@@ -231,12 +231,8 @@ class Home extends Component {
       try {
         //console.log('user info: ', user)
         //console.log('records: ', records)
-<<<<<<< HEAD
-        configureBgTasks({user, storePlayground, autoCheckin, autoCheckout, records})
-=======
         console.log('anonimity???',anonymous)
         configureBgTasks({user, storePlayground, autoCheckin, autoCheckout, records, anonymous})
->>>>>>> ce739b159049826a9d5528f0d5965b51e6acaaab
         startBackgroundUpdate();
       }
       catch (error) {

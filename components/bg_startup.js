@@ -181,10 +181,7 @@ export const configureBgTasks = ({ user, storePlayground, autoCheckin, autoCheck
   const proximityMax = 250;
   //console.log('starting tracking...', user);
   //console.log('*******is this person checked in already?? ', records)
-<<<<<<< HEAD
-=======
   console.log('**********is this person anonymous???', anonymous)
->>>>>>> ce739b159049826a9d5528f0d5965b51e6acaaab
   //console.log('proximityMax is:', proximityMax)
   //checkUserStatus().then(res=>console.log('******',res))
  
