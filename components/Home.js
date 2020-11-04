@@ -194,8 +194,8 @@ class Home extends Component {
      //this.setState({ submittedAnimation: false })
    }
 
-   configureBackground = async (user, storePlayground, records, autoCheckout = this.autoTrackingCheckout, autoCheckin = this.autoTrackingCheckin) => {
-    console.log('FIRING BACKGROUND...')
+   configureBackground = async (user, storePlayground, records, anonymous = this.props.reducer.isAnanimous, autoCheckout = this.autoTrackingCheckout, autoCheckin = this.autoTrackingCheckin) => {
+    console.log('FIRING BACKGROUND...');
     //start tracking in background
     const startBackgroundUpdate = async () => {
      if(Platform.OS==='ios') {
@@ -231,7 +231,12 @@ class Home extends Component {
       try {
         //console.log('user info: ', user)
         //console.log('records: ', records)
+<<<<<<< HEAD
         configureBgTasks({user, storePlayground, autoCheckin, autoCheckout, records})
+=======
+        console.log('anonimity???',anonymous)
+        configureBgTasks({user, storePlayground, autoCheckin, autoCheckout, records, anonymous})
+>>>>>>> ce739b159049826a9d5528f0d5965b51e6acaaab
         startBackgroundUpdate();
       }
       catch (error) {
