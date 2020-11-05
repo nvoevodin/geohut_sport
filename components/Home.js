@@ -173,7 +173,7 @@ class Home extends Component {
       //      console.log('tracking reducer is FALSE!!!')
       //    }
       //  });
-      this.checkedIn(this.props.reducer.userId[3]);
+      //this.checkedIn(this.props.reducer.userId[3]);
 
 
 
