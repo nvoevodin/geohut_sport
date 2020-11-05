@@ -33,8 +33,8 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 //import notificationFunction from "./functions/notifications"
 
 //TRACKING - FAUSTO
-import { configureBgTasks } from './bg_startup';
-const TASK_FETCH_LOCATION = 'background-location-task';
+//import { configureBgTasks } from './bg_startup';
+//const TASK_FETCH_LOCATION = 'background-location-task';
 import AsyncStorage from '@react-native-community/async-storage';
 const moment = require("moment");
 import PermissionNotFunc from './functions/notifications'
@@ -133,8 +133,9 @@ class Home extends Component {
     //   }
     // });
 
-    //refresh courts 
-    this.removeItemValue('courts');
+    
+    //REFRESH COURTS
+    //this.removeItemValue('courts');
     
     const firstNotif = await AsyncStorage.getItem('notifications')
     if (firstNotif === null){
@@ -288,29 +289,29 @@ class Home extends Component {
     });
 
    //ONCE WE HAVE SET STATE WE CAN NOW PASS STATE TO TRACKING AND FIRE
-   const asyncTracking = await AsyncStorage.getItem('vpAutoTracking');
-    if (asyncTracking !== null) {
-      // We have data!!
-      //return asyncTracking
-      //console.log('tracking status: ', asyncTracking)
-      this.props.setTracking(JSON.parse(asyncTracking));
-    } else {
-      //this._storeTracking('vpAutoTracking', 'true')
-      //console.log('HELLOOOOOO ITS EMPTTYYYYYYY')
-      this.props.setTracking(true);
-    }
+  //  const asyncTracking = await AsyncStorage.getItem('vpAutoTracking');
+  //   if (asyncTracking !== null) {
+  //     // We have data!!
+  //     //return asyncTracking
+  //     //console.log('tracking status: ', asyncTracking)
+  //     this.props.setTracking(JSON.parse(asyncTracking));
+  //   } else {
+  //     //this._storeTracking('vpAutoTracking', 'true')
+  //     //console.log('HELLOOOOOO ITS EMPTTYYYYYYY')
+  //     this.props.setTracking(true);
+  //   }
 
-    //fire background tracking - user daya is pulled from local storage with backup being db
-    this.pullUserInfo().then(user => {
-      if (this.props.reducer.tracking == true) {
-        const { storePlayground } = this.props;
-        //console.log('MY RECORDS: ', records)
-        this.configureBackground(user, storePlayground, records);
-        //console.log('tracking reducer is TRUE!!!!!!!!')
-      } else {
-        //console.log('tracking reducer is FALSE!!!')
-      }
-    });
+  //   //fire background tracking - user daya is pulled from local storage with backup being db
+  //   this.pullUserInfo().then(user => {
+  //     if (this.props.reducer.tracking == true) {
+  //       const { storePlayground } = this.props;
+  //       //console.log('MY RECORDS: ', records)
+  //       this.configureBackground(user, storePlayground, records);
+  //       //console.log('tracking reducer is TRUE!!!!!!!!')
+  //     } else {
+  //       //console.log('tracking reducer is FALSE!!!')
+  //     }
+  //   });
 
 
 
@@ -422,11 +423,12 @@ class Home extends Component {
     if (this.props.reducer.playgroundId === '') {
       Alert.alert("Select your court first.");
      } 
-    else if (this.props.reducer.tracking == true & this.state.submitted == true) {
-       Alert.alert('No need to check out. You will be checked out Automatically')
+     //TRACKING - COMMENT
+    //else if (this.props.reducer.tracking == true & this.state.submitted == true) {
+      // Alert.alert('No need to check out. You will be checked out Automatically')
      //} else if (this.props.reducer.tracking == true & this.state.submitted == false) {
      //  Alert.alert('No need to check in You will be checked in Automatically')
-     } 
+    // } 
     else if (this.state.submitted === false) {
       this.setState({ submittedAnimation: true });
       try {
