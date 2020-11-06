@@ -310,24 +310,7 @@ class Profile extends Component {
               </Right>
             </CardItem>
 
-            <CardItem>
-              <Left>
-                <Text style={styles.cartTitles}>Location Tracking: </Text>
-                {this.state.tracking ? <Text>Yes</Text> : <Text>No</Text>}
-                <TouchableOpacity onPress={this.questionLocation}>
-                  <AntDesign style={{ marginLeft: 10 }} name="questioncircleo" size={24} color="black" />
-                </TouchableOpacity>
-              </Left>
-              <Right>
-                <Switch
-                  trackColor={{ false: '#767577', true: '#81b0ff' }}
-                  thumbColor={this.state.tracking ? '#f5dd4b' : '#f4f3f4'}
-                  ios_backgroundColor="#3e3e3e"
-                  onValueChange={this.toggleTracking}
-                  value={this.state.tracking}
-                />
-              </Right>
-            </CardItem>
+           
 
             <CardItem>
               <Left>
@@ -505,3 +488,27 @@ const styles = StyleSheet.create({
     fontWeight: "bold"
   }
 });
+
+
+
+/**
+ *  <CardItem>
+              <Left>
+                <Text style={styles.cartTitles}>Location Tracking: </Text>
+                {this.state.tracking ? <Text>Yes</Text> : <Text>No</Text>}
+                <TouchableOpacity onPress={this.questionLocation}>
+                  <AntDesign style={{ marginLeft: 10 }} name="questioncircleo" size={24} color="black" />
+                </TouchableOpacity>
+              </Left>
+              <Right>
+                <Switch
+                  trackColor={{ false: '#767577', true: '#81b0ff' }}
+                  thumbColor={this.state.tracking ? '#f5dd4b' : '#f4f3f4'}
+                  ios_backgroundColor="#3e3e3e"
+                  onValueChange={this.toggleTracking}
+                  value={this.state.tracking}
+                />
+              </Right>
+            </CardItem>
+ * 
+ */

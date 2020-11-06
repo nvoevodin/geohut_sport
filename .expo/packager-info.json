@@ -3,8 +3,14 @@
   "expoServerPort": null,
   "packagerPort": null,
   "packagerPid": null,
+<<<<<<< HEAD
   "expoServerNgrokUrl": null,
   "packagerNgrokUrl": null,
   "ngrokPid": null,
+=======
+  "expoServerNgrokUrl": "https://t7-rj4.vcoolstudio.geohut-sport.exp.direct",
+  "packagerNgrokUrl": "https://packager.t7-rj4.vcoolstudio.geohut-sport.exp.direct",
+  "ngrokPid": 12365,
+>>>>>>> 1eb4205c9855b46f4bc3830b4dd2792bf45e50ae
   "webpackServerPort": null
 }
