@@ -1,18 +1,22 @@
 import React, { Component } from "react";
-import { StyleSheet, Text, View, Image } from "react-native";
+import { StyleSheet, Text, View, Image, Alert } from "react-native";
 import { Container, Form, Button } from "native-base";
 import * as firebase from "firebase";
 import * as Animatable from "react-native-animatable";
 import { connect } from "react-redux";
 import AsyncStorage from '@react-native-community/async-storage';
 import * as Font from 'expo-font';
-
+import { AntDesign } from '@expo/vector-icons';
 class Help extends Component {
 
-
+state = {
+  bad: false
+}
 
   async componentDidMount() {
 
+   
+    
 
     await Font.loadAsync({
       Roboto: require('native-base/Fonts/Roboto.ttf'),
@@ -22,18 +26,103 @@ class Help extends Component {
 
     this.setUser()
     this.setSite() 
-    firebase.auth().onAuthStateChanged((user) =>  {
-      if (user) {
 
-        if(user.emailVerified == true){
-          this.props.navigation.navigate("Home")
-        } else {
-          
-          alert('Please, verify your email!')
-        }
-        
+    fetch(`${global.x}/app_status`)
+    .then((res) => res.json())
+    .then((res) => {
+
+      if(res.data[0].app_status !== 'bad'){
+        this.welcomeAlert()
+        firebase.auth().onAuthStateChanged((user) =>  {
+          if (user) {
+    
+            if(user.emailVerified == true){
+              this.props.navigation.navigate("Home")
+            } else {
+              
+              alert('Please, verify your email!')
+            }
+            
+          }
+        });
+      } else {
+        alert("VolleyPal is under maintenance at the moment. Please check back later. Sorry for the inconvenience.")
+        this.setState({status:true})
       }
+
+
+     
+    //this.setState({status:res.data[0].app_status})
+    
+    }).catch((error) => {
+      console.log(error)
     });
+
+    
+
+
+
+  }
+
+  welcomeAlertButton = () =>{
+    Alert.alert(
+      `Welcome to VolleyPal.`,
+      `VolleyPal is an all around service for beach volleyball players. Check out www.VolleyPal.site page for the detailed app guide. \n
+      DISCLOSURE: \n 
+      * This app collects location data to enable check in and out at appropriate courts. For the best experience, we are asking for the "Always" location access when the app is not in use (in background). That option allows you to be automatically checked in and out at the courts where you play. 
+      * We do not collect, store, or share your location data for any other purposes.
+      * You can always turn that feature off in the Profile tab.`,
+      [
+  
+        { text: "Got it", onPress: () => {
+    
+        
+    
+          
+        } }
+      ],
+      { cancelable: false }
+    );
+  }
+
+  welcomeAlert = async () =>{
+    try{
+      var value = await AsyncStorage.getItem('welcomeAlert')
+    } catch(e){
+console.log('error')
+    }
+    
+    val = (value === 'true')
+    console.log(val)
+if (val === false){
+
+  Alert.alert(
+    `Welcome to VolleyPal.`,
+    `VolleyPal is an all around service for beach volleyball players. Check out www.VolleyPal.site page for the detailed app guide. \n
+    DISCLOSURE: \n 
+    * This app collects location data to enable check in and out at appropriate courts. For the best experience, we are asking for the "Always" location access when the app is not in use (in background). That option allows you to be automatically checked in and out at the courts where you play. 
+    * We do not collect, store, or share your location data for any other purposes.
+    * You can always turn that feature off in the Profile tab.`,
+    [
+
+      { text: "Got it", onPress: () => {
+  
+        
+  
+        try {
+          AsyncStorage.setItem('welcomeAlert', "true")
+        } catch (e) {
+          console.log('something wrong (storage)')
+        }
+  
+        
+      } }
+    ],
+    { cancelable: false }
+  );
+
+}
+
 
 
   }
@@ -163,6 +252,7 @@ try{
           <Form>
             <Button
               style={{ margin: 10 }}
+              disabled ={this.state.status}
               full
               rounded
               success
@@ -173,6 +263,7 @@ try{
 
             <Button
               style={{ margin: 10 }}
+              disabled ={this.state.status}
               full
               rounded
               primary
@@ -181,6 +272,8 @@ try{
               <Text style={{ color: "white" }}>Registration</Text>
             </Button>
           </Form>
+
+
         </View>
 
         {/* ANIMATED COMPANY LOGO */}
@@ -194,6 +287,15 @@ try{
           <Text style={{ fontSize: 13, fontWeight: "bold" }}>VeryCool-Studio.com</Text>
           <Text style={{ fontSize: 10, marginTop:10 }}>ver. 1.1.0</Text>
         </View>
+        <Button style={{ position: "absolute", bottom: "5%", right: '6%', borderRadius: 60, height: 55, width: 55 }}
+          full
+          rounded
+          success
+          onPress={this.welcomeAlertButton}
+        >
+
+          <AntDesign name="questioncircleo" size={35} color="white" />
+        </Button>
       </Container>
     );
   }
