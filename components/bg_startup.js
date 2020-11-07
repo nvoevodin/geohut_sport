@@ -238,9 +238,7 @@ export const configureBgTasks = async ({ user, storePlayground, autoCheckin, aut
           } catch(e){
             console.log('error')
           }
-
           
-
           map1.then(nearestSite => {
             //using user data attempt to check in or checkout based on distance logic
             //checkUserStatus(user.email)
