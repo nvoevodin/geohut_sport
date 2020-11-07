@@ -180,6 +180,7 @@ class Profile extends Component {
     this.setState({ tracking: !this.state.tracking })
 
     if (!this.state.tracking == false) {
+      //AsyncStorage.setItem('submitted', 'TRUE')
       //UNREGISTER TASK WHEN TURNING OFF
       const TASK_FETCH_LOCATION = 'background-location-task';
       TaskManager.unregisterTaskAsync(TASK_FETCH_LOCATION);
@@ -327,6 +328,25 @@ class Profile extends Component {
                   ios_backgroundColor="#3e3e3e"
                   onValueChange={this.toggleNotification}
                   value={this.props.reducer.isRunningNotification}
+                />
+              </Right>
+            </CardItem>
+
+            <CardItem>
+              <Left>
+                <Text style={styles.cartTitles}>Location Tracking: </Text>
+                {this.state.tracking ? <Text>Yes</Text> : <Text>No</Text>}
+                <TouchableOpacity onPress={this.questionLocation}>
+                  <AntDesign style={{ marginLeft: 10 }} name="questioncircleo" size={24} color="black" />
+                </TouchableOpacity>
+              </Left>
+              <Right>
+                <Switch
+                  trackColor={{ false: '#767577', true: '#81b0ff' }}
+                  thumbColor={this.state.tracking ? '#f5dd4b' : '#f4f3f4'}
+                  ios_backgroundColor="#3e3e3e"
+                  onValueChange={this.toggleTracking}
+                  value={this.state.tracking}
                 />
               </Right>
             </CardItem>
@@ -492,23 +512,6 @@ const styles = StyleSheet.create({
 
 
 /**
- *  <CardItem>
-              <Left>
-                <Text style={styles.cartTitles}>Location Tracking: </Text>
-                {this.state.tracking ? <Text>Yes</Text> : <Text>No</Text>}
-                <TouchableOpacity onPress={this.questionLocation}>
-                  <AntDesign style={{ marginLeft: 10 }} name="questioncircleo" size={24} color="black" />
-                </TouchableOpacity>
-              </Left>
-              <Right>
-                <Switch
-                  trackColor={{ false: '#767577', true: '#81b0ff' }}
-                  thumbColor={this.state.tracking ? '#f5dd4b' : '#f4f3f4'}
-                  ios_backgroundColor="#3e3e3e"
-                  onValueChange={this.toggleTracking}
-                  value={this.state.tracking}
-                />
-              </Right>
-            </CardItem>
+ *  
  * 
  */

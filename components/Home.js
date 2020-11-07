@@ -7,10 +7,9 @@ import {
   Alert,
   Animated,
   ActivityIndicator,
-  Platform
+  Platform   
 } from "react-native";
 
-import * as BackgroundFetch from 'expo-background-fetch';
 import { Button, Right, Left, Header, Title } from "native-base";
 
 import * as firebase from "firebase";
@@ -33,8 +32,8 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 //import notificationFunction from "./functions/notifications"
 
 //TRACKING - FAUSTO
-//import { configureBgTasks } from './bg_startup';
-//const TASK_FETCH_LOCATION = 'background-location-task';
+import { configureBgTasks } from './bg_startup';
+const TASK_FETCH_LOCATION = 'background-location-task';
 import AsyncStorage from '@react-native-community/async-storage';
 const moment = require("moment");
 import PermissionNotFunc from './functions/notifications'
@@ -135,7 +134,8 @@ class Home extends Component {
 
     
     //REFRESH COURTS
-    //this.removeItemValue('courts');
+    this.removeItemValue('courts');
+    //this.removeItemValue('submitted');
     
     const firstNotif = await AsyncStorage.getItem('notifications')
     if (firstNotif === null){
@@ -173,7 +173,7 @@ class Home extends Component {
       //      console.log('tracking reducer is FALSE!!!')
       //    }
       //  });
-      //this.checkedIn(this.props.reducer.userId[3]);
+      this.checkedIn(this.props.reducer.userId[3]);
 
 
 
@@ -183,19 +183,23 @@ class Home extends Component {
 
 
 
-   autoTrackingCheckin = () => {
+   autoTrackingCheckin = async () => {
      //console.log('passed function works!!!!!!!')
      this.setState({ submitted: true });
+     //this.props.storeCheck(JSON.stringify(true))
+     await AsyncStorage.setItem('submitted', 'TRUE')
      //this.setState({ submittedAnimation: true })
    }
 
-   autoTrackingCheckout = () => {
+   autoTrackingCheckout = async () => {
      //console.log('passed function works!!!!!!!')
      this.setState({ submitted: false });
+     //this.props.storeCheck(JSON.stringify(false))
+     await AsyncStorage.setItem('submitted', 'FALSE')
      //this.setState({ submittedAnimation: false })
    }
 
-   configureBackground = async (user, storePlayground, records, anonymous = this.props.reducer.isAnanimous, autoCheckout = this.autoTrackingCheckout, autoCheckin = this.autoTrackingCheckin) => {
+   configureBackground = async (user, storePlayground, records, submitted = this.props.reducer.submitted, anonymous = this.props.reducer.isAnanimous, autoCheckout = this.autoTrackingCheckout, autoCheckin = this.autoTrackingCheckin) => {
     console.log('FIRING BACKGROUND...');
     //start tracking in background
     const startBackgroundUpdate = async () => {
@@ -215,7 +219,8 @@ class Home extends Component {
      } else {
        await Location.startLocationUpdatesAsync(TASK_FETCH_LOCATION, {
          accuracy: Location.Accuracy.BestForNavigation,
-         timeInterval: 300000,
+         //timeInterval: 300000,
+         timeInterval: 10000,
          //distanceInterval: 5, // minimum change (in meters) betweens updates
          //deferredUpdatesInterval: 1000, // minimum interval (in milliseconds) between updates
          // foregroundService is how you get the task to be updated as often as would be if the app was open
@@ -233,7 +238,7 @@ class Home extends Component {
         //console.log('user info: ', user)
         //console.log('records: ', records)
         console.log('anonimity???',anonymous)
-        configureBgTasks({user, storePlayground, autoCheckin, autoCheckout, records, anonymous})
+        configureBgTasks({user, storePlayground, autoCheckin, autoCheckout, records, submitted, anonymous})
         startBackgroundUpdate();
       }
       catch (error) {
@@ -272,7 +277,7 @@ class Home extends Component {
 
   checkedIn = async (email) => {
 
-
+    console.log('CHECKING STATUS AGAIN...')
     let records = await fetch(`${global.x}/checkincheck/${email}`)
     .then(res => res.json())
     .then(res => {  
@@ -289,29 +294,30 @@ class Home extends Component {
     });
 
    //ONCE WE HAVE SET STATE WE CAN NOW PASS STATE TO TRACKING AND FIRE
-  //  const asyncTracking = await AsyncStorage.getItem('vpAutoTracking');
-  //   if (asyncTracking !== null) {
-  //     // We have data!!
-  //     //return asyncTracking
-  //     //console.log('tracking status: ', asyncTracking)
-  //     this.props.setTracking(JSON.parse(asyncTracking));
-  //   } else {
-  //     //this._storeTracking('vpAutoTracking', 'true')
-  //     //console.log('HELLOOOOOO ITS EMPTTYYYYYYY')
-  //     this.props.setTracking(true);
-  //   }
+    const asyncTracking = await AsyncStorage.getItem('vpAutoTracking');
+     if (asyncTracking !== null) {
+       // We have data!!
+       //return asyncTracking
+       console.log('tracking status: ', asyncTracking)
+       this.props.setTracking(JSON.parse(asyncTracking));
+     } else {
+       this._storeTracking('vpAutoTracking', 'true')
+       console.log('HELLOOOOOO ITS EMPTTYYYYYYY')
+       this.props.setTracking(true);
+     }
 
   //   //fire background tracking - user daya is pulled from local storage with backup being db
-  //   this.pullUserInfo().then(user => {
-  //     if (this.props.reducer.tracking == true) {
-  //       const { storePlayground } = this.props;
-  //       //console.log('MY RECORDS: ', records)
-  //       this.configureBackground(user, storePlayground, records);
-  //       //console.log('tracking reducer is TRUE!!!!!!!!')
-  //     } else {
-  //       //console.log('tracking reducer is FALSE!!!')
-  //     }
-  //   });
+     this.pullUserInfo().then(user => {
+       if (this.props.reducer.tracking == true) {
+         const { storePlayground } = this.props;
+         //console.log('MY RECORDS: ', records);
+         console.log('CHECKED IN? ', this.state.submitted);
+         this.configureBackground(user, storePlayground, records);
+         console.log('tracking reducer is TRUE!!!!!!!!')
+       } else {
+         console.log('tracking reducer is FALSE!!!')
+       }
+     });
 
 
 
@@ -424,11 +430,11 @@ class Home extends Component {
       Alert.alert("Select your court first.");
      } 
      //TRACKING - COMMENT
-    //else if (this.props.reducer.tracking == true & this.state.submitted == true) {
-      // Alert.alert('No need to check out. You will be checked out Automatically')
-     //} else if (this.props.reducer.tracking == true & this.state.submitted == false) {
-     //  Alert.alert('No need to check in You will be checked in Automatically')
-    // } 
+    else if (this.props.reducer.tracking == true & this.state.submitted == true) {
+      Alert.alert('No need to check out. You will be checked out Automatically')
+     } else if (this.props.reducer.tracking == true & this.state.submitted == false) {
+       Alert.alert('No need to check in You will be checked in Automatically')
+     } 
     else if (this.state.submitted === false) {
       this.setState({ submittedAnimation: true });
       try {
@@ -463,7 +469,7 @@ class Home extends Component {
           //this.handleAnimation();
 
           //show checkin as done
-
+          await AsyncStorage.setItem('submitted', 'TRUE')
           this.setState({ submitted: true });
         } else if (distance > this.state.proximityMax 
           // & this.props.reducer.tracking == false 
@@ -505,7 +511,7 @@ await fetch(
 
 
 
-
+      await AsyncStorage.setItem('submitted', 'FALSE')
       this.setState({ submittedAnimation: false });
       this.setState({ submitted: false });
 
@@ -578,7 +584,7 @@ await fetch(
 
 
   render() {
-
+    //console.log('HOME PAGE CHECKIN STATUS:', this.props.reducer.submitted);
 
     return (
       <React.Fragment>
@@ -816,6 +822,7 @@ const mapDispachToProps = dispatch => {
     setTracking: (y) => dispatch({ type: "TRACKING", value: y }),
     storePlayground: (name, id, lat, lon) => dispatch({ type: "STORE_PLAYGROUND", value: name, value1: id, value2: lat, value3: lon }),
     setNotifications: (x) => dispatch({ type: "SET_NOTIFICATIONS", value: x }),
+    storeCheck: (y) => dispatch({ type: "SUBMITTED", value: y })
 
   };
 };

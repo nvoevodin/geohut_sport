@@ -74,7 +74,7 @@ const checkin = async (nearestSite, user_id, fname, lname, distance, anonymous) 
     //if(distance < proximityMax) {
       //console.log('checking you IN via function...', distance)
       //Alert.alert(`you r checked in, distance is: ${distance}`)
-      console.log('CHECKING IN....... THIS PERSON.......',anonymous)
+      //console.log('CHECKING IN....... THIS PERSON.......',anonymous)
       try {
         fetch(
           // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
@@ -177,15 +177,15 @@ const _storeCourts = async (key,value) => {
 };
 
 
-export const configureBgTasks = ({ user, storePlayground, autoCheckin, autoCheckout, records, anonymous }) => {
+export const configureBgTasks = async ({ user, storePlayground, autoCheckin, autoCheckout, records, submitted, anonymous }) => {
   const proximityMax = 250;
   //console.log('starting tracking...', user);
-  //console.log('*******is this person checked in already?? ', records)
-  console.log('**********is this person anonymous???', anonymous)
+  console.log('*******is this person checked in already?? ', submitted)
+  //console.log('**********is this person anonymous???', anonymous)
   //console.log('proximityMax is:', proximityMax)
   //checkUserStatus().then(res=>console.log('******',res))
  
-  TaskManager.defineTask(TASK_FETCH_LOCATION, ({ data, error }) => {
+  TaskManager.defineTask(TASK_FETCH_LOCATION, async ({ data, error }) => {
   
     if (error) {
       // Error occurred - check `error.message` for more details.
@@ -232,14 +232,24 @@ export const configureBgTasks = ({ user, storePlayground, autoCheckin, autoCheck
         //_retrieveData('email')
         //.then(user_id=>{
 
+          try {
+            var submitted = await AsyncStorage.getItem('submitted')
+            console.log('bg gets------>',submitted)
+          } catch(e){
+            console.log('error')
+          }
+
+          
+
           map1.then(nearestSite => {
             //using user data attempt to check in or checkout based on distance logic
             //checkUserStatus(user.email)
             //.then(res=>{
               //condition 1. user is not signed in at a court and within proximityMax -->SIGN THEM IN
-              if ((records === undefined || records.length == 0) & nearestSite.distance <= proximityMax ) {
+              if ( (submitted=='FALSE' || submitted == null) & nearestSite.distance <= proximityMax ) {
                 //console.log(nearestSite.site_id, user_id, user.firstName, user.lastName, nearestSite.distance)
-                checkin(nearestSite.site_id, user.email, user.first_name, user.last_name, nearestSite.distance, anonymous);
+                console.log('SIGNING U IN AUTOMATICALLY FROM BGSTARTUP, YOUR CHECKED IN STATUS IS: ',submitted);
+                checkin(nearestSite.site_id, user.email, user.first_name, user.last_name, nearestSite.distance);
                 
                 //send value reducer - change color to check in
                 autoCheckin()
@@ -247,15 +257,15 @@ export const configureBgTasks = ({ user, storePlayground, autoCheckin, autoCheck
                 //Alert.alert(`you were checked in at: ${nearestSite.distance}meters`)
               }
               //condition 2. user is not signed in at a court and outside proximityMax -->NO SIGN IN
-              else if ((records === undefined || records.length == 0) & nearestSite.distance > proximityMax) {
-                //console.log('do nothing');
+              else if ( (submitted=='FALSE' || submitted == null) & nearestSite.distance > proximityMax) {
+                console.log('TOO FAR AWAY');
               } 
               //condition 3. user is signed in at a court and still within proximityMax -->NO SIGN IN
-              else if ((records !== undefined || records.length == 0) > 0 & nearestSite.distance <= proximityMax) {
-                //console.log('do nothing');
+              else if (submitted=='TRUE' & nearestSite.distance <= proximityMax) {
+                console.log('ALREADY SIGNED IN ');
               } 
               //confition 4. user is signed in at a court and outside the proximityMax now -->SIGN OUT
-              else if ((records !== undefined || records.length == 0) > 0 & nearestSite.distance > proximityMax) {
+              else if (submitted == 'TRUE' & nearestSite.distance > proximityMax) {
                 checkout(nearestSite.site_id, user.email, nearestSite.distance)
                 //Alert.alert(`You were checked out at: ${nearestSite.distance}meters`)
     
