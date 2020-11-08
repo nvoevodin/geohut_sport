@@ -79,72 +79,27 @@ class Home extends Component {
     }
 
    
-        this.readFireBase(this.props.reducer.userId[1],this.props.reducer.userId[2],this.props.reducer.userId[3]);
-           //CHECKS IF ALREADY PRECHECKED IN
+    this.readFireBase(this.props.reducer.userId[1],this.props.reducer.userId[2],this.props.reducer.userId[3]);
+
+    //CHECKS IF ALREADY PRECHECKED IN
     this.preCheckedIn(this.props.reducer.userId[3]);
 
     //CHECKS IF ALREADY CHECKED IN
     this.checkedIn(this.props.reducer.userId[3]);
 
-    //   } catch(e){console.log(e)}
-    // });
-
-
-    //ADDING GEO TRACKING - FAUSTO
-    //const {setEnterRegion} = this.props;
-    //configureBgTasks({ setEnterRegion });
-
-    //this.startBackgroundUpdate();
-    //this.startGeofence();
-
     //EXECUTES LOCATION PERMISSIONS
     this.getLocationsPermissions();
-    // const { status } = await Location.requestPermissionsAsync();
-    // if (status === 'granted') {
-    //   console.log('location permissions are granted...')
-    // }
 
-    //const { status } = await Location.requestPermissionsAsync();
-    //if (status === 'granted') {
-    //  console.log('location permissions are granted...')
-   // }
-
-    // const asyncTracking = await AsyncStorage.getItem('vpAutoTracking');
-    // if (asyncTracking !== null) {
-    //   // We have data!!
-    //   //return asyncTracking
-    //   console.log('tracking status: ', asyncTracking)
-    //   this.props.setTracking(JSON.parse(asyncTracking));
-    // } else {
-    //   //this._storeTracking('vpAutoTracking', 'true')
-    //   console.log('HELLOOOOOO ITS EMPTTYYYYYYY')
-    //   this.props.setTracking(true);
-    // }
-
-    // //fire background tracking - user daya is pulled from local storage with backup being db
-    // this.pullUserInfo().then(user => {
-    //   if (this.props.reducer.tracking == true) {
-    //     const { storePlayground } = this.props;
-    //     this.configureBackground(this.state.proximityMax ,user, storePlayground);
-    //     console.log('tracking reducer is TRUE!!!!!!!!')
-    //   } else {
-    //     console.log('tracking reducer is FALSE!!!')
-    //   }
-    // });
-
-    
     //REFRESH COURTS
     this.removeItemValue('courts');
     //this.removeItemValue('submitted');
     
+    //NOTIFICATIONS
     const firstNotif = await AsyncStorage.getItem('notifications')
     if (firstNotif === null){
       const valu = await PermissionNotFunc();
     this.props.setNotifications(valu)
     }
-
-    
-
   }
 
 
@@ -162,23 +117,11 @@ class Home extends Component {
     } 
      else if (this.props.reducer.tracking == false & prevProps.reducer.tracking == true) {
        //console.log('stop tracking now')
+     //REFIRE TRACKING WHEHN SOMEONE TOGGLES TRACKING
      } else if (this.props.reducer.tracking == true & prevProps.reducer.tracking == false) {
-       //fire background tracking - user daya is pulled from local storage with backup being db
-      //  this.pullUserInfo().then(user => {
-      //    if (this.props.reducer.tracking == true) {
-      //      const { storePlayground } = this.props;
-      //      this.configureBackground(this.state.proximityMax ,user, storePlayground);
-      //      console.log('tracking reducer is TRUE!!!!!!!!')
-      //    } else {
-      //      console.log('tracking reducer is FALSE!!!')
-      //    }
-      //  });
+      
       this.checkedIn(this.props.reducer.userId[3]);
-
-
-
      }
-
   }
 
 
@@ -199,8 +142,8 @@ class Home extends Component {
      //this.setState({ submittedAnimation: false })
    }
 
-   configureBackground = async (user, storePlayground, records, submitted = this.props.reducer.submitted, anonymous = this.props.reducer.isAnanimous, autoCheckout = this.autoTrackingCheckout, autoCheckin = this.autoTrackingCheckin) => {
-    console.log('FIRING BACKGROUND...');
+   configureBackground = async (user, storePlayground, anonymous = this.props.reducer.isAnanimous, autoCheckout = this.autoTrackingCheckout, autoCheckin = this.autoTrackingCheckin) => {
+    //console.log('FIRING BACKGROUND...');
     //start tracking in background
     const startBackgroundUpdate = async () => {
      if(Platform.OS==='ios') {
@@ -238,7 +181,7 @@ class Home extends Component {
         //console.log('user info: ', user)
         //console.log('records: ', records)
         console.log('anonimity???',anonymous)
-        configureBgTasks({user, storePlayground, autoCheckin, autoCheckout, records, submitted, anonymous})
+        configureBgTasks({user, storePlayground, anonymous, autoCheckin, autoCheckout})
         startBackgroundUpdate();
       }
       catch (error) {
@@ -277,7 +220,7 @@ class Home extends Component {
 
   checkedIn = async (email) => {
 
-    console.log('CHECKING STATUS AGAIN...')
+    //console.log('CHECKING STATUS AGAIN...')
     let records = await fetch(`${global.x}/checkincheck/${email}`)
     .then(res => res.json())
     .then(res => {  
@@ -293,34 +236,36 @@ class Home extends Component {
       console.log(error)
     });
 
-   //ONCE WE HAVE SET STATE WE CAN NOW PASS STATE TO TRACKING AND FIRE
-    const asyncTracking = await AsyncStorage.getItem('vpAutoTracking');
-     if (asyncTracking !== null) {
-       // We have data!!
-       //return asyncTracking
-       console.log('tracking status: ', asyncTracking)
-       this.props.setTracking(JSON.parse(asyncTracking));
-     } else {
-       this._storeTracking('vpAutoTracking', 'true')
-       console.log('HELLOOOOOO ITS EMPTTYYYYYYY')
-       this.props.setTracking(true);
-     }
+    //CHECK TRACKING STATUS
+    this.checkTrackingStatus();
 
-  //   //fire background tracking - user daya is pulled from local storage with backup being db
+     //fire background tracking - user daya is pulled from local storage with backup being db
      this.pullUserInfo().then(user => {
        if (this.props.reducer.tracking == true) {
          const { storePlayground } = this.props;
          //console.log('MY RECORDS: ', records);
          console.log('CHECKED IN? ', this.state.submitted);
-         this.configureBackground(user, storePlayground, records);
+         this.configureBackground(user, storePlayground);
          console.log('tracking reducer is TRUE!!!!!!!!')
        } else {
          console.log('tracking reducer is FALSE!!!')
        }
      });
+  }
 
-
-
+  //WE CHECK ASYNC STORAGE AND SET TRACKIGN STATUS
+  checkTrackingStatus = async () => {
+    const asyncTracking = await AsyncStorage.getItem('vpAutoTracking');
+     if (asyncTracking !== null) {
+       // We have data!!
+       //return asyncTracking
+       console.log('TRACKING STATUS: ', asyncTracking)
+       this.props.setTracking(JSON.parse(asyncTracking));
+     } else {
+       this._storeTracking('vpAutoTracking', 'true')
+       console.log('TRACKING IS EMPTY, SETTING TO TRUE')
+       this.props.setTracking(true);
+     }
   }
 
   preCheckedIn = (email) => {
@@ -432,8 +377,8 @@ class Home extends Component {
      //TRACKING - COMMENT
     else if (this.props.reducer.tracking == true & this.state.submitted == true) {
       Alert.alert('No need to check out. You will be checked out Automatically')
-     } else if (this.props.reducer.tracking == true & this.state.submitted == false) {
-       Alert.alert('No need to check in You will be checked in Automatically')
+     //} else if (this.props.reducer.tracking == true & this.state.submitted == false) {
+     //  Alert.alert('No need to check in You will be checked in Automatically')
      } 
     else if (this.state.submitted === false) {
       this.setState({ submittedAnimation: true });
@@ -469,6 +414,7 @@ class Home extends Component {
           //this.handleAnimation();
 
           //show checkin as done
+          //await this._storeTracking('submitted', 'TRUE')
           await AsyncStorage.setItem('submitted', 'TRUE')
           this.setState({ submitted: true });
         } else if (distance > this.state.proximityMax 
@@ -510,7 +456,7 @@ await fetch(
 
 
 
-
+      //await this._storeTracking('submitted', 'FALSE')
       await AsyncStorage.setItem('submitted', 'FALSE')
       this.setState({ submittedAnimation: false });
       this.setState({ submitted: false });
@@ -581,6 +527,18 @@ await fetch(
         return false;
     }
 }
+
+  //FUNCTION: STORE COURTS LOCALLY 
+  _storeTracking = async (key, value) => {
+    try {
+      await AsyncStorage.setItem(
+        key,
+        JSON.stringify(value)
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
 
   render() {

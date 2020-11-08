@@ -24,7 +24,7 @@ class Profile extends Component {
 
 
 
-  deleteAccount = async () =>{
+  deleteAccount = async () => {
 
     Alert.alert(
       `Delete account.`,
@@ -33,13 +33,14 @@ class Profile extends Component {
         {
           text: "No",
           onPress: () => {
-    
+
           },
           style: "cancel"
         },
-        { text: "Yes", onPress: () => {
+        {
+          text: "Yes", onPress: () => {
 
-         AsyncStorage.removeItem('user_info')
+            AsyncStorage.removeItem('user_info')
 
             fetch(
               // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
@@ -50,31 +51,32 @@ class Profile extends Component {
             })
 
 
-          firebase.auth().currentUser.delete().then(function() {
-            alert('deleted')
-          }).catch(function(error) {
-            alert('error')
-          });
+            firebase.auth().currentUser.delete().then(function () {
+              alert('deleted')
+            }).catch(function (error) {
+              alert('error')
+            });
 
 
-          this.logout()
-          
-    
-//           firebase.auth().currentUser.delete().then(function () {
-//             
+            this.logout()
+
+
+            //           firebase.auth().currentUser.delete().then(function () {
+            //             
 
 
 
 
-// alert('You deleted your account.')
+            // alert('You deleted your account.')
 
-            
-     
-//           }).catch(function (error) {
-//             console.log(error)
-//             alert('Important action! Log into the app again and try one more time.')
-//           })
-        } }
+
+
+            //           }).catch(function (error) {
+            //             console.log(error)
+            //             alert('Important action! Log into the app again and try one more time.')
+            //           })
+          }
+        }
       ],
       { cancelable: false }
     );
@@ -131,11 +133,11 @@ class Profile extends Component {
       console.log('something wrong (storage)')
     }
 
-    if(this.state.isRunningNotification){
+    if (this.state.isRunningNotification) {
       helpers.cancelNotificationFunction()
-    } else{
+    } else {
       PermissionNotFunc();
-    //this.props.setNotifications(valu)
+      //this.props.setNotifications(valu)
     }
 
   };
@@ -148,7 +150,7 @@ class Profile extends Component {
 
 
   componentDidMount() {
-   
+
     this.readUserData()
 
 
@@ -246,7 +248,7 @@ class Profile extends Component {
     alert("Permitting location tracking allows volleypal to check you in and out automatically. We do not store location data.")
   }
   render() {
-    
+
     return (
       <React.Fragment>
         <Header style={{ backgroundColor: '#5cb85c', height: 70, paddingTop: 0 }}>
@@ -255,12 +257,12 @@ class Profile extends Component {
           </Left>
 
           <Right>
-          <TouchableOpacity onPress={this.readUserData}>
-          <MaterialCommunityIcons name="refresh" size={30} color="white" />
-          </TouchableOpacity>
-          <TouchableOpacity onPress = {this.logout}>
-          <MaterialCommunityIcons name="exit-run" size={30} color="white" />
-          </TouchableOpacity>
+            <TouchableOpacity onPress={this.readUserData}>
+              <MaterialCommunityIcons name="refresh" size={30} color="white" />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={this.logout}>
+              <MaterialCommunityIcons name="exit-run" size={30} color="white" />
+            </TouchableOpacity>
           </Right>
         </Header>
         <Content padder>
@@ -311,7 +313,7 @@ class Profile extends Component {
               </Right>
             </CardItem>
 
-           
+
 
             <CardItem>
               <Left>
@@ -350,23 +352,7 @@ class Profile extends Component {
                 />
               </Right>
             </CardItem>
-
-        
-{/**
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- */}        
-             
-          
           </Card>
-
           <Button style={{ margin: 10, marginTop: 40 }}
             full
             rounded
@@ -462,7 +448,7 @@ const mapDispachToProps = dispatch => {
   return {
     setAnanimous: (x) => dispatch({ type: "SET_ANANIMOUS", value: x }),
     setNotifications: (x) => dispatch({ type: "SET_NOTIFICATIONS", value: x }),
-    setTracking: (y) => dispatch({ type: "TRACKING", value: y})
+    setTracking: (y) => dispatch({ type: "TRACKING", value: y })
   };
 };
 
@@ -508,10 +494,3 @@ const styles = StyleSheet.create({
     fontWeight: "bold"
   }
 });
-
-
-
-/**
- *  
- * 
- */

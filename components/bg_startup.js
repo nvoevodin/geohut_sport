@@ -16,9 +16,6 @@ const moment = require("moment");
 
 //uid = firebase.auth().currentUser.uid;
 
-
-
-
 //FUNCTION: GET ALL SITES
 const getCourts = async () => {
   const value = await AsyncStorage.getItem('courts').then(req => JSON.parse(req))
@@ -177,11 +174,11 @@ const _storeCourts = async (key,value) => {
 };
 
 
-export const configureBgTasks = async ({ user, storePlayground, autoCheckin, autoCheckout, records, submitted, anonymous }) => {
+export const configureBgTasks = async ({ user, storePlayground, anonymous, autoCheckin, autoCheckout }) => {
   const proximityMax = 250;
   //console.log('starting tracking...', user);
-  console.log('*******is this person checked in already?? ', submitted)
-  //console.log('**********is this person anonymous???', anonymous)
+  //console.log('*******is this person checked in already?? ', submitted)
+  console.log('**********is this person anonymous???', anonymous)
   //console.log('proximityMax is:', proximityMax)
   //checkUserStatus().then(res=>console.log('******',res))
  
@@ -189,6 +186,7 @@ export const configureBgTasks = async ({ user, storePlayground, autoCheckin, aut
   
     if (error) {
       // Error occurred - check `error.message` for more details.
+      console.log(error);
       return;
     }
     if (data) {
@@ -217,42 +215,22 @@ export const configureBgTasks = async ({ user, storePlayground, autoCheckin, aut
       map1.then(nearestSite=>{
         storePlayground(nearestSite.site_name,nearestSite.site_id,nearestSite.latitude,nearestSite.longitude)
       })
-
-      //***TEMP SEND TO TABLE */  
-      //let sqlStamp = moment().utcOffset('-0400').format("YYYY-MM-DD HH:mm:ss").substr(0,18)+'0';
-      //fetch(
-        // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
-      //  `${global.x}/addTracking?datetime=${sqlStamp}&latitude=${locations[0].coords.latitude}&longitude=${locations[0].coords.longitude}`,
-      //  { method: "POST" }
-      //  ).catch((error) => {
-      //    console.log(error)
-      //  })
-    
-       //using email and information check in or checkout
-        //_retrieveData('email')
-        //.then(user_id=>{
-
+          //USE ASYNC STORAGE TO SET VALUE OF CHECK IN OR CHECKOUT
           try {
             var submitted = await AsyncStorage.getItem('submitted')
-            console.log('bg gets------>',submitted)
+            //console.log('bg gets------>',submitted)
           } catch(e){
             console.log('error')
           }
-          
+
           map1.then(nearestSite => {
-            //using user data attempt to check in or checkout based on distance logic
-            //checkUserStatus(user.email)
-            //.then(res=>{
+            
               //condition 1. user is not signed in at a court and within proximityMax -->SIGN THEM IN
               if ( (submitted=='FALSE' || submitted == null) & nearestSite.distance <= proximityMax ) {
                 //console.log(nearestSite.site_id, user_id, user.firstName, user.lastName, nearestSite.distance)
-                console.log('SIGNING U IN AUTOMATICALLY FROM BGSTARTUP, YOUR CHECKED IN STATUS IS: ',submitted);
-                checkin(nearestSite.site_id, user.email, user.first_name, user.last_name, nearestSite.distance);
-                
-                //send value reducer - change color to check in
+                //console.log('SIGNING U IN AUTOMATICALLY FROM BGSTARTUP, YOUR CHECKED IN STATUS IS: ',submitted);
+                checkin(nearestSite.site_id, user.email, user.first_name, user.last_name, nearestSite.distance, anonymous);
                 autoCheckin()
-                
-                //Alert.alert(`you were checked in at: ${nearestSite.distance}meters`)
               }
               //condition 2. user is not signed in at a court and outside proximityMax -->NO SIGN IN
               else if ( (submitted=='FALSE' || submitted == null) & nearestSite.distance > proximityMax) {
@@ -265,22 +243,9 @@ export const configureBgTasks = async ({ user, storePlayground, autoCheckin, aut
               //confition 4. user is signed in at a court and outside the proximityMax now -->SIGN OUT
               else if (submitted == 'TRUE' & nearestSite.distance > proximityMax) {
                 checkout(nearestSite.site_id, user.email, nearestSite.distance)
-                //Alert.alert(`You were checked out at: ${nearestSite.distance}meters`)
-    
-                //send value reducer - change color to check in
-                //check_in(false);
                 autoCheckout()
               }
-          //})
           })  
-
-
-        
-
-
-
-
-   
     }
 })
 }
@@ -329,7 +294,12 @@ export const configureBgTasks = async ({ user, storePlayground, autoCheckin, aut
 
  /**
   * 
-  *                  map1.then(nearestSite => {
+  *          
+  * 
+  * 
+  * 
+  * 
+  *         map1.then(nearestSite => {
             //using user data attempt to check in or checkout based on distance logic
             //checkUserStatus(user.email)
             //.then(res=>{
@@ -400,3 +370,14 @@ export const configureBgTasks = async ({ user, storePlayground, autoCheckin, aut
           //})
           })  
   */
+
+  /* 
+      //let sqlStamp = moment().utcOffset('-0400').format("YYYY-MM-DD HH:mm:ss").substr(0,18)+'0';
+      //fetch(
+        // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
+      //  `${global.x}/addTracking?datetime=${sqlStamp}&latitude=${locations[0].coords.latitude}&longitude=${locations[0].coords.longitude}`,
+      //  { method: "POST" }
+      //  ).catch((error) => {
+      //    console.log(error)
+      //  })
+   */
