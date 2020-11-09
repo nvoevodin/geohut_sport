@@ -117,9 +117,11 @@ class Home extends Component {
      else if (this.props.reducer.tracking == false & prevProps.reducer.tracking == true) {
        //console.log('stop tracking now')
      //REFIRE TRACKING WHEHN SOMEONE TOGGLES TRACKING
+     //IF A PERSON DENIED LOCATION USE THE VERY FIRST TIME STATUS WILL BE FALSE IN WHICH CASE
+     //WE NEED TO ASK AGAIN TO ALLOW THEM TO TOGGLE LOCATION
      } else if (this.props.reducer.tracking == true & prevProps.reducer.tracking == false) {
-      
-      this.checkedIn(this.props.reducer.userId[3]);
+        this.getLocationsPermissions();
+        this.checkedIn(this.props.reducer.userId[3]);
      }
   }
 
