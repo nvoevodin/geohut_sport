@@ -248,7 +248,7 @@ class Profile extends Component {
     alert("Permitting location tracking allows volleypal to check you in and out automatically. We do not store location data.")
   }
   render() {
-    //console.log('TRACKER SETTING: ',this.props.reducer.tracking)
+    console.log('TRACKER SETTING: ',this.props.reducer.tracking)
 
     return (
       <React.Fragment>
@@ -334,11 +334,12 @@ class Profile extends Component {
                 />
               </Right>
             </CardItem>
+            
 
             <CardItem>
               <Left>
                 <Text style={styles.cartTitles}>Location Tracking: </Text>
-                {this.props.reducer.tracking ? <Text>Yes</Text> : <Text>No</Text>}
+                {JSON.parse(this.props.reducer.tracking) ? <Text>Yes</Text> : <Text>No</Text>}
                 <TouchableOpacity onPress={this.questionLocation}>
                   <AntDesign style={{ marginLeft: 10 }} name="questioncircleo" size={24} color="black" />
                 </TouchableOpacity>
@@ -346,14 +347,16 @@ class Profile extends Component {
               <Right>
                 <Switch
                   trackColor={{ false: '#767577', true: '#81b0ff' }}
-                  thumbColor={this.props.reducer.tracking ? '#f5dd4b' : '#f4f3f4'}
+                  thumbColor={JSON.parse(this.props.reducer.tracking) ? '#f5dd4b' : '#f4f3f4'}
                   ios_backgroundColor="#3e3e3e"
                   onValueChange={this.toggleTracking}
-                  value={this.props.reducer.tracking}
+                  value={JSON.parse(this.props.reducer.tracking)}
                 />
               </Right>
             </CardItem>
           </Card>
+
+
           <Button style={{ margin: 10, marginTop: 40 }}
             full
             rounded

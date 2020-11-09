@@ -121,7 +121,6 @@ class Home extends Component {
      //WE NEED TO ASK AGAIN TO ALLOW THEM TO TOGGLE LOCATION
      } else if (this.props.reducer.tracking == true & prevProps.reducer.tracking == false) {
         this.getLocationsPermissions();
-        this.checkedIn(this.props.reducer.userId[3]);
      }
   }
 
@@ -235,7 +234,8 @@ class Home extends Component {
       console.log(error)
     });
 
-    if (this.props.reducer.tracking === true) {
+    if (JSON.parse(this.props.reducer.tracking) === true) {
+      console.log('TRACKING IS STARTING UP...');
       this.pullUserInfo().then(user => {
            console.log('CHECKED IN? ', this.state.submitted);
            console.log('TRACKING REDUCER INTERPERTED AS: ',this.props.reducer.tracking);
@@ -243,6 +243,7 @@ class Home extends Component {
            this.configureBackground(user, storePlayground);
        });
     }
+
   }
 
   //WE CHECK ASYNC STORAGE AND SET TRACKIGN STATUS
@@ -253,34 +254,9 @@ class Home extends Component {
       this.props.setTracking(true);
       this._storeTracking('vpAutoTracking', 'true')
     } else {
-      console.log('TRACKING STATUS IS...',asyncTracking);
+      //console.log('TRACKING STATUS IS...',JSON.parse(asyncTracking));
       this.props.setTracking(JSON.parse(asyncTracking))
     }
-     
-    //if (asyncTracking !== null) {
-       // We have data!!
-       //return asyncTracking
-    //   console.log('TRACKING STATUS: ', asyncTracking)
-    //   this.props.setTracking(JSON.parse(asyncTracking));
-    // } else {
-   //    this._storeTracking('vpAutoTracking', 'true')
-   //    console.log('TRACKING IS EMPTY, SETTING TO TRUE')
-   //    this.props.setTracking(true);
-   //  }
-
-    //  //fire background tracking - user daya is pulled from local storage with backup being db
-    //  this.pullUserInfo().then(user => {
-    //   if (this.props.reducer.tracking == true) {
-    //     const { storePlayground } = this.props;
-    //     //console.log('MY RECORDS: ', records);
-    //     console.log('CHECKED IN? ', this.state.submitted);
-    //     this.configureBackground(user, storePlayground);
-    //     console.log('tracking reducer is TRUE!!!!!!!!')
-    //   } else {
-    //     console.log('tracking reducer is FALSE!!!')
-    //   }
-    // });
-
   }
 
   preCheckedIn = (email) => {
@@ -318,8 +294,6 @@ class Home extends Component {
     });
     //})
   }
-
-
 
   //FUNCTION: ASKS FOR LOCATION PERMISSIONS
   getLocationsPermissions = async () => {
