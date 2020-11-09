@@ -248,7 +248,7 @@ class Profile extends Component {
     alert("Permitting location tracking allows volleypal to check you in and out automatically. We do not store location data.")
   }
   render() {
-    console.log('TRACKER SETTING: ',this.props.reducer.tracking)
+    //console.log('TRACKER SETTING: ',this.props.reducer.tracking)
 
     return (
       <React.Fragment>

@@ -233,9 +233,8 @@ class Home extends Component {
     .catch((error) => {
       console.log(error)
     });
-
     if (JSON.parse(this.props.reducer.tracking) === true) {
-      console.log('TRACKING IS STARTING UP...');
+      console.log('TRACKING IS STARTING UP...', JSON.parse(this.props.reducer.tracking));
       this.pullUserInfo().then(user => {
            console.log('CHECKED IN? ', this.state.submitted);
            console.log('TRACKING REDUCER INTERPERTED AS: ',this.props.reducer.tracking);
@@ -243,7 +242,6 @@ class Home extends Component {
            this.configureBackground(user, storePlayground);
        });
     }
-
   }
 
   //WE CHECK ASYNC STORAGE AND SET TRACKIGN STATUS
@@ -308,8 +306,9 @@ class Home extends Component {
       });
     } else {
       this.setState({ hasLocationPermission: status });
-      //CHECK TRACKING STATUS
-      this.checkTrackingStatus();
+      //CHECK TRACKING STATUS FIRE AUTOMATIC CHECK IN IF PERMISSIONS ARE GIVEN
+      await this.checkTrackingStatus();
+      this.checkedIn(this.props.reducer.userId[3]);
     }
   };
 
