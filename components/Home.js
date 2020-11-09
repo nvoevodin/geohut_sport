@@ -77,7 +77,6 @@ class Home extends Component {
       );
       this.logout();
     }
-
    
     this.readFireBase(this.props.reducer.userId[1],this.props.reducer.userId[2],this.props.reducer.userId[3]);
 
@@ -129,7 +128,6 @@ class Home extends Component {
    autoTrackingCheckin = async () => {
      //console.log('passed function works!!!!!!!')
      this.setState({ submitted: true });
-     //this.props.storeCheck(JSON.stringify(true))
      await AsyncStorage.setItem('submitted', 'TRUE')
      //this.setState({ submittedAnimation: true })
    }
@@ -137,7 +135,6 @@ class Home extends Component {
    autoTrackingCheckout = async () => {
      //console.log('passed function works!!!!!!!')
      this.setState({ submitted: false });
-     //this.props.storeCheck(JSON.stringify(false))
      await AsyncStorage.setItem('submitted', 'FALSE')
      //this.setState({ submittedAnimation: false })
    }
@@ -180,7 +177,7 @@ class Home extends Component {
       try {
         //console.log('user info: ', user)
         //console.log('records: ', records)
-        console.log('anonimity???',anonymous)
+        //console.log('anonimity???',anonymous)
         configureBgTasks({user, storePlayground, anonymous, autoCheckin, autoCheckout})
         startBackgroundUpdate();
       }
@@ -221,7 +218,7 @@ class Home extends Component {
   checkedIn = async (email) => {
 
     //console.log('CHECKING STATUS AGAIN...')
-    let records = await fetch(`${global.x}/checkincheck/${email}`)
+    await fetch(`${global.x}/checkincheck/${email}`)
     .then(res => res.json())
     .then(res => {  
       if (res["data"].some(e => e.checkin_datetime.substr(0,10) === moment().utc().format("YYYY-MM-DD")) && res["data"].some(e => e.site_id === this.props.reducer.playgroundId)){
@@ -236,36 +233,52 @@ class Home extends Component {
       console.log(error)
     });
 
-    //CHECK TRACKING STATUS
-    this.checkTrackingStatus();
-
-     //fire background tracking - user daya is pulled from local storage with backup being db
-     this.pullUserInfo().then(user => {
-       if (this.props.reducer.tracking == true) {
-         const { storePlayground } = this.props;
-         //console.log('MY RECORDS: ', records);
-         console.log('CHECKED IN? ', this.state.submitted);
-         this.configureBackground(user, storePlayground);
-         console.log('tracking reducer is TRUE!!!!!!!!')
-       } else {
-         console.log('tracking reducer is FALSE!!!')
-       }
-     });
+    if (this.props.reducer.tracking === true) {
+      this.pullUserInfo().then(user => {
+           console.log('CHECKED IN? ', this.state.submitted);
+           console.log('TRACKING REDUCER INTERPERTED AS: ',this.props.reducer.tracking);
+           const { storePlayground } = this.props;
+           this.configureBackground(user, storePlayground);
+       });
+    }
   }
 
   //WE CHECK ASYNC STORAGE AND SET TRACKIGN STATUS
   checkTrackingStatus = async () => {
     const asyncTracking = await AsyncStorage.getItem('vpAutoTracking');
-     if (asyncTracking !== null) {
+    if(asyncTracking === null) {
+      console.log('TRACKING STATUS IS EMPTY, SETTING TO TRUE...')
+      this.props.setTracking(true);
+      this._storeTracking('vpAutoTracking', 'true')
+    } else {
+      console.log('TRACKING STATUS IS...',asyncTracking);
+      this.props.setTracking(JSON.parse(asyncTracking))
+    }
+     
+    //if (asyncTracking !== null) {
        // We have data!!
        //return asyncTracking
-       console.log('TRACKING STATUS: ', asyncTracking)
-       this.props.setTracking(JSON.parse(asyncTracking));
-     } else {
-       this._storeTracking('vpAutoTracking', 'true')
-       console.log('TRACKING IS EMPTY, SETTING TO TRUE')
-       this.props.setTracking(true);
-     }
+    //   console.log('TRACKING STATUS: ', asyncTracking)
+    //   this.props.setTracking(JSON.parse(asyncTracking));
+    // } else {
+   //    this._storeTracking('vpAutoTracking', 'true')
+   //    console.log('TRACKING IS EMPTY, SETTING TO TRUE')
+   //    this.props.setTracking(true);
+   //  }
+
+    //  //fire background tracking - user daya is pulled from local storage with backup being db
+    //  this.pullUserInfo().then(user => {
+    //   if (this.props.reducer.tracking == true) {
+    //     const { storePlayground } = this.props;
+    //     //console.log('MY RECORDS: ', records);
+    //     console.log('CHECKED IN? ', this.state.submitted);
+    //     this.configureBackground(user, storePlayground);
+    //     console.log('tracking reducer is TRUE!!!!!!!!')
+    //   } else {
+    //     console.log('tracking reducer is FALSE!!!')
+    //   }
+    // });
+
   }
 
   preCheckedIn = (email) => {
@@ -319,6 +332,8 @@ class Home extends Component {
       });
     } else {
       this.setState({ hasLocationPermission: status });
+      //CHECK TRACKING STATUS
+      this.checkTrackingStatus();
     }
   };
 
@@ -536,13 +551,13 @@ await fetch(
         JSON.stringify(value)
       );
     } catch (error) {
-      console.log(error);
+      console.log('LOCAL STORAGE: ',error);
     }
   };
 
 
   render() {
-    //console.log('HOME PAGE CHECKIN STATUS:', this.props.reducer.submitted);
+    console.log('HOME PAGE CHECKIN STATUS:', this.state.submitted);
 
     return (
       <React.Fragment>

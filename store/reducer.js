@@ -17,7 +17,7 @@ userInfo:null,
 reportModal: false,
 reportWeatherModal: false,
 userId:[],
-tracking: true,
+tracking: false,
 weather:null,
 isRunningNotification: false
 };

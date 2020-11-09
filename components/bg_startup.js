@@ -178,7 +178,7 @@ export const configureBgTasks = async ({ user, storePlayground, anonymous, autoC
   const proximityMax = 250;
   //console.log('starting tracking...', user);
   //console.log('*******is this person checked in already?? ', submitted)
-  console.log('**********is this person anonymous???', anonymous)
+  //console.log('**********is this person anonymous???', anonymous)
   //console.log('proximityMax is:', proximityMax)
   //checkUserStatus().then(res=>console.log('******',res))
  
@@ -229,8 +229,18 @@ export const configureBgTasks = async ({ user, storePlayground, anonymous, autoC
               if ( (submitted=='FALSE' || submitted == null) & nearestSite.distance <= proximityMax ) {
                 //console.log(nearestSite.site_id, user_id, user.firstName, user.lastName, nearestSite.distance)
                 //console.log('SIGNING U IN AUTOMATICALLY FROM BGSTARTUP, YOUR CHECKED IN STATUS IS: ',submitted);
-                checkin(nearestSite.site_id, user.email, user.first_name, user.last_name, nearestSite.distance, anonymous);
-                autoCheckin()
+                checkin(nearestSite.site_id,
+                        user.email,
+                        user.first_name,
+                        user.last_name,
+                        nearestSite.distance,
+                        anonymous)
+
+                setTimeout(function () {
+                    autoCheckin();
+                    console.log('CHECKING YOU IN...')
+                },1500);
+                
               }
               //condition 2. user is not signed in at a court and outside proximityMax -->NO SIGN IN
               else if ( (submitted=='FALSE' || submitted == null) & nearestSite.distance > proximityMax) {
@@ -243,7 +253,10 @@ export const configureBgTasks = async ({ user, storePlayground, anonymous, autoC
               //confition 4. user is signed in at a court and outside the proximityMax now -->SIGN OUT
               else if (submitted == 'TRUE' & nearestSite.distance > proximityMax) {
                 checkout(nearestSite.site_id, user.email, nearestSite.distance)
-                autoCheckout()
+                setTimeout(function () {
+                  autoCheckout();
+                  console.log('CHECKING YOU OUT...')
+              },1500);
               }
           })  
     }
