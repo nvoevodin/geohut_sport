@@ -175,7 +175,7 @@ const _storeCourts = async (key,value) => {
 
 
 export const configureBgTasks = async ({ user, storePlayground, anonymous, autoCheckin, autoCheckout }) => {
-  const proximityMax = 250;
+  const proximityMax = 275;
   //console.log('starting tracking...', user);
   //console.log('*******is this person checked in already?? ', submitted)
   //console.log('**********is this person anonymous???', anonymous)
@@ -214,11 +214,24 @@ export const configureBgTasks = async ({ user, storePlayground, anonymous, autoC
       //STORE PLAYGROUND
       map1.then(nearestSite=>{
         storePlayground(nearestSite.site_name,nearestSite.site_id,nearestSite.latitude,nearestSite.longitude)
+
+        let sqlStamp = moment().utcOffset('-0400').format("YYYY-MM-DD HH:mm:ss").substr(0,18)+'0';
+      fetch(
+        // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
+        `${global.x}/addTracking?datetime=${sqlStamp}&latitude=${locations[0].coords.latitude}&longitude=${locations[0].coords.longitude}&nearest_site=${nearestSite.site_id}&email=${user.email}&distance=${nearestSite.distance}`,
+        { method: "POST" }
+        ).catch((error) => {
+          console.log(error)
+        })
       })
+
+      
+
+
           //USE ASYNC STORAGE TO SET VALUE OF CHECK IN OR CHECKOUT
           try {
             var submitted = await AsyncStorage.getItem('submitted')
-            //console.log('bg gets------>',submitted)
+            console.log('bg gets------>',submitted)
           } catch(e){
             console.log('error')
           }
@@ -226,7 +239,7 @@ export const configureBgTasks = async ({ user, storePlayground, anonymous, autoC
           map1.then(nearestSite => {
             
               //condition 1. user is not signed in at a court and within proximityMax -->SIGN THEM IN
-              if ( (submitted=='FALSE' || submitted == null) & nearestSite.distance <= proximityMax ) {
+              if ( (submitted=='FALSE' || submitted == undefined) & nearestSite.distance <= proximityMax ) {
                 //console.log(nearestSite.site_id, user_id, user.firstName, user.lastName, nearestSite.distance)
                 //console.log('SIGNING U IN AUTOMATICALLY FROM BGSTARTUP, YOUR CHECKED IN STATUS IS: ',submitted);
                 checkin(nearestSite.site_id,
@@ -243,7 +256,7 @@ export const configureBgTasks = async ({ user, storePlayground, anonymous, autoC
                 
               }
               //condition 2. user is not signed in at a court and outside proximityMax -->NO SIGN IN
-              else if ( (submitted=='FALSE' || submitted == null) & nearestSite.distance > proximityMax) {
+              else if ( (submitted=='FALSE' || submitted == undefined) & nearestSite.distance > proximityMax) {
                 console.log('TOO FAR AWAY');
               } 
               //condition 3. user is signed in at a court and still within proximityMax -->NO SIGN IN
