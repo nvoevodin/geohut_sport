@@ -90,28 +90,23 @@ const checkin = async (nearestSite, user_id, fname, lname, distance, anonymous,c
 }
 
 //FUNCTION: HANDLE MAIN CHECKOUT
-const checkout = async (nearestSite, user_id, distance) => {
+const checkout = async (nearestSite, user_id, distance, checkin_type) => {
   
   //if(distance > proximityMax) {
     //console.log('checking you OUT via function...')        
     //Alert.alert(`you r checked out, distance is: ${distance}`)
       //FIRST CHECK THE PERSON OUT
-      try {
         await fetch(
           // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
-          `${global.x}/update?site_id=${nearestSite}&user_id=${user_id}`,
+          `${global.x}/update?site_id=${nearestSite}&user_id=${user_id}&distance=${distance}&checkin_type=${checkin_type}`,
           { method: "PUT" }
         ).catch((error) => {
           console.log(error)
         })
         
 
-      } catch(error) {
-        console.log(error)
-      }
 
       //NEXT COPY THEIR RECORD TO STORAGE
-      try {
         await fetch(
           // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
           `${global.x}/addToStorage?site_id=${nearestSite}&user_id=${user_id}`,
@@ -120,12 +115,8 @@ const checkout = async (nearestSite, user_id, distance) => {
           console.log(error)
         })
 
-      } catch(error) {
-        console.log(error)
-      }
-
+  
       //THEN DELETE THE RECORD FROM THE MAIN TABLE
-      try {
         await fetch(
           // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
           `${global.x}/delete?site_id=${nearestSite}&user_id=${user_id}`,
@@ -134,9 +125,7 @@ const checkout = async (nearestSite, user_id, distance) => {
              console.log(error)
           })
       
-      } catch(error) {
-        console.log(error)
-      }
+   
 }
 
 //FUNCTION: CALCULATES DISTANCE
@@ -175,7 +164,7 @@ const _storeCourts = async (key,value) => {
 
 
 export const configureBgTasks = async ({ user, storePlayground, anonymous, autoCheckin, autoCheckout }) => {
-  const proximityMax = 275;
+  const proximityMax = 5;
   //console.log('starting tracking...', user);
   //console.log('*******is this person checked in already?? ', submitted)
   //console.log('**********is this person anonymous???', anonymous)
@@ -197,7 +186,7 @@ export const configureBgTasks = async ({ user, storePlayground, anonymous, autoC
 
       //check current distance against all sites, 
       //return the closest site and distance to current location
-      const map1 = getCourts().then(res=>{
+      let map1 = getCourts().then(res=>{
         let response = res.map((court) => ({
           ...court,
           distance: calculateDistance(
@@ -209,20 +198,15 @@ export const configureBgTasks = async ({ user, storePlayground, anonymous, autoC
         })).sort(compare)[0];
         return response
       })
-      //map1.then(res=>console.log(res))
+
+      //RESOLVE PROMISE AND GRAB DISTANCE
+      let distance = await map1.then(nearestSite=>nearestSite.distance);
+      //console.log('MAKING SURE DISTANCE IS AVAILABLE:',distance)
 
       //STORE PLAYGROUND
       map1.then(nearestSite=>{
         storePlayground(nearestSite.site_name,nearestSite.site_id,nearestSite.latitude,nearestSite.longitude)
-
-      //   let sqlStamp = moment().utcOffset('-0400').format("YYYY-MM-DD HH:mm:ss").substr(0,18)+'0';
-      // fetch(
-      //   // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
-      //   `${global.x}/addTracking?datetime=${sqlStamp}&latitude=${locations[0].coords.latitude}&longitude=${locations[0].coords.longitude}&nearest_site=${nearestSite.site_id}&email=${user.email}&distance=${nearestSite.distance}`,
-      //   { method: "POST" }
-      //   ).catch((error) => {
-      //     console.log(error)
-      //   })
+        //console.log('CURRENT DISTANCE FROM SITE: ', nearestSite.distance)
       })
 
       
@@ -230,50 +214,15 @@ export const configureBgTasks = async ({ user, storePlayground, anonymous, autoC
 
           //USE ASYNC STORAGE TO SET VALUE OF CHECK IN OR CHECKOUT
           try {
-            var submitted = await AsyncStorage.getItem('submitted')
-            console.log('bg gets------>',submitted)
-
-            map1.then(nearestSite => {
+            let submitted = await AsyncStorage.getItem('submitted')
+            console.log('bg gets------>',submitted, 'WITH DISTANCE OF:', distance, 'PROXMAX IS: ', proximityMax)
             
-              //condition 1. user is not signed in at a court and within proximityMax -->SIGN THEM IN
-              if ( (submitted=='FALSE' || submitted == undefined) & nearestSite.distance <= proximityMax ) {
-                //console.log(nearestSite.site_id, user_id, user.firstName, user.lastName, nearestSite.distance)
-                //console.log('SIGNING U IN AUTOMATICALLY FROM BGSTARTUP, YOUR CHECKED IN STATUS IS: ',submitted);
-                checkin(nearestSite.site_id,
-                        user.email,
-                        user.first_name,
-                        user.last_name,
-                        nearestSite.distance,
-                        anonymous,
-                        submitted,
-                        nearestSite.distance
-                        );
-
-                setTimeout(function () {
-                    autoCheckin();
-                    console.log('CHECKING YOU IN...')
-                },1500);
-                
-              }
-              //condition 2. user is not signed in at a court and outside proximityMax -->NO SIGN IN
-              else if ( (submitted=='FALSE' || submitted == undefined) & nearestSite.distance > proximityMax) {
-                console.log('TOO FAR AWAY');
-              } 
-              //condition 3. user is signed in at a court and still within proximityMax -->NO SIGN IN
-              else if (submitted=='TRUE' & nearestSite.distance <= proximityMax) {
-                console.log('ALREADY SIGNED IN ');
-              } 
-              //confition 4. user is signed in at a court and outside the proximityMax now -->SIGN OUT
-              else if (submitted == 'TRUE' & nearestSite.distance > proximityMax) {
-                checkout(nearestSite.site_id, user.email, nearestSite.distance)
-                setTimeout(function () {
-                  autoCheckout();
-                  console.log('CHECKING YOU OUT...')
-              },1500);
-              }
-          })
+            //WHERE THINGS SHOULD FIRE
+            if (submitted=='TRUE' & distance > proximityMax) {
+              console.log('FIRE!!!!!!!');
+            } 
           } catch(e){
-            console.log('error')
+            console.log(e)
           }
 
            
@@ -317,6 +266,15 @@ export const configureBgTasks = async ({ user, storePlayground, anonymous, autoC
               }
           })
           }) 
+
+          //   let sqlStamp = moment().utcOffset('-0400').format("YYYY-MM-DD HH:mm:ss").substr(0,18)+'0';
+      // fetch(
+      //   // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
+      //   `${global.x}/addTracking?datetime=${sqlStamp}&latitude=${locations[0].coords.latitude}&longitude=${locations[0].coords.longitude}&nearest_site=${nearestSite.site_id}&email=${user.email}&distance=${nearestSite.distance}`,
+      //   { method: "POST" }
+      //   ).catch((error) => {
+      //     console.log(error)
+      //   })
  *      
 * 
  */
@@ -411,4 +369,50 @@ export const configureBgTasks = async ({ user, storePlayground, anonymous, autoC
       //  ).catch((error) => {
       //    console.log(error)
       //  })
+
+
+      map1.then(nearestSite => {
+            
+              //condition 1. user is not signed in at a court and within proximityMax -->SIGN THEM IN
+              if ( (submitted=='FALSE' || submitted == undefined) & nearestSite.distance <= proximityMax ) {
+                //console.log(nearestSite.site_id, user_id, user.firstName, user.lastName, nearestSite.distance)
+                //console.log('SIGNING U IN AUTOMATICALLY FROM BGSTARTUP, YOUR CHECKED IN STATUS IS: ',submitted);
+                // checkin(nearestSite.site_id,
+                //         user.email,
+                //         user.first_name,
+                //         user.last_name,
+                //         nearestSite.distance,
+                //         anonymous,
+                //         submitted,
+                //         nearestSite.distance
+                //         );
+
+             
+                //     autoCheckin();
+                    console.log('CHECKING YOU IN...')
+          
+                
+              }
+              //condition 2. user is not signed in at a court and outside proximityMax -->NO SIGN IN
+              else if ( (submitted=='FALSE' || submitted == undefined) & nearestSite.distance > proximityMax) {
+                console.log('TOO FAR AWAY');
+              } 
+              //condition 3. user is signed in at a court and still within proximityMax -->NO SIGN IN
+              else if (submitted=='TRUE' & nearestSite.distance <= proximityMax) {
+                console.log('ALREADY SIGNED IN ');
+              } 
+              //confition 4. user is signed in at a court and outside the proximityMax now -->SIGN OUT
+              else if (submitted == 'TRUE' & nearestSite.distance > proximityMax) {
+                console.log('CHECKING YOU OUT...')
+                // checkout(
+                //    nearestSite.site_id,
+                //    user.email, 
+                //    nearestSite.distance,
+                //    submitted)
+                   
+               
+                //   autoCheckout();
+  
+              }
+          })
    */

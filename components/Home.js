@@ -372,7 +372,7 @@ class Home extends Component {
         },
         //(accuracy = 100)
       );
-
+      this.setState({ distance: distance })
       return distance
 
     } catch (error) {
@@ -445,7 +445,7 @@ class Home extends Component {
 this.setState({ submittedAnimation: true });
 await fetch(
   // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
-  `${global.x}/update?site_id=${this.props.reducer.playgroundId}&user_id=${this.props.reducer.userId[3]}`,
+  `${global.x}/update?site_id=${this.props.reducer.playgroundId}&user_id=${this.props.reducer.userId[3]}&distance=${this.state.distance}&checkin_type=${this.state.submitted}`,
   { method: "PUT" }
 ).catch((error) => {
   console.log(error)
@@ -545,7 +545,7 @@ await fetch(
 
 
   render() {
-    console.log('HOME PAGE CHECKIN STATUS:', this.state.submitted);
+    //console.log('HOME PAGE CHECKIN STATUS:', this.state.submitted);
 
     return (
       <React.Fragment>
