@@ -124,19 +124,42 @@ class Home extends Component {
      }
   }
 
-
+    //FUNCTION: STORE COURTS LOCALLY 
+    _storeTracking = async (key, value) => {
+      try {
+        await AsyncStorage.setItem(
+          key,
+          JSON.stringify(value)
+        );
+      } catch (error) {
+        console.log('LOCAL STORAGE: ',error);
+        //send error to table
+        //key_value: req.query.key_value,
+        //datetime: req.query.datetime,
+        //error: req.query.error
+        fetch(
+          // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
+          `${global.x}/storageErrors?key_value=${key}&value=${value}&datetime=${moment().utc().format("YYYY-MM-DD HH:mm:ss").substr(0, 18) + "0"}&error=${error}`,
+          { method: "POST" }
+        ).catch((error) => {
+          console.log(error)
+        });
+      }
+    };
 
    autoTrackingCheckin = async () => {
      //console.log('passed function works!!!!!!!')
      this.setState({ submitted: true });
-     await AsyncStorage.setItem('submitted', 'TRUE')
+     //await AsyncStorage.setItem('submitted', 'TRUE')
+     this._storeTracking('submitted', 'TRUE');
      //this.setState({ submittedAnimation: true })
    }
 
    autoTrackingCheckout = async () => {
      //console.log('passed function works!!!!!!!')
      this.setState({ submitted: false });
-     await AsyncStorage.setItem('submitted', 'FALSE')
+     //await AsyncStorage.setItem('submitted', 'FALSE')
+     this._storeTracking('submitted', 'FALSE');
      //this.setState({ submittedAnimation: false })
    }
 
@@ -518,17 +541,7 @@ await fetch(
     }
 }
 
-  //FUNCTION: STORE COURTS LOCALLY 
-  _storeTracking = async (key, value) => {
-    try {
-      await AsyncStorage.setItem(
-        key,
-        JSON.stringify(value)
-      );
-    } catch (error) {
-      console.log('LOCAL STORAGE: ',error);
-    }
-  };
+
 
 
   render() {

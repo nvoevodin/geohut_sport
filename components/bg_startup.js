@@ -66,7 +66,7 @@ const checkUserStatus = async (user_id) => {
 
 
 //FUNCTION: HANDLE MAIN CHECKIN
-const checkin = async (nearestSite, user_id, fname, lname, distance, anonymous) => {
+const checkin = async (nearestSite, user_id, fname, lname, distance, anonymous,checkin_type) => {
 
     //if(distance < proximityMax) {
       //console.log('checking you IN via function...', distance)
@@ -78,7 +78,7 @@ const checkin = async (nearestSite, user_id, fname, lname, distance, anonymous) 
           `${global.x}/add?time=${
             moment().utc().format("YYYY-MM-DD HH:mm:ss").substr(0, 18) + "0"
           }&site_id=${nearestSite}&first_name=${anonymous ? 'Anonymous' :fname}
-          &last_name=${anonymous ? 'Player' : lname }&user_id=${user_id}`,
+          &last_name=${anonymous ? 'Player' : lname }&user_id=${user_id}&checkin_type=${checkin_type}&distance=${distance}`,
           { method: "POST" }
         ).catch((error) => {
           console.log(error)
@@ -97,7 +97,7 @@ const checkout = async (nearestSite, user_id, distance) => {
     //Alert.alert(`you r checked out, distance is: ${distance}`)
       //FIRST CHECK THE PERSON OUT
       try {
-        fetch(
+        await fetch(
           // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
           `${global.x}/update?site_id=${nearestSite}&user_id=${user_id}`,
           { method: "PUT" }
@@ -112,7 +112,7 @@ const checkout = async (nearestSite, user_id, distance) => {
 
       //NEXT COPY THEIR RECORD TO STORAGE
       try {
-        fetch(
+        await fetch(
           // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
           `${global.x}/addToStorage?site_id=${nearestSite}&user_id=${user_id}`,
           { method: "POST" }
@@ -126,7 +126,7 @@ const checkout = async (nearestSite, user_id, distance) => {
 
       //THEN DELETE THE RECORD FROM THE MAIN TABLE
       try {
-        fetch(
+        await fetch(
           // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
           `${global.x}/delete?site_id=${nearestSite}&user_id=${user_id}`,
             { method: "DELETE" }
@@ -215,14 +215,14 @@ export const configureBgTasks = async ({ user, storePlayground, anonymous, autoC
       map1.then(nearestSite=>{
         storePlayground(nearestSite.site_name,nearestSite.site_id,nearestSite.latitude,nearestSite.longitude)
 
-        let sqlStamp = moment().utcOffset('-0400').format("YYYY-MM-DD HH:mm:ss").substr(0,18)+'0';
-      fetch(
-        // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
-        `${global.x}/addTracking?datetime=${sqlStamp}&latitude=${locations[0].coords.latitude}&longitude=${locations[0].coords.longitude}&nearest_site=${nearestSite.site_id}&email=${user.email}&distance=${nearestSite.distance}`,
-        { method: "POST" }
-        ).catch((error) => {
-          console.log(error)
-        })
+      //   let sqlStamp = moment().utcOffset('-0400').format("YYYY-MM-DD HH:mm:ss").substr(0,18)+'0';
+      // fetch(
+      //   // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
+      //   `${global.x}/addTracking?datetime=${sqlStamp}&latitude=${locations[0].coords.latitude}&longitude=${locations[0].coords.longitude}&nearest_site=${nearestSite.site_id}&email=${user.email}&distance=${nearestSite.distance}`,
+      //   { method: "POST" }
+      //   ).catch((error) => {
+      //     console.log(error)
+      //   })
       })
 
       
@@ -232,11 +232,8 @@ export const configureBgTasks = async ({ user, storePlayground, anonymous, autoC
           try {
             var submitted = await AsyncStorage.getItem('submitted')
             console.log('bg gets------>',submitted)
-          } catch(e){
-            console.log('error')
-          }
 
-          map1.then(nearestSite => {
+            map1.then(nearestSite => {
             
               //condition 1. user is not signed in at a court and within proximityMax -->SIGN THEM IN
               if ( (submitted=='FALSE' || submitted == undefined) & nearestSite.distance <= proximityMax ) {
@@ -247,7 +244,10 @@ export const configureBgTasks = async ({ user, storePlayground, anonymous, autoC
                         user.first_name,
                         user.last_name,
                         nearestSite.distance,
-                        anonymous)
+                        anonymous,
+                        submitted,
+                        nearestSite.distance
+                        );
 
                 setTimeout(function () {
                     autoCheckin();
@@ -271,7 +271,12 @@ export const configureBgTasks = async ({ user, storePlayground, anonymous, autoC
                   console.log('CHECKING YOU OUT...')
               },1500);
               }
-          })  
+          })
+          } catch(e){
+            console.log('error')
+          }
+
+           
     }
 })
 }
