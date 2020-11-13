@@ -285,7 +285,7 @@ try{
             source={require("../assets/companyLogo.png")}
           />
           <Text style={{ fontSize: 13, fontWeight: "bold" }}>VeryCool-Studio.com</Text>
-          <Text style={{ fontSize: 10, marginTop:10 }}>ver. 1.5.2</Text>
+          <Text style={{ fontSize: 10, marginTop:10 }}>ver. 1.5.5</Text>
         </View>
         <Button style={{ position: "absolute", bottom: "5%", right: '6%', borderRadius: 60, height: 55, width: 55 }}
           full

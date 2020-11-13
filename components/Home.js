@@ -63,7 +63,7 @@ class Home extends Component {
   };
 
   async componentDidMount() {
-
+    
 
     //notificationFunction()
 
@@ -120,7 +120,7 @@ class Home extends Component {
      //IF A PERSON DENIED LOCATION USE THE VERY FIRST TIME STATUS WILL BE FALSE IN WHICH CASE
      //WE NEED TO ASK AGAIN TO ALLOW THEM TO TOGGLE LOCATION
      } else if (this.props.reducer.tracking == true & prevProps.reducer.tracking == false) {
-        this.getLocationsPermissions();
+        //this.getLocationsPermissions();
      }
   }
 
@@ -150,8 +150,8 @@ class Home extends Component {
    autoTrackingCheckin = async () => {
      //console.log('passed function works!!!!!!!')
      this.setState({ submitted: true });
-     //await AsyncStorage.setItem('submitted', 'TRUE')
-     this._storeTracking('submitted', 'TRUE');
+      //await AsyncStorage.setItem('submitted', 'TRUE')
+     //this._storeTracking('submitted', 'TRUE');
      //this.setState({ submittedAnimation: true })
    }
 
@@ -159,17 +159,17 @@ class Home extends Component {
      //console.log('passed function works!!!!!!!')
      this.setState({ submitted: false });
      //await AsyncStorage.setItem('submitted', 'FALSE')
-     this._storeTracking('submitted', 'FALSE');
+     //this._storeTracking('submitted', 'FALSE');
      //this.setState({ submittedAnimation: false })
    }
 
-   configureBackground = async (user, storePlayground, anonymous = this.props.reducer.isAnanimous, autoCheckout = this.autoTrackingCheckout, autoCheckin = this.autoTrackingCheckin) => {
+   executeBackground = async (user, storePlayground, anonymous = this.props.reducer.isAnanimous, autoCheckout = this.autoTrackingCheckout, autoCheckin = this.autoTrackingCheckin) => {
     //console.log('FIRING BACKGROUND...');
     //start tracking in background
     const startBackgroundUpdate = async () => {
      if(Platform.OS==='ios') {
        await Location.startLocationUpdatesAsync(TASK_FETCH_LOCATION, {
-         accuracy: Location.Accuracy.BestForNavigation,
+         accuracy: Location.Accuracy.High,
          //timeInterval: 60000,
          distanceInterval: 2, // minimum change (in meters) betweens updates
          //deferredUpdatesInterval: 1000, // minimum interval (in milliseconds) between updates
@@ -182,9 +182,9 @@ class Home extends Component {
        });
      } else {
        await Location.startLocationUpdatesAsync(TASK_FETCH_LOCATION, {
-         accuracy: Location.Accuracy.BestForNavigation,
+         accuracy: Location.Accuracy.High,
          //timeInterval: 300000,
-         timeInterval: 10000,
+         timeInterval: 1000,
          //distanceInterval: 5, // minimum change (in meters) betweens updates
          //deferredUpdatesInterval: 1000, // minimum interval (in milliseconds) between updates
          // foregroundService is how you get the task to be updated as often as would be if the app was open
@@ -196,13 +196,14 @@ class Home extends Component {
        });
      }
     }
-                      
+                  
+    configureBgTasks({user, storePlayground, anonymous, autoCheckin, autoCheckout});
     setTimeout(function () {
       try {
         //console.log('user info: ', user)
         //console.log('records: ', records)
         //console.log('anonimity???',anonymous)
-        configureBgTasks({user, storePlayground, anonymous, autoCheckin, autoCheckout})
+        
         startBackgroundUpdate();
       }
       catch (error) {
@@ -256,19 +257,11 @@ class Home extends Component {
     .catch((error) => {
       console.log(error)
     });
-    if (JSON.parse(this.props.reducer.tracking) === true) {
-      console.log('TRACKING IS STARTING UP...', JSON.parse(this.props.reducer.tracking));
-      this.pullUserInfo().then(user => {
-           console.log('CHECKED IN? ', this.state.submitted);
-           console.log('TRACKING REDUCER INTERPERTED AS: ',this.props.reducer.tracking);
-           const { storePlayground } = this.props;
-           this.configureBackground(user, storePlayground);
-       });
-    }
   }
 
   //WE CHECK ASYNC STORAGE AND SET TRACKIGN STATUS
   checkTrackingStatus = async () => {
+    //CHECK STATUS
     const asyncTracking = await AsyncStorage.getItem('vpAutoTracking');
     if(asyncTracking === null) {
       console.log('TRACKING STATUS IS EMPTY, SETTING TO TRUE...')
@@ -277,6 +270,17 @@ class Home extends Component {
     } else {
       //console.log('TRACKING STATUS IS...',JSON.parse(asyncTracking));
       this.props.setTracking(JSON.parse(asyncTracking))
+    }
+
+    //BASED OFF STATUS FIRE
+    if (JSON.parse(this.props.reducer.tracking) === true) {
+      console.log('TRACKING IS STARTING UP...', JSON.parse(this.props.reducer.tracking));
+      this.pullUserInfo().then(user => {
+           console.log('CHECKED IN? ', this.state.submitted);
+           console.log('TRACKING REDUCER INTERPERTED AS: ',this.props.reducer.tracking);
+           const { storePlayground } = this.props;
+           this.executeBackground(user, storePlayground);
+       });
     }
   }
 
@@ -330,8 +334,9 @@ class Home extends Component {
     } else {
       this.setState({ hasLocationPermission: status });
       //CHECK TRACKING STATUS FIRE AUTOMATIC CHECK IN IF PERMISSIONS ARE GIVEN
-      await this.checkTrackingStatus();
-      this.checkedIn(this.props.reducer.userId[3]);
+      this.checkTrackingStatus();
+      //this.checkedIn(this.props.reducer.userId[3]);
+      
     }
   };
 
@@ -428,7 +433,7 @@ class Home extends Component {
 
           //show checkin as done
           //await this._storeTracking('submitted', 'TRUE')
-          await AsyncStorage.setItem('submitted', 'TRUE')
+          //await AsyncStorage.setItem('submitted', 'TRUE')
           this.setState({ submitted: true });
         } else if (distance > this.state.proximityMax 
           // & this.props.reducer.tracking == false 
@@ -470,7 +475,7 @@ await fetch(
 
 
       //await this._storeTracking('submitted', 'FALSE')
-      await AsyncStorage.setItem('submitted', 'FALSE')
+      //await AsyncStorage.setItem('submitted', 'FALSE')
       this.setState({ submittedAnimation: false });
       this.setState({ submitted: false });
 

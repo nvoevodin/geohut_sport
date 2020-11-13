@@ -48,7 +48,19 @@ const compare = ( a, b ) => {
   return 0;
 }
 
-
+//FUNCTION: PULL ALL CHECKINS TO SEE WHOS THERE
+const checkList = async () => {
+  let response = await fetch(`${global.x}/allCheckedIn`)
+    .then(res => res.json())
+    .then(res => { 
+      console.log('res',res["data"]) 
+      return res["data"]
+    })
+    .catch((error) => {
+      console.log(error)
+    });
+    return response
+}
 
 //FUNCTION: PULL USER DATA TO SEE IF THEY EXIST
 const checkUserStatus = async (user_id) => {
@@ -163,8 +175,9 @@ const _storeCourts = async (key,value) => {
 };
 
 
-export const configureBgTasks = async ({ user, storePlayground, anonymous, autoCheckin, autoCheckout }) => {
-  const proximityMax = 5;
+export const configureBgTasks = async ({ user, storePlayground, anonymous, autoCheckin, autoCheckout 
+}) => {
+  const proximityMax = 250;
   //console.log('starting tracking...', user);
   //console.log('*******is this person checked in already?? ', submitted)
   //console.log('**********is this person anonymous???', anonymous)
@@ -182,49 +195,92 @@ export const configureBgTasks = async ({ user, storePlayground, anonymous, autoC
 
       //get location data from background
       const { locations } = data;
-      //console.log(locations)
+      console.log(locations);
 
       //check current distance against all sites, 
       //return the closest site and distance to current location
-      let map1 = getCourts().then(res=>{
-        let response = res.map((court) => ({
-          ...court,
-          distance: calculateDistance(
-            court.latitude,
-            court.longitude,
-            locations[0].coords.latitude,
-            locations[0].coords.longitude
-          )
-        })).sort(compare)[0];
-        return response
-      })
+      // let map1 = getCourts().then(res=>{
+      //   let response = res.map((court) => ({
+      //     ...court,
+      //     distance: calculateDistance(
+      //       court.latitude,
+      //       court.longitude,
+      //       locations[0].coords.latitude,
+      //       locations[0].coords.longitude
+      //     )
+      //   })).sort(compare)[0];
+      //   return response
+      // })
 
       //RESOLVE PROMISE AND GRAB DISTANCE
-      let distance = await map1.then(nearestSite=>nearestSite.distance);
+      //let distance = await map1.then(nearestSite=>nearestSite.distance);
       //console.log('MAKING SURE DISTANCE IS AVAILABLE:',distance)
 
       //STORE PLAYGROUND
-      map1.then(nearestSite=>{
-        storePlayground(nearestSite.site_name,nearestSite.site_id,nearestSite.latitude,nearestSite.longitude)
+      //map1.then(nearestSite=>{
+      //  storePlayground(nearestSite.site_name,nearestSite.site_id,nearestSite.latitude,nearestSite.longitude)
         //console.log('CURRENT DISTANCE FROM SITE: ', nearestSite.distance)
-      })
+      //    let sqlStamp = moment().utcOffset('-0400').format("YYYY-MM-DD HH:mm:ss").substr(0,18)+'0';
+      //  fetch(
+      //    // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
+      //    `${global.x}/addTracking?datetime=${sqlStamp}&latitude=${locations[0].coords.latitude}&longitude=${locations[0].coords.longitude}&nearest_site=${nearestSite.site_id}&email=${user.email}&distance=${nearestSite.distance}`,
+      //    { method: "POST" }
+      //    ).catch((error) => {
+      //      console.log(error)
+      //    })
+      //})
 
-      
+      //PULL LIST
+      // map1.then(nearestSite => {
+      //   //using user data attempt to check in or checkout based on distance logic
+      //   checkList()
+      //   .then(res=>{
+      //     //condition 1. user is not signed in at a court and within proximityMax -->SIGN THEM IN
+      //     if ((res === undefined || res.length == 0) & nearestSite.distance <= proximityMax ) {
+      //       //console.log(nearestSite.site_id, user_id, user.firstName, user.lastName, nearestSite.distance)
+      //       checkin(nearestSite.site_id,
+      //                  user.email,
+      //                  user.first_name,
+      //                  user.last_name,
+      //                  nearestSite.distance,
+      //                  anonymous,
+      //                  'false',
+      //                  nearestSite.distance
+      //                  );
+      //       //send value reducer - change color to check in
+      //       setTimeout(
+      //         function() {
+      //           autoCheckin()
+      //         },
+      //         1000
+      //       );
+      //     }
+      //     //condition 2. user is not signed in at a court and outside proximityMax -->NO SIGN IN
+      //     else if ((res === undefined || res.length == 0) & nearestSite.distance > proximityMax) {
+      //       console.log('do nothing');
+      //     } 
+      //     //condition 3. user is signed in at a court and still within proximityMax -->NO SIGN IN
+      //     else if ((res !== undefined) & nearestSite.distance <= proximityMax) {
+      //       console.log('do nothing');
+      //     } 
+      //     //confition 4. user is signed in at a court and outside the proximityMax now -->SIGN OUT
+      //     else if ((res !== undefined) & nearestSite.distance > proximityMax) {
+      //       checkout(
+      //               nearestSite.site_id,
+      //               user.email, 
+      //               nearestSite.distance,
+      //               'true')
 
-
-          //USE ASYNC STORAGE TO SET VALUE OF CHECK IN OR CHECKOUT
-          try {
-            let submitted = await AsyncStorage.getItem('submitted')
-            console.log('bg gets------>',submitted, 'WITH DISTANCE OF:', distance, 'PROXMAX IS: ', proximityMax)
-            
-            //WHERE THINGS SHOULD FIRE
-            if (submitted=='TRUE' & distance > proximityMax) {
-              console.log('FIRE!!!!!!!');
-            } 
-          } catch(e){
-            console.log(e)
-          }
-
+      //       //send value reducer - change color to check in
+      //       setTimeout(
+      //         function() {
+      //           autoCheckout()
+      //         },
+      //         1000
+      //       );
+      //     }
+      // })
+      // }) 
            
     }
 })
