@@ -12,7 +12,7 @@ import * as TaskManager from 'expo-task-manager';
 import { connect } from 'react-redux';
 import helpers from './functions/localNotification'
 import PermissionNotFunc from './functions/notifications'
-
+//import { configureBgTasks, runTest } from './bg_test';
 
 class Profile extends Component {
 
@@ -24,7 +24,7 @@ class Profile extends Component {
 
 
 
-  deleteAccount = async () =>{
+  deleteAccount = async () => {
 
     Alert.alert(
       `Delete account.`,
@@ -33,13 +33,14 @@ class Profile extends Component {
         {
           text: "No",
           onPress: () => {
-    
+
           },
           style: "cancel"
         },
-        { text: "Yes", onPress: () => {
+        {
+          text: "Yes", onPress: () => {
 
-         AsyncStorage.removeItem('user_info')
+            AsyncStorage.removeItem('user_info')
 
             fetch(
               // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
@@ -50,31 +51,32 @@ class Profile extends Component {
             })
 
 
-          firebase.auth().currentUser.delete().then(function() {
-            alert('deleted')
-          }).catch(function(error) {
-            alert('error')
-          });
+            firebase.auth().currentUser.delete().then(function () {
+              alert('deleted')
+            }).catch(function (error) {
+              alert('error')
+            });
 
 
-          this.logout()
-          
-    
-//           firebase.auth().currentUser.delete().then(function () {
-//             
+            this.logout()
+
+
+            //           firebase.auth().currentUser.delete().then(function () {
+            //             
 
 
 
 
-// alert('You deleted your account.')
+            // alert('You deleted your account.')
 
-            
-     
-//           }).catch(function (error) {
-//             console.log(error)
-//             alert('Important action! Log into the app again and try one more time.')
-//           })
-        } }
+
+
+            //           }).catch(function (error) {
+            //             console.log(error)
+            //             alert('Important action! Log into the app again and try one more time.')
+            //           })
+          }
+        }
       ],
       { cancelable: false }
     );
@@ -131,11 +133,11 @@ class Profile extends Component {
       console.log('something wrong (storage)')
     }
 
-    if(this.state.isRunningNotification){
+    if (this.state.isRunningNotification) {
       helpers.cancelNotificationFunction()
-    } else{
+    } else {
       PermissionNotFunc();
-    //this.props.setNotifications(valu)
+      //this.props.setNotifications(valu)
     }
 
   };
@@ -148,9 +150,9 @@ class Profile extends Component {
 
 
   componentDidMount() {
-   
-    this.readUserData()
 
+    this.readUserData()
+    //configureBgTasks();
 
 
   }
@@ -180,11 +182,15 @@ class Profile extends Component {
     this.setState({ tracking: !this.state.tracking })
 
     if (!this.state.tracking == false) {
+      //AsyncStorage.setItem('submitted', 'TRUE')
       //UNREGISTER TASK WHEN TURNING OFF
       const TASK_FETCH_LOCATION = 'background-location-task';
+      //const TASK_FETCH_LOCATION = 'background-location-test';
       TaskManager.unregisterTaskAsync(TASK_FETCH_LOCATION);
       Alert.alert('Stopping Automatic Background Tracking')
     } else {
+      //const TASK_FETCH_LOCATION = 'background-location-test';
+      //runTest();
       Alert.alert('Starting Automatic Background Tracking')
     }
 
@@ -245,7 +251,8 @@ class Profile extends Component {
     alert("Permitting location tracking allows volleypal to check you in and out automatically. We do not store location data.")
   }
   render() {
-    
+    //console.log('TRACKER SETTING: ',this.props.reducer.tracking)
+
     return (
       <React.Fragment>
         <Header style={{ backgroundColor: '#5cb85c', height: 70, paddingTop: 0 }}>
@@ -254,12 +261,12 @@ class Profile extends Component {
           </Left>
 
           <Right>
-          <TouchableOpacity onPress={this.readUserData}>
-          <MaterialCommunityIcons name="refresh" size={30} color="white" />
-          </TouchableOpacity>
-          <TouchableOpacity onPress = {this.logout}>
-          <MaterialCommunityIcons name="exit-run" size={30} color="white" />
-          </TouchableOpacity>
+            <TouchableOpacity onPress={this.readUserData}>
+              <MaterialCommunityIcons name="refresh" size={30} color="white" />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={this.logout}>
+              <MaterialCommunityIcons name="exit-run" size={30} color="white" />
+            </TouchableOpacity>
           </Right>
         </Header>
         <Content padder>
@@ -310,7 +317,7 @@ class Profile extends Component {
               </Right>
             </CardItem>
 
-           
+
 
             <CardItem>
               <Left>
@@ -330,22 +337,28 @@ class Profile extends Component {
                 />
               </Right>
             </CardItem>
+            
 
-        
-{/**
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- */}        
-             
-          
+            <CardItem>
+              <Left>
+                <Text style={styles.cartTitles}>Location Tracking: </Text>
+                {JSON.parse(this.props.reducer.tracking) ? <Text>Yes</Text> : <Text>No</Text>}
+                <TouchableOpacity onPress={this.questionLocation}>
+                  <AntDesign style={{ marginLeft: 10 }} name="questioncircleo" size={24} color="black" />
+                </TouchableOpacity>
+              </Left>
+              <Right>
+                <Switch
+                  trackColor={{ false: '#767577', true: '#81b0ff' }}
+                  thumbColor={JSON.parse(this.props.reducer.tracking) ? '#f5dd4b' : '#f4f3f4'}
+                  ios_backgroundColor="#3e3e3e"
+                  onValueChange={this.toggleTracking}
+                  value={JSON.parse(this.props.reducer.tracking)}
+                />
+              </Right>
+            </CardItem>
           </Card>
+
 
           <Button style={{ margin: 10, marginTop: 40 }}
             full
@@ -442,7 +455,7 @@ const mapDispachToProps = dispatch => {
   return {
     setAnanimous: (x) => dispatch({ type: "SET_ANANIMOUS", value: x }),
     setNotifications: (x) => dispatch({ type: "SET_NOTIFICATIONS", value: x }),
-    setTracking: (y) => dispatch({ type: "TRACKING", value: y})
+    setTracking: (y) => dispatch({ type: "TRACKING", value: y })
   };
 };
 
@@ -488,27 +501,3 @@ const styles = StyleSheet.create({
     fontWeight: "bold"
   }
 });
-
-
-
-/**
- *  <CardItem>
-              <Left>
-                <Text style={styles.cartTitles}>Location Tracking: </Text>
-                {this.state.tracking ? <Text>Yes</Text> : <Text>No</Text>}
-                <TouchableOpacity onPress={this.questionLocation}>
-                  <AntDesign style={{ marginLeft: 10 }} name="questioncircleo" size={24} color="black" />
-                </TouchableOpacity>
-              </Left>
-              <Right>
-                <Switch
-                  trackColor={{ false: '#767577', true: '#81b0ff' }}
-                  thumbColor={this.state.tracking ? '#f5dd4b' : '#f4f3f4'}
-                  ios_backgroundColor="#3e3e3e"
-                  onValueChange={this.toggleTracking}
-                  value={this.state.tracking}
-                />
-              </Right>
-            </CardItem>
- * 
- */

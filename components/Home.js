@@ -7,19 +7,18 @@ import {
   Alert,
   Animated,
   ActivityIndicator,
-  Platform
+  Platform   
 } from "react-native";
 
-import * as BackgroundFetch from 'expo-background-fetch';
 import { Button, Right, Left, Header, Title } from "native-base";
-
+import * as Location from "expo-location";
 import * as firebase from "firebase";
 import { Entypo } from "@expo/vector-icons";
 import { FontAwesome5 } from '@expo/vector-icons';  
 
 
 import * as Permissions from 'expo-permissions';
-import * as Location from "expo-location";
+
 import { getDistance } from "geolib";
 import * as Animatable from "react-native-animatable";
 import background from "../assets/background.png";
@@ -33,8 +32,8 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 //import notificationFunction from "./functions/notifications"
 
 //TRACKING - FAUSTO
-//import { configureBgTasks } from './bg_startup';
-//const TASK_FETCH_LOCATION = 'background-location-task';
+import { configureBgTasks } from './bg_startup';
+const TASK_FETCH_LOCATION = 'background-location-task';
 import AsyncStorage from '@react-native-community/async-storage';
 const moment = require("moment");
 import PermissionNotFunc from './functions/notifications'
@@ -64,7 +63,7 @@ class Home extends Component {
   };
 
   async componentDidMount() {
-
+    
 
     //notificationFunction()
 
@@ -78,73 +77,28 @@ class Home extends Component {
       );
       this.logout();
     }
-
    
-        this.readFireBase(this.props.reducer.userId[1],this.props.reducer.userId[2],this.props.reducer.userId[3]);
-           //CHECKS IF ALREADY PRECHECKED IN
+    this.readFireBase(this.props.reducer.userId[1],this.props.reducer.userId[2],this.props.reducer.userId[3]);
+
+    //CHECKS IF ALREADY PRECHECKED IN
     this.preCheckedIn(this.props.reducer.userId[3]);
 
     //CHECKS IF ALREADY CHECKED IN
     this.checkedIn(this.props.reducer.userId[3]);
 
-    //   } catch(e){console.log(e)}
-    // });
-
-
-    //ADDING GEO TRACKING - FAUSTO
-    //const {setEnterRegion} = this.props;
-    //configureBgTasks({ setEnterRegion });
-
-    //this.startBackgroundUpdate();
-    //this.startGeofence();
-
     //EXECUTES LOCATION PERMISSIONS
     this.getLocationsPermissions();
-    // const { status } = await Location.requestPermissionsAsync();
-    // if (status === 'granted') {
-    //   console.log('location permissions are granted...')
-    // }
 
-    //const { status } = await Location.requestPermissionsAsync();
-    //if (status === 'granted') {
-    //  console.log('location permissions are granted...')
-   // }
-
-    // const asyncTracking = await AsyncStorage.getItem('vpAutoTracking');
-    // if (asyncTracking !== null) {
-    //   // We have data!!
-    //   //return asyncTracking
-    //   console.log('tracking status: ', asyncTracking)
-    //   this.props.setTracking(JSON.parse(asyncTracking));
-    // } else {
-    //   //this._storeTracking('vpAutoTracking', 'true')
-    //   console.log('HELLOOOOOO ITS EMPTTYYYYYYY')
-    //   this.props.setTracking(true);
-    // }
-
-    // //fire background tracking - user daya is pulled from local storage with backup being db
-    // this.pullUserInfo().then(user => {
-    //   if (this.props.reducer.tracking == true) {
-    //     const { storePlayground } = this.props;
-    //     this.configureBackground(this.state.proximityMax ,user, storePlayground);
-    //     console.log('tracking reducer is TRUE!!!!!!!!')
-    //   } else {
-    //     console.log('tracking reducer is FALSE!!!')
-    //   }
-    // });
-
-    
     //REFRESH COURTS
-    //this.removeItemValue('courts');
+    this.removeItemValue('courts');
+    //this.removeItemValue('submitted');
     
+    //NOTIFICATIONS
     const firstNotif = await AsyncStorage.getItem('notifications')
     if (firstNotif === null){
       const valu = await PermissionNotFunc();
     this.props.setNotifications(valu)
     }
-
-    
-
   }
 
 
@@ -162,78 +116,93 @@ class Home extends Component {
     } 
      else if (this.props.reducer.tracking == false & prevProps.reducer.tracking == true) {
        //console.log('stop tracking now')
+     //REFIRE TRACKING WHEHN SOMEONE TOGGLES TRACKING
+     //IF A PERSON DENIED LOCATION USE THE VERY FIRST TIME STATUS WILL BE FALSE IN WHICH CASE
+     //WE NEED TO ASK AGAIN TO ALLOW THEM TO TOGGLE LOCATION
      } else if (this.props.reducer.tracking == true & prevProps.reducer.tracking == false) {
-       //fire background tracking - user daya is pulled from local storage with backup being db
-      //  this.pullUserInfo().then(user => {
-      //    if (this.props.reducer.tracking == true) {
-      //      const { storePlayground } = this.props;
-      //      this.configureBackground(this.state.proximityMax ,user, storePlayground);
-      //      console.log('tracking reducer is TRUE!!!!!!!!')
-      //    } else {
-      //      console.log('tracking reducer is FALSE!!!')
-      //    }
-      //  });
-      //this.checkedIn(this.props.reducer.userId[3]);
-
-
-
+        this.getLocationsPermissions();
      }
-
   }
 
+    //FUNCTION: STORE COURTS LOCALLY 
+    _storeTracking = async (key, value) => {
+      try {
+        await AsyncStorage.setItem(
+          key,
+          JSON.stringify(value)
+        );
+      } catch (error) {
+        console.log('LOCAL STORAGE: ',error);
+        //send error to table
+        //key_value: req.query.key_value,
+        //datetime: req.query.datetime,
+        //error: req.query.error
+        fetch(
+          // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
+          `${global.x}/storageErrors?key_value=${key}&value=${value}&datetime=${moment().utc().format("YYYY-MM-DD HH:mm:ss").substr(0, 18) + "0"}&error=${error}`,
+          { method: "POST" }
+        ).catch((error) => {
+          console.log(error)
+        });
+      }
+    };
 
-
-   autoTrackingCheckin = () => {
+   autoTrackingCheckin = async () => {
      //console.log('passed function works!!!!!!!')
      this.setState({ submitted: true });
+      //await AsyncStorage.setItem('submitted', 'TRUE')
+     //this._storeTracking('submitted', 'TRUE');
      //this.setState({ submittedAnimation: true })
    }
 
-   autoTrackingCheckout = () => {
+   autoTrackingCheckout = async () => {
      //console.log('passed function works!!!!!!!')
      this.setState({ submitted: false });
+     //await AsyncStorage.setItem('submitted', 'FALSE')
+     //this._storeTracking('submitted', 'FALSE');
      //this.setState({ submittedAnimation: false })
    }
 
-   configureBackground = async (user, storePlayground, records, anonymous = this.props.reducer.isAnanimous, autoCheckout = this.autoTrackingCheckout, autoCheckin = this.autoTrackingCheckin) => {
-    console.log('FIRING BACKGROUND...');
-    //start tracking in background
+   executeBackground = async (user, storePlayground, storePlaygroundAuto, anonymous = this.props.reducer.isAnanimous, autoCheckout = this.autoTrackingCheckout, autoCheckin = this.autoTrackingCheckin) => {
+    //console.log('FIRING BACKGROUND...');
+    //start tracking in background  
     const startBackgroundUpdate = async () => {
-     if(Platform.OS==='ios') {
-       await Location.startLocationUpdatesAsync(TASK_FETCH_LOCATION, {
-         accuracy: Location.Accuracy.BestForNavigation,
-         //timeInterval: 60000,
-         distanceInterval: 2, // minimum change (in meters) betweens updates
-         //deferredUpdatesInterval: 1000, // minimum interval (in milliseconds) between updates
-         // foregroundService is how you get the task to be updated as often as would be if the app was open
-         foregroundService: {
-           notificationTitle: 'Using your location for VolleyPal',
-           notificationBody: 'To turn off, go back to the app and toggle tracking.',
-         },
-         pausesUpdatesAutomatically: false,
-       });
-     } else {
-       await Location.startLocationUpdatesAsync(TASK_FETCH_LOCATION, {
-         accuracy: Location.Accuracy.BestForNavigation,
-         timeInterval: 300000,
-         //distanceInterval: 5, // minimum change (in meters) betweens updates
-         //deferredUpdatesInterval: 1000, // minimum interval (in milliseconds) between updates
-         // foregroundService is how you get the task to be updated as often as would be if the app was open
-         foregroundService: {
-           notificationTitle: 'Using your location for VolleyPal',
-           notificationBody: 'To turn off, go back to the app and toggle tracking.',
-         },
-         pausesUpdatesAutomatically: false,
-       });
+      if(Platform.OS==='ios') {
+        await Location.startLocationUpdatesAsync(TASK_FETCH_LOCATION, {
+          accuracy: Location.Accuracy.Balanced,
+          //timeInterval: 60000,
+          distanceInterval: 30, // minimum change (in meters) betweens updates
+          //deferredUpdatesInterval: 1000, // minimum interval (in milliseconds) between updates
+          // foregroundService is how you get the task to be updated as often as would be if the app was open
+          foregroundService: {
+            notificationTitle: 'Using your location for VolleyPal',
+            notificationBody: 'To turn off, go back to the app and toggle tracking.',
+          },
+          pausesUpdatesAutomatically: false,
+        });
+      } else {
+        await Location.startLocationUpdatesAsync(TASK_FETCH_LOCATION, {
+          accuracy: Location.Accuracy.Balanced,
+          //timeInterval: 300000,
+          timeInterval: 300000,
+          distanceInterval: 0, // minimum change (in meters) betweens updates
+          //deferredUpdatesInterval: 1000, // minimum interval (in milliseconds) between updates
+          // foregroundService is how you get the task to be updated as often as would be if the app was open
+          foregroundService: {
+            notificationTitle: 'Using your location for VolleyPal',
+            notificationBody: 'To turn off, go back to the app and toggle tracking.',
+          },
+          pausesUpdatesAutomatically: false,
+        });
+      }
      }
-    }
-                      
+    
     setTimeout(function () {
       try {
-        //console.log('user info: ', user)
+        console.log('user info: ', user)
         //console.log('records: ', records)
-        console.log('anonimity???',anonymous)
-        configureBgTasks({user, storePlayground, autoCheckin, autoCheckout, records, anonymous})
+        //console.log('anonimity???',anonymous)
+        configureBgTasks({user, storePlayground, storePlaygroundAuto, anonymous, autoCheckin, autoCheckout});
         startBackgroundUpdate();
       }
       catch (error) {
@@ -268,12 +237,18 @@ class Home extends Component {
      }
    }
 
+   //FUNCTION TO CHECK IF PERSON IS ALREADY CHECKED ELSEWHERE
+   checkedOtherSite = async () => {
+     console.log('checking entire checkin system...')
+
+   }
+
 
 
   checkedIn = async (email) => {
 
-
-    let records = await fetch(`${global.x}/checkincheck/${email}`)
+    //console.log('CHECKING STATUS AGAIN...')
+    await fetch(`${global.x}/checkincheck/${email}`)
     .then(res => res.json())
     .then(res => {  
       if (res["data"].some(e => e.checkin_datetime.substr(0,10) === moment().utc().format("YYYY-MM-DD")) && res["data"].some(e => e.site_id === this.props.reducer.playgroundId)){
@@ -288,33 +263,35 @@ class Home extends Component {
       console.log(error)
     });
 
-   //ONCE WE HAVE SET STATE WE CAN NOW PASS STATE TO TRACKING AND FIRE
-  //  const asyncTracking = await AsyncStorage.getItem('vpAutoTracking');
-  //   if (asyncTracking !== null) {
-  //     // We have data!!
-  //     //return asyncTracking
-  //     //console.log('tracking status: ', asyncTracking)
-  //     this.props.setTracking(JSON.parse(asyncTracking));
-  //   } else {
-  //     //this._storeTracking('vpAutoTracking', 'true')
-  //     //console.log('HELLOOOOOO ITS EMPTTYYYYYYY')
-  //     this.props.setTracking(true);
-  //   }
 
-  //   //fire background tracking - user daya is pulled from local storage with backup being db
-  //   this.pullUserInfo().then(user => {
-  //     if (this.props.reducer.tracking == true) {
-  //       const { storePlayground } = this.props;
-  //       //console.log('MY RECORDS: ', records)
-  //       this.configureBackground(user, storePlayground, records);
-  //       //console.log('tracking reducer is TRUE!!!!!!!!')
-  //     } else {
-  //       //console.log('tracking reducer is FALSE!!!')
-  //     }
-  //   });
+    
+  }
 
+  //WE CHECK ASYNC STORAGE AND SET TRACKIGN STATUS
+  checkTrackingStatus = async () => {
+    //CHECK STATUS
+    const asyncTracking = await AsyncStorage.getItem('vpAutoTracking');
+    if(asyncTracking === null) {
+      console.log('TRACKING STATUS IS EMPTY, SETTING TO TRUE...')
+      this.props.setTracking(true);
+      this._storeTracking('vpAutoTracking', 'true')
+    } else {
+      console.log('TRACKING STATUS IS...',JSON.parse(asyncTracking));
+      this.props.setTracking(JSON.parse(asyncTracking))
+    }
 
+    //BASED OFF STATUS FIRE
+    if (JSON.parse(this.props.reducer.tracking) === true) {
+      console.log('TRACKING IS STARTING UP...', JSON.parse(this.props.reducer.tracking));
+      this.pullUserInfo().then(user => {
+        console.log('CHECKED IN? ', this.state.submitted);
+        console.log('TRACKING REDUCER INTERPERTED AS: ',this.props.reducer.tracking);
+        const { storePlayground, storePlaygroundAuto } = this.props;
+        this.executeBackground(user, storePlayground, storePlaygroundAuto);
+    });
+    }
 
+    
   }
 
   preCheckedIn = (email) => {
@@ -353,8 +330,6 @@ class Home extends Component {
     //})
   }
 
-
-
   //FUNCTION: ASKS FOR LOCATION PERMISSIONS
   getLocationsPermissions = async () => {
     let status;
@@ -368,6 +343,10 @@ class Home extends Component {
       });
     } else {
       this.setState({ hasLocationPermission: status });
+      //CHECK TRACKING STATUS FIRE AUTOMATIC CHECK IN IF PERMISSIONS ARE GIVEN
+      this.checkTrackingStatus();
+      //this.checkedIn(this.props.reducer.userId[3]);
+      
     }
   };
 
@@ -408,7 +387,7 @@ class Home extends Component {
         },
         //(accuracy = 100)
       );
-
+      this.setState({ distance: distance })
       return distance
 
     } catch (error) {
@@ -424,11 +403,11 @@ class Home extends Component {
       Alert.alert("Select your court first.");
      } 
      //TRACKING - COMMENT
-    //else if (this.props.reducer.tracking == true & this.state.submitted == true) {
-      // Alert.alert('No need to check out. You will be checked out Automatically')
+    else if (JSON.parse(this.props.reducer.tracking) == true & this.state.submitted == true) {
+      Alert.alert('No need to check out. You will be checked out Automatically')
      //} else if (this.props.reducer.tracking == true & this.state.submitted == false) {
      //  Alert.alert('No need to check in You will be checked in Automatically')
-    // } 
+     } 
     else if (this.state.submitted === false) {
       this.setState({ submittedAnimation: true });
       try {
@@ -463,7 +442,8 @@ class Home extends Component {
           //this.handleAnimation();
 
           //show checkin as done
-
+          //await this._storeTracking('submitted', 'TRUE')
+          //await AsyncStorage.setItem('submitted', 'TRUE')
           this.setState({ submitted: true });
         } else if (distance > this.state.proximityMax 
           // & this.props.reducer.tracking == false 
@@ -480,7 +460,7 @@ class Home extends Component {
 this.setState({ submittedAnimation: true });
 await fetch(
   // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
-  `${global.x}/update?site_id=${this.props.reducer.playgroundId}&user_id=${this.props.reducer.userId[3]}`,
+  `${global.x}/update?site_id=${this.props.reducer.playgroundId}&user_id=${this.props.reducer.userId[3]}&distance=${this.state.distance}&checkin_type=${this.state.submitted}`,
   { method: "PUT" }
 ).catch((error) => {
   console.log(error)
@@ -504,8 +484,8 @@ await fetch(
 
 
 
-
-
+      //await this._storeTracking('submitted', 'FALSE')
+      //await AsyncStorage.setItem('submitted', 'FALSE')
       this.setState({ submittedAnimation: false });
       this.setState({ submitted: false });
 
@@ -577,8 +557,10 @@ await fetch(
 }
 
 
-  render() {
 
+
+  render() {
+    //console.log('HOME PAGE CHECKIN STATUS:', this.state.submitted);
 
     return (
       <React.Fragment>
@@ -815,7 +797,9 @@ const mapDispachToProps = dispatch => {
     storePreCheck: () => dispatch({ type: "STORE_PRECHECK", value: true }),
     setTracking: (y) => dispatch({ type: "TRACKING", value: y }),
     storePlayground: (name, id, lat, lon) => dispatch({ type: "STORE_PLAYGROUND", value: name, value1: id, value2: lat, value3: lon }),
+    storePlaygroundAuto: (id) => dispatch({ type: "STORE_PLAYGROUND_AUTO", value: id }),
     setNotifications: (x) => dispatch({ type: "SET_NOTIFICATIONS", value: x }),
+    storeCheck: (y) => dispatch({ type: "SUBMITTED", value: y })
 
   };
 };
