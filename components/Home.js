@@ -11,14 +11,14 @@ import {
 } from "react-native";
 
 import { Button, Right, Left, Header, Title } from "native-base";
-
+import * as Location from "expo-location";
 import * as firebase from "firebase";
 import { Entypo } from "@expo/vector-icons";
 import { FontAwesome5 } from '@expo/vector-icons';  
 
 
 import * as Permissions from 'expo-permissions';
-import * as Location from "expo-location";
+
 import { getDistance } from "geolib";
 import * as Animatable from "react-native-animatable";
 import background from "../assets/background.png";
@@ -120,7 +120,7 @@ class Home extends Component {
      //IF A PERSON DENIED LOCATION USE THE VERY FIRST TIME STATUS WILL BE FALSE IN WHICH CASE
      //WE NEED TO ASK AGAIN TO ALLOW THEM TO TOGGLE LOCATION
      } else if (this.props.reducer.tracking == true & prevProps.reducer.tracking == false) {
-        //this.getLocationsPermissions();
+        this.getLocationsPermissions();
      }
   }
 
@@ -163,47 +163,46 @@ class Home extends Component {
      //this.setState({ submittedAnimation: false })
    }
 
-   executeBackground = async (user, storePlayground, anonymous = this.props.reducer.isAnanimous, autoCheckout = this.autoTrackingCheckout, autoCheckin = this.autoTrackingCheckin) => {
+   executeBackground = async (user, storePlayground, storePlaygroundAuto, anonymous = this.props.reducer.isAnanimous, autoCheckout = this.autoTrackingCheckout, autoCheckin = this.autoTrackingCheckin) => {
     //console.log('FIRING BACKGROUND...');
-    //start tracking in background
+    //start tracking in background  
     const startBackgroundUpdate = async () => {
-     if(Platform.OS==='ios') {
-       await Location.startLocationUpdatesAsync(TASK_FETCH_LOCATION, {
-         accuracy: Location.Accuracy.High,
-         //timeInterval: 60000,
-         distanceInterval: 2, // minimum change (in meters) betweens updates
-         //deferredUpdatesInterval: 1000, // minimum interval (in milliseconds) between updates
-         // foregroundService is how you get the task to be updated as often as would be if the app was open
-         foregroundService: {
-           notificationTitle: 'Using your location for VolleyPal',
-           notificationBody: 'To turn off, go back to the app and toggle tracking.',
-         },
-         pausesUpdatesAutomatically: false,
-       });
-     } else {
-       await Location.startLocationUpdatesAsync(TASK_FETCH_LOCATION, {
-         accuracy: Location.Accuracy.High,
-         //timeInterval: 300000,
-         timeInterval: 1000,
-         //distanceInterval: 5, // minimum change (in meters) betweens updates
-         //deferredUpdatesInterval: 1000, // minimum interval (in milliseconds) between updates
-         // foregroundService is how you get the task to be updated as often as would be if the app was open
-         foregroundService: {
-           notificationTitle: 'Using your location for VolleyPal',
-           notificationBody: 'To turn off, go back to the app and toggle tracking.',
-         },
-         pausesUpdatesAutomatically: false,
-       });
+      if(Platform.OS==='ios') {
+        await Location.startLocationUpdatesAsync(TASK_FETCH_LOCATION, {
+          accuracy: Location.Accuracy.Balanced,
+          //timeInterval: 60000,
+          distanceInterval: 2, // minimum change (in meters) betweens updates
+          //deferredUpdatesInterval: 1000, // minimum interval (in milliseconds) between updates
+          // foregroundService is how you get the task to be updated as often as would be if the app was open
+          foregroundService: {
+            notificationTitle: 'Using your location for VolleyPal',
+            notificationBody: 'To turn off, go back to the app and toggle tracking.',
+          },
+          pausesUpdatesAutomatically: false,
+        });
+      } else {
+        await Location.startLocationUpdatesAsync(TASK_FETCH_LOCATION, {
+          accuracy: Location.Accuracy.Balanced,
+          //timeInterval: 300000,
+          timeInterval: 150000,
+          distanceInterval: 0, // minimum change (in meters) betweens updates
+          //deferredUpdatesInterval: 1000, // minimum interval (in milliseconds) between updates
+          // foregroundService is how you get the task to be updated as often as would be if the app was open
+          foregroundService: {
+            notificationTitle: 'Using your location for VolleyPal',
+            notificationBody: 'To turn off, go back to the app and toggle tracking.',
+          },
+          pausesUpdatesAutomatically: false,
+        });
+      }
      }
-    }
-                  
-    configureBgTasks({user, storePlayground, anonymous, autoCheckin, autoCheckout});
+    
     setTimeout(function () {
       try {
-        //console.log('user info: ', user)
+        console.log('user info: ', user)
         //console.log('records: ', records)
         //console.log('anonimity???',anonymous)
-        
+        configureBgTasks({user, storePlayground, storePlaygroundAuto, anonymous, autoCheckin, autoCheckout});
         startBackgroundUpdate();
       }
       catch (error) {
@@ -238,6 +237,12 @@ class Home extends Component {
      }
    }
 
+   //FUNCTION TO CHECK IF PERSON IS ALREADY CHECKED ELSEWHERE
+   checkedOtherSite = async () => {
+     console.log('checking entire checkin system...')
+
+   }
+
 
 
   checkedIn = async (email) => {
@@ -257,6 +262,9 @@ class Home extends Component {
     .catch((error) => {
       console.log(error)
     });
+
+
+    
   }
 
   //WE CHECK ASYNC STORAGE AND SET TRACKIGN STATUS
@@ -268,7 +276,7 @@ class Home extends Component {
       this.props.setTracking(true);
       this._storeTracking('vpAutoTracking', 'true')
     } else {
-      //console.log('TRACKING STATUS IS...',JSON.parse(asyncTracking));
+      console.log('TRACKING STATUS IS...',JSON.parse(asyncTracking));
       this.props.setTracking(JSON.parse(asyncTracking))
     }
 
@@ -276,12 +284,14 @@ class Home extends Component {
     if (JSON.parse(this.props.reducer.tracking) === true) {
       console.log('TRACKING IS STARTING UP...', JSON.parse(this.props.reducer.tracking));
       this.pullUserInfo().then(user => {
-           console.log('CHECKED IN? ', this.state.submitted);
-           console.log('TRACKING REDUCER INTERPERTED AS: ',this.props.reducer.tracking);
-           const { storePlayground } = this.props;
-           this.executeBackground(user, storePlayground);
-       });
+        console.log('CHECKED IN? ', this.state.submitted);
+        console.log('TRACKING REDUCER INTERPERTED AS: ',this.props.reducer.tracking);
+        const { storePlayground, storePlaygroundAuto } = this.props;
+        this.executeBackground(user, storePlayground, storePlaygroundAuto);
+    });
     }
+
+    
   }
 
   preCheckedIn = (email) => {
@@ -393,7 +403,7 @@ class Home extends Component {
       Alert.alert("Select your court first.");
      } 
      //TRACKING - COMMENT
-    else if (this.props.reducer.tracking == true & this.state.submitted == true) {
+    else if (JSON.parse(this.props.reducer.tracking) == true & this.state.submitted == true) {
       Alert.alert('No need to check out. You will be checked out Automatically')
      //} else if (this.props.reducer.tracking == true & this.state.submitted == false) {
      //  Alert.alert('No need to check in You will be checked in Automatically')
@@ -787,6 +797,7 @@ const mapDispachToProps = dispatch => {
     storePreCheck: () => dispatch({ type: "STORE_PRECHECK", value: true }),
     setTracking: (y) => dispatch({ type: "TRACKING", value: y }),
     storePlayground: (name, id, lat, lon) => dispatch({ type: "STORE_PLAYGROUND", value: name, value1: id, value2: lat, value3: lon }),
+    storePlaygroundAuto: (id) => dispatch({ type: "STORE_PLAYGROUND_AUTO", value: id }),
     setNotifications: (x) => dispatch({ type: "SET_NOTIFICATIONS", value: x }),
     storeCheck: (y) => dispatch({ type: "SUBMITTED", value: y })
 

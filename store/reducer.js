@@ -19,7 +19,8 @@ reportWeatherModal: false,
 userId:[],
 tracking: false,
 weather:null,
-isRunningNotification: false
+isRunningNotification: false,
+playgroundIdAuto: null
 };
 
 const ourReducer = (state = INITIAL_STATE, action) => {
@@ -33,6 +34,12 @@ const ourReducer = (state = INITIAL_STATE, action) => {
                         tracking: action.value
                       }
                     break;
+    case "STORE_PLAYGROUND_AUTO":
+      return{
+        ...state,
+        playgroundIdAuto: action.value,
+      }
+    break;
     
     case "MODAL_REPORT":
       return{
@@ -94,6 +101,7 @@ const ourReducer = (state = INITIAL_STATE, action) => {
                         playgroundLon:action.value3
                       }
                     break;
+                    
                     case "STORE_PRECHECK":
                       return{
                         ...state,

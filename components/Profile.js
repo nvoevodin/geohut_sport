@@ -12,7 +12,7 @@ import * as TaskManager from 'expo-task-manager';
 import { connect } from 'react-redux';
 import helpers from './functions/localNotification'
 import PermissionNotFunc from './functions/notifications'
-import { configureBgTasks, runTest } from './bg_test';
+//import { configureBgTasks, runTest } from './bg_test';
 
 class Profile extends Component {
 
@@ -152,7 +152,7 @@ class Profile extends Component {
   componentDidMount() {
 
     this.readUserData()
-    configureBgTasks();
+    //configureBgTasks();
 
 
   }
@@ -184,13 +184,13 @@ class Profile extends Component {
     if (!this.state.tracking == false) {
       //AsyncStorage.setItem('submitted', 'TRUE')
       //UNREGISTER TASK WHEN TURNING OFF
-      //const TASK_FETCH_LOCATION = 'background-location-task';
-      const TASK_FETCH_LOCATION = 'background-location-test';
+      const TASK_FETCH_LOCATION = 'background-location-task';
+      //const TASK_FETCH_LOCATION = 'background-location-test';
       TaskManager.unregisterTaskAsync(TASK_FETCH_LOCATION);
       Alert.alert('Stopping Automatic Background Tracking')
     } else {
-      const TASK_FETCH_LOCATION = 'background-location-test';
-      runTest();
+      //const TASK_FETCH_LOCATION = 'background-location-test';
+      //runTest();
       Alert.alert('Starting Automatic Background Tracking')
     }
 

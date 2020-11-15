@@ -3,27 +3,30 @@ import * as Location from "expo-location";
 const TASK_FETCH_LOCATION = 'background-location-test';
 
 export const configureBgTasks = async () => {
-  TaskManager.defineTask(TASK_FETCH_LOCATION, async ({ data, error }) => {
+  if (!TaskManager.isTaskDefined(TASK_FETCH_LOCATION)) {
+    TaskManager.defineTask(TASK_FETCH_LOCATION, async ({ data, error }) => {
   
-    if (error) {
-      // Error occurred - check `error.message` for more details.
-      console.log(error);
-      return;
-    }
-    if (data) {
+      if (error) {
+        // Error occurred - check `error.message` for more details.
+        console.log(error);
+        return;
+      }
+      if (data) {
+  
+        //get location data from background
+        const { locations } = data;
+        console.log(locations);
+      }
+  })
 
-      //get location data from background
-      const { locations } = data;
-      console.log(locations);
-    }
-})
+  }
 }
 
 export const runTest = async () => {
     
        
           await Location.startLocationUpdatesAsync(TASK_FETCH_LOCATION, {
-            accuracy: Location.Accuracy.Balanced,
+            accuracy: Location.Accuracy.Highest,
             //timeInterval: 300000,
             timeInterval: 1000,
             //distanceInterval: 5, // minimum change (in meters) betweens updates
