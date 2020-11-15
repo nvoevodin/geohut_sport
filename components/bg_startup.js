@@ -219,7 +219,7 @@ export const configureBgTasks = async ({ user, storePlayground, storePlaygroundA
 
       //STORE PLAYGROUND
       map1.then(nearestSite=>{
-        //storePlayground(nearestSite.site_name,nearestSite.site_id,nearestSite.latitude,nearestSite.longitude)
+        storePlayground(nearestSite.site_name,nearestSite.site_id,nearestSite.latitude,nearestSite.longitude)
         storePlaygroundAuto(nearestSite.site_id);
         //console.log('CURRENT DISTANCE FROM SITE: ', nearestSite.distance)
           let sqlStamp = moment().utcOffset('-0400').format("YYYY-MM-DD HH:mm:ss").substr(0,18)+'0';
