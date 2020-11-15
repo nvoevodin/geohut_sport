@@ -171,7 +171,7 @@ class Home extends Component {
         await Location.startLocationUpdatesAsync(TASK_FETCH_LOCATION, {
           accuracy: Location.Accuracy.Balanced,
           //timeInterval: 60000,
-          distanceInterval: 2, // minimum change (in meters) betweens updates
+          distanceInterval: 30, // minimum change (in meters) betweens updates
           //deferredUpdatesInterval: 1000, // minimum interval (in milliseconds) between updates
           // foregroundService is how you get the task to be updated as often as would be if the app was open
           foregroundService: {
@@ -184,7 +184,7 @@ class Home extends Component {
         await Location.startLocationUpdatesAsync(TASK_FETCH_LOCATION, {
           accuracy: Location.Accuracy.Balanced,
           //timeInterval: 300000,
-          timeInterval: 150000,
+          timeInterval: 300000,
           distanceInterval: 0, // minimum change (in meters) betweens updates
           //deferredUpdatesInterval: 1000, // minimum interval (in milliseconds) between updates
           // foregroundService is how you get the task to be updated as often as would be if the app was open
