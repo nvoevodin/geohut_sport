@@ -7,14 +7,14 @@ import {
   Alert,
   Animated,
   ActivityIndicator,
-  Platform   
+  Platform
 } from "react-native";
 
 import { Button, Right, Left, Header, Title } from "native-base";
 import * as Location from "expo-location";
 import * as firebase from "firebase";
 import { Entypo } from "@expo/vector-icons";
-import { FontAwesome5 } from '@expo/vector-icons';  
+import { FontAwesome5 } from '@expo/vector-icons';
 
 
 import * as Permissions from 'expo-permissions';
@@ -63,7 +63,7 @@ class Home extends Component {
   };
 
   async componentDidMount() {
-    
+
 
     //notificationFunction()
 
@@ -77,8 +77,8 @@ class Home extends Component {
       );
       this.logout();
     }
-   
-    this.readFireBase(this.props.reducer.userId[1],this.props.reducer.userId[2],this.props.reducer.userId[3]);
+
+    this.readFireBase(this.props.reducer.userId[1], this.props.reducer.userId[2], this.props.reducer.userId[3]);
 
     //CHECKS IF ALREADY PRECHECKED IN
     this.preCheckedIn(this.props.reducer.userId[3]);
@@ -92,18 +92,18 @@ class Home extends Component {
     //REFRESH COURTS
     this.removeItemValue('courts');
     //this.removeItemValue('submitted');
-    
+
     //NOTIFICATIONS
     const firstNotif = await AsyncStorage.getItem('notifications')
-    if (firstNotif === null){
+    if (firstNotif === null) {
       const valu = await PermissionNotFunc();
-    this.props.setNotifications(valu)
+      this.props.setNotifications(valu)
     }
   }
 
 
-  componentDidUpdate(prevProps){
-    if(prevProps.reducer.playgroundId !== this.props.reducer.playgroundId || prevProps.reducer.userId[3] !== this.props.reducer.userId[3]){
+  componentDidUpdate(prevProps) {
+    if (prevProps.reducer.playgroundId !== this.props.reducer.playgroundId || prevProps.reducer.userId[3] !== this.props.reducer.userId[3]) {
       //console.log('updating')
 
       //READS FROM FIREBASE AND SETS EMAIL AND WORKID IN REDUX
@@ -113,61 +113,61 @@ class Home extends Component {
 
       //CHECKS IF ALREADY CHECKED IN
       this.checkedIn(this.props.reducer.userId[3]);
-    } 
-     else if (this.props.reducer.tracking == false & prevProps.reducer.tracking == true) {
-       //console.log('stop tracking now')
-     //REFIRE TRACKING WHEHN SOMEONE TOGGLES TRACKING
-     //IF A PERSON DENIED LOCATION USE THE VERY FIRST TIME STATUS WILL BE FALSE IN WHICH CASE
-     //WE NEED TO ASK AGAIN TO ALLOW THEM TO TOGGLE LOCATION
-     } else if (this.props.reducer.tracking == true & prevProps.reducer.tracking == false) {
-        this.getLocationsPermissions();
-     }
+    }
+    else if (this.props.reducer.tracking == false & prevProps.reducer.tracking == true) {
+      //console.log('stop tracking now')
+      //REFIRE TRACKING WHEHN SOMEONE TOGGLES TRACKING
+      //IF A PERSON DENIED LOCATION USE THE VERY FIRST TIME STATUS WILL BE FALSE IN WHICH CASE
+      //WE NEED TO ASK AGAIN TO ALLOW THEM TO TOGGLE LOCATION
+    } else if (this.props.reducer.tracking == true & prevProps.reducer.tracking == false) {
+      this.getLocationsPermissions();
+    }
   }
 
-    //FUNCTION: STORE COURTS LOCALLY 
-    _storeTracking = async (key, value) => {
-      try {
-        await AsyncStorage.setItem(
-          key,
-          JSON.stringify(value)
-        );
-      } catch (error) {
-        console.log('LOCAL STORAGE: ',error);
-        //send error to table
-        //key_value: req.query.key_value,
-        //datetime: req.query.datetime,
-        //error: req.query.error
-        fetch(
-          // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
-          `${global.x}/storageErrors?key_value=${key}&value=${value}&datetime=${moment().utc().format("YYYY-MM-DD HH:mm:ss").substr(0, 18) + "0"}&error=${error}`,
-          { method: "POST" }
-        ).catch((error) => {
-          console.log(error)
-        });
-      }
-    };
+  //FUNCTION: STORE COURTS LOCALLY 
+  _storeTracking = async (key, value) => {
+    try {
+      await AsyncStorage.setItem(
+        key,
+        JSON.stringify(value)
+      );
+    } catch (error) {
+      console.log('LOCAL STORAGE: ', error);
+      //send error to table
+      //key_value: req.query.key_value,
+      //datetime: req.query.datetime,
+      //error: req.query.error
+      fetch(
+        // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
+        `${global.x}/storageErrors?key_value=${key}&value=${value}&datetime=${moment().utc().format("YYYY-MM-DD HH:mm:ss").substr(0, 18) + "0"}&error=${error}`,
+        { method: "POST" }
+      ).catch((error) => {
+        console.log(error)
+      });
+    }
+  };
 
-   autoTrackingCheckin = async () => {
-     //console.log('passed function works!!!!!!!')
-     this.setState({ submitted: true });
-      //await AsyncStorage.setItem('submitted', 'TRUE')
-     //this._storeTracking('submitted', 'TRUE');
-     //this.setState({ submittedAnimation: true })
-   }
+  autoTrackingCheckin = async () => {
+    //console.log('passed function works!!!!!!!')
+    this.setState({ submitted: true });
+    //await AsyncStorage.setItem('submitted', 'TRUE')
+    //this._storeTracking('submitted', 'TRUE');
+    //this.setState({ submittedAnimation: true })
+  }
 
-   autoTrackingCheckout = async () => {
-     //console.log('passed function works!!!!!!!')
-     this.setState({ submitted: false });
-     //await AsyncStorage.setItem('submitted', 'FALSE')
-     //this._storeTracking('submitted', 'FALSE');
-     //this.setState({ submittedAnimation: false })
-   }
+  autoTrackingCheckout = async () => {
+    //console.log('passed function works!!!!!!!')
+    this.setState({ submitted: false });
+    //await AsyncStorage.setItem('submitted', 'FALSE')
+    //this._storeTracking('submitted', 'FALSE');
+    //this.setState({ submittedAnimation: false })
+  }
 
-   executeBackground = async (user, storePlayground, storePlaygroundAuto, anonymous = this.props.reducer.isAnanimous, autoCheckout = this.autoTrackingCheckout, autoCheckin = this.autoTrackingCheckin) => {
+  executeBackground = async (user, storePlayground, storePlaygroundAuto, anonymous = this.props.reducer.isAnanimous, autoCheckout = this.autoTrackingCheckout, autoCheckin = this.autoTrackingCheckin) => {
     //console.log('FIRING BACKGROUND...');
     //start tracking in background  
     const startBackgroundUpdate = async () => {
-      if(Platform.OS==='ios') {
+      if (Platform.OS === 'ios') {
         await Location.startLocationUpdatesAsync(TASK_FETCH_LOCATION, {
           accuracy: Location.Accuracy.Balanced,
           //timeInterval: 60000,
@@ -195,14 +195,14 @@ class Home extends Component {
           pausesUpdatesAutomatically: false,
         });
       }
-     }
-    
+    }
+
     setTimeout(function () {
       try {
-        console.log('user info: ', user)
+        //console.log('user info: ', user)
         //console.log('records: ', records)
         //console.log('anonimity???',anonymous)
-        configureBgTasks({user, storePlayground, storePlaygroundAuto, anonymous, autoCheckin, autoCheckout});
+        configureBgTasks({ user, storePlayground, storePlaygroundAuto, anonymous, autoCheckin, autoCheckout });
         startBackgroundUpdate();
       }
       catch (error) {
@@ -214,34 +214,34 @@ class Home extends Component {
 
 
   //FUNCTION: GET USER DATA
-   pullUserInfo = async () => {
-     const value = await AsyncStorage.getItem('user_info').then(req => JSON.parse(req))
-     if (value !== null) {
-       return {
-         "email": value[3],
-         "first_name": value[1],
-         "last_name": value[2]
-       }
-     } else {
-       //console.log('pulling information......')
-       let response = await fetch(`${global.x}/get_user/${firebase.auth().currentUser.uid}`)
-         .then(res => res.json())
-         .then(res => {
-           //console.log('res',res) 
-           return res["data"][0]
-         })
-         .catch((error) => {
-           console.log(error)
-         });
-       return response
-     }
-   }
+  pullUserInfo = async () => {
+    const value = await AsyncStorage.getItem('user_info').then(req => JSON.parse(req))
+    if (value !== null) {
+      return {
+        "email": value[3],
+        "first_name": value[1],
+        "last_name": value[2]
+      }
+    } else {
+      //console.log('pulling information......')
+      let response = await fetch(`${global.x}/get_user/${firebase.auth().currentUser.uid}`)
+        .then(res => res.json())
+        .then(res => {
+          //console.log('res',res) 
+          return res["data"][0]
+        })
+        .catch((error) => {
+          console.log(error)
+        });
+      return response
+    }
+  }
 
-   //FUNCTION TO CHECK IF PERSON IS ALREADY CHECKED ELSEWHERE
-   checkedOtherSite = async () => {
-     console.log('checking entire checkin system...')
+  //FUNCTION TO CHECK IF PERSON IS ALREADY CHECKED ELSEWHERE
+  checkedOtherSite = async () => {
+    console.log('checking entire checkin system...')
 
-   }
+  }
 
 
 
@@ -249,49 +249,49 @@ class Home extends Component {
 
     //console.log('CHECKING STATUS AGAIN...')
     await fetch(`${global.x}/checkincheck/${email}`)
-    .then(res => res.json())
-    .then(res => {  
-      if (res["data"].some(e => e.checkin_datetime.substr(0,10) === moment().utc().format("YYYY-MM-DD")) && res["data"].some(e => e.site_id === this.props.reducer.playgroundId)){
-        this.setState({submitted: true})
-        return res["data"]
-      } else {
-        this.setState({submitted: false})
-        return res["data"]
-      }
-    })
-    .catch((error) => {
-      console.log(error)
-    });
+      .then(res => res.json())
+      .then(res => {
+        if (res["data"].some(e => e.checkin_datetime.substr(0, 10) === moment().utc().format("YYYY-MM-DD")) && res["data"].some(e => e.site_id === this.props.reducer.playgroundId)) {
+          this.setState({ submitted: true })
+          return res["data"]
+        } else {
+          this.setState({ submitted: false })
+          return res["data"]
+        }
+      })
+      .catch((error) => {
+        console.log(error)
+      });
 
 
-    
+
   }
 
   //WE CHECK ASYNC STORAGE AND SET TRACKIGN STATUS
   checkTrackingStatus = async () => {
     //CHECK STATUS
     const asyncTracking = await AsyncStorage.getItem('vpAutoTracking');
-    if(asyncTracking === null) {
-      console.log('TRACKING STATUS IS EMPTY, SETTING TO TRUE...')
+    if (asyncTracking === null) {
+      //console.log('TRACKING STATUS IS EMPTY, SETTING TO TRUE...')
       this.props.setTracking(true);
       this._storeTracking('vpAutoTracking', 'true')
     } else {
-      console.log('TRACKING STATUS IS...',JSON.parse(asyncTracking));
+      //console.log('TRACKING STATUS IS...',JSON.parse(asyncTracking));
       this.props.setTracking(JSON.parse(asyncTracking))
     }
 
     //BASED OFF STATUS FIRE
     if (JSON.parse(this.props.reducer.tracking) === true) {
-      console.log('TRACKING IS STARTING UP...', JSON.parse(this.props.reducer.tracking));
+      //console.log('TRACKING IS STARTING UP...', JSON.parse(this.props.reducer.tracking));
       this.pullUserInfo().then(user => {
-        console.log('CHECKED IN? ', this.state.submitted);
-        console.log('TRACKING REDUCER INTERPERTED AS: ',this.props.reducer.tracking);
+        //console.log('CHECKED IN? ', this.state.submitted);
+        //console.log('TRACKING REDUCER INTERPERTED AS: ',this.props.reducer.tracking);
         const { storePlayground, storePlaygroundAuto } = this.props;
         this.executeBackground(user, storePlayground, storePlaygroundAuto);
-    });
+      });
     }
 
-    
+
   }
 
   preCheckedIn = (email) => {
@@ -346,7 +346,7 @@ class Home extends Component {
       //CHECK TRACKING STATUS FIRE AUTOMATIC CHECK IN IF PERMISSIONS ARE GIVEN
       this.checkTrackingStatus();
       //this.checkedIn(this.props.reducer.userId[3]);
-      
+
     }
   };
 
@@ -401,13 +401,13 @@ class Home extends Component {
 
     if (this.props.reducer.playgroundId === '') {
       Alert.alert("Select your court first.");
-     } 
-     //TRACKING - COMMENT
+    }
+    //TRACKING - COMMENT
     else if (JSON.parse(this.props.reducer.tracking) == true & this.state.submitted == true) {
       Alert.alert('No need to check out. You will be checked out Automatically')
-     //} else if (this.props.reducer.tracking == true & this.state.submitted == false) {
-     //  Alert.alert('No need to check in You will be checked in Automatically')
-     } 
+      //} else if (this.props.reducer.tracking == true & this.state.submitted == false) {
+      //  Alert.alert('No need to check in You will be checked in Automatically')
+    }
     else if (this.state.submitted === false) {
       this.setState({ submittedAnimation: true });
       try {
@@ -430,9 +430,9 @@ class Home extends Component {
           fetch(
             // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
             `${global.x}/add?time=${
-              moment().utc().format("YYYY-MM-DD HH:mm:ss").substr(0, 18) + "0"
-            }&site_id=${this.props.reducer.playgroundId}&first_name=${this.props.reducer.isAnanimous?"Anonimous":this.props.reducer.userId[1]}
-            &last_name=${this.props.reducer.isAnanimous?"Player":this.props.reducer.userId[2]}&user_id=${this.props.reducer.userId[3]}`,
+            moment().utc().format("YYYY-MM-DD HH:mm:ss").substr(0, 18) + "0"
+            }&site_id=${this.props.reducer.playgroundId}&first_name=${this.props.reducer.isAnanimous ? "Anonimous" : this.props.reducer.userId[1]}
+            &last_name=${this.props.reducer.isAnanimous ? "Player" : this.props.reducer.userId[2]}&user_id=${this.props.reducer.userId[3]}`,
             { method: "POST" }
           ).catch((error) => {
             console.log(error)
@@ -445,9 +445,9 @@ class Home extends Component {
           //await this._storeTracking('submitted', 'TRUE')
           //await AsyncStorage.setItem('submitted', 'TRUE')
           this.setState({ submitted: true });
-        } else if (distance > this.state.proximityMax 
+        } else if (distance > this.state.proximityMax
           // & this.props.reducer.tracking == false 
-          ) {
+        ) {
           //console.log('something went wrong');
           Alert.alert("Please move closer to your site and try again.");
         }
@@ -456,30 +456,30 @@ class Home extends Component {
       }
       this.setState({ submittedAnimation: false });
     } else {
-//console.log(this.props.reducer.playgroundId)
-this.setState({ submittedAnimation: true });
-await fetch(
-  // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
-  `${global.x}/update?site_id=${this.props.reducer.playgroundId}&user_id=${this.props.reducer.userId[3]}&distance=${this.state.distance}&checkin_type=${this.state.submitted}`,
-  { method: "PUT" }
-).catch((error) => {
-  console.log(error)
-})
+      //console.log(this.props.reducer.playgroundId)
+      this.setState({ submittedAnimation: true });
+      await fetch(
+        // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
+        `${global.x}/update?site_id=${this.props.reducer.playgroundId}&user_id=${this.props.reducer.userId[3]}&distance=${this.state.distance}&checkin_type=${this.state.submitted}`,
+        { method: "PUT" }
+      ).catch((error) => {
+        console.log(error)
+      })
 
-await fetch(
-  // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
-  `${global.x}/addToStorage?site_id=${this.props.reducer.playgroundId}&user_id=${this.props.reducer.userId[3]}`,
-  { method: "POST" }
-).catch((error) => {
-  console.log(error)
-})
-  fetch(
-    // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
-    `${global.x}/delete?site_id=${this.props.reducer.playgroundId}&user_id=${this.props.reducer.userId[3]}`,
-    { method: "DELETE" }
-  ).catch((error) => {
-    console.log(error)
-  })
+      await fetch(
+        // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
+        `${global.x}/addToStorage?site_id=${this.props.reducer.playgroundId}&user_id=${this.props.reducer.userId[3]}`,
+        { method: "POST" }
+      ).catch((error) => {
+        console.log(error)
+      })
+      fetch(
+        // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
+        `${global.x}/delete?site_id=${this.props.reducer.playgroundId}&user_id=${this.props.reducer.userId[3]}`,
+        { method: "DELETE" }
+      ).catch((error) => {
+        console.log(error)
+      })
 
 
 
@@ -509,19 +509,21 @@ await fetch(
           },
           style: "cancel"
         },
-        { text: "OK", onPress: () => {
-          fetch(
-            // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
-            `${global.x}/cancelPreCheck?site_id=${this.props.reducer.playgroundId}&user_id=${this.props.reducer.userId[3]}`,
-            { method: "DELETE" }
-          ).catch((error) => {
-            console.log(error)
-          })
-      
-          this.props.cancelPreCheck()
-      
-          alert('You canceled your pre-check.')
-        } }
+        {
+          text: "OK", onPress: () => {
+            fetch(
+              // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
+              `${global.x}/cancelPreCheck?site_id=${this.props.reducer.playgroundId}&user_id=${this.props.reducer.userId[3]}`,
+              { method: "DELETE" }
+            ).catch((error) => {
+              console.log(error)
+            })
+
+            this.props.cancelPreCheck()
+
+            alert('You canceled your pre-check.')
+          }
+        }
       ],
       { cancelable: false }
     );
@@ -542,19 +544,19 @@ await fetch(
 
 
 
-  onWeather = () =>{
+  onWeather = () => {
     this.props.onModalWeather()
   }
 
   async removeItemValue(key) {
     try {
-        await AsyncStorage.removeItem(key);
-        return true;
+      await AsyncStorage.removeItem(key);
+      return true;
     }
-    catch(exception) {
-        return false;
+    catch (exception) {
+      return false;
     }
-}
+  }
 
 
 
@@ -594,10 +596,10 @@ await fetch(
             full
             rounded
             warning
-            onPress={()=>this.props.reducer.playgroundId?this.onWeather():alert('No court selected!')}
+            onPress={() => this.props.reducer.playgroundId ? this.onWeather() : alert('No court selected!')}
           >
-<Text style={{ color: 'white', fontWeight: 'bold', fontSize: 13 }}>Weather </Text>
-<FontAwesome5 name={this.props.reducer.weather === 'Bad'?"frown":this.props.reducer.weather === 'Acceptable'?"meh":this.props.reducer.weather === 'Good'?"smile":this.props.reducer.weather === 'Perfect'?"grin-stars":"question-circle"} size={25} color="white" />
+            <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 13 }}>Weather </Text>
+            <FontAwesome5 name={this.props.reducer.weather === 'Bad' ? "frown" : this.props.reducer.weather === 'Acceptable' ? "meh" : this.props.reducer.weather === 'Good' ? "smile" : this.props.reducer.weather === 'Perfect' ? "grin-stars" : "question-circle"} size={25} color="white" />
           </Button>
 
           <Button style={{ position: "absolute", top: "3%", right: '6%', borderRadius: 50, height: 45, width: 45 }}
@@ -788,7 +790,7 @@ const mapStateToProps = (state) => {
 
 const mapDispachToProps = dispatch => {
   return {
-    onModalWeather: () => dispatch({ type: "MODAL_WEATHER", value: true}),
+    onModalWeather: () => dispatch({ type: "MODAL_WEATHER", value: true }),
     setEmailData: (y) => dispatch({ type: "SET_EMAIL_DATA", value: y }),
     setUserData: (y) => dispatch({ type: "SET_USER_DATA", value: y }),
     onModalOne: () => dispatch({ type: "CLOSE_MODAL_1", value: true }),
@@ -838,7 +840,7 @@ const styles = StyleSheet.create({
     top: "-4.1%",
     alignItems: "center",
     justifyContent: "center",
-    alignSelf:"center",
+    alignSelf: "center",
     width: "30%",
     height: "8%",
     //marginLeft: "42%",
@@ -849,11 +851,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#4aa0cf",
     borderWidth: 3,
     borderColor: "white",
-     shadowColor: "white", // IOS
+    shadowColor: "white", // IOS
     // shadowOffset: { height: 4, width: 0 }, // IOS
     // shadowOpacity: 0.5, // IOS
-     shadowRadius: 0, //IOS
-     elevation: 0, // Android
+    shadowRadius: 0, //IOS
+    elevation: 0, // Android
     zIndex: 9999,
   },
   bubble1: {

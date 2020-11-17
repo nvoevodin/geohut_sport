@@ -64,19 +64,6 @@ const checkList = async (user_id) => {
     return response
 }
 
-//FUNCTION: PULL USER DATA TO SEE IF THEY EXIST
-const checkUserStatus = async (user_id) => {
-  let response = await fetch(`${global.x}/checkincheck/${user_id}`)
-    .then(res => res.json())
-    .then(res => { 
-      //console.log('res',res["data"]) 
-      return res["data"]
-    })
-    .catch((error) => {
-      console.log(error)
-    });
-    return response
-}
 
 
 //FUNCTION: HANDLE MAIN CHECKIN
@@ -220,16 +207,16 @@ export const configureBgTasks = async ({ user, storePlayground, storePlaygroundA
       //STORE PLAYGROUND
       map1.then(nearestSite=>{
         storePlayground(nearestSite.site_name,nearestSite.site_id,nearestSite.latitude,nearestSite.longitude)
-        storePlaygroundAuto(nearestSite.site_id);
-        //console.log('CURRENT DISTANCE FROM SITE: ', nearestSite.distance)
-          let sqlStamp = moment().utcOffset('-0400').format("YYYY-MM-DD HH:mm:ss").substr(0,18)+'0';
-        fetch(
-          // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
-          `${global.x}/addTracking?datetime=${sqlStamp}&latitude=${locations[0].coords.latitude}&longitude=${locations[0].coords.longitude}&nearest_site=${nearestSite.site_id}&email=${user.email}&distance=${nearestSite.distance}`,
-          { method: "POST" }
-          ).catch((error) => {
-            console.log(error)
-          })
+        // storePlaygroundAuto(nearestSite.site_id);
+        // //console.log('CURRENT DISTANCE FROM SITE: ', nearestSite.distance)
+        //   let sqlStamp = moment().utcOffset('-0400').format("YYYY-MM-DD HH:mm:ss").substr(0,18)+'0';
+        // fetch(
+        //   // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
+        //   `${global.x}/addTracking?datetime=${sqlStamp}&latitude=${locations[0].coords.latitude}&longitude=${locations[0].coords.longitude}&nearest_site=${nearestSite.site_id}&email=${user.email}&distance=${nearestSite.distance}`,
+        //   { method: "POST" }
+        //   ).catch((error) => {
+        //     console.log(error)
+        //   })
       })
 
 
@@ -242,7 +229,7 @@ export const configureBgTasks = async ({ user, storePlayground, storePlaygroundA
             //condition 1. user is not signed in at a court and within proximityMax -->SIGN THEM IN
             if ((res === undefined || res.length == 0) & nearestSite.distance <= proximityMax ) {
               //console.log(nearestSite.site_id, user_id, user.firstName, user.lastName, nearestSite.distance)
-              console.log('CHECKIN IN...');
+              //console.log('CHECKIN IN...');
                checkin(nearestSite.site_id,
                           user.email,
                           user.first_name,
@@ -263,11 +250,11 @@ export const configureBgTasks = async ({ user, storePlayground, storePlaygroundA
             }
             //condition 2. user is not signed in at a court and outside proximityMax -->NO SIGN IN
             else if ((res === undefined || res.length == 0) & nearestSite.distance > proximityMax) {
-              console.log('TOO FAR AWAY...');
+              //console.log('TOO FAR AWAY...');
             } 
             //condition 3. user is signed in at a court and still within proximityMax -->NO SIGN IN
             else if ((res !== undefined) & nearestSite.distance <= proximityMax) {
-              console.log('ALREADY SIGNED IN...');
+              //console.log('ALREADY SIGNED IN...');
             } 
             //confition 4. user is signed in at a court and outside the proximityMax now -->SIGN OUT
             else if ((res !== undefined) & nearestSite.distance > proximityMax) {
