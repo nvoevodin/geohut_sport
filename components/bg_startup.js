@@ -209,14 +209,14 @@ export const configureBgTasks = async ({ user, storePlayground, storePlaygroundA
         storePlayground(nearestSite.site_name,nearestSite.site_id,nearestSite.latitude,nearestSite.longitude)
         // storePlaygroundAuto(nearestSite.site_id);
         // //console.log('CURRENT DISTANCE FROM SITE: ', nearestSite.distance)
-        //   let sqlStamp = moment().utcOffset('-0400').format("YYYY-MM-DD HH:mm:ss").substr(0,18)+'0';
-        // fetch(
-        //   // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
-        //   `${global.x}/addTracking?datetime=${sqlStamp}&latitude=${locations[0].coords.latitude}&longitude=${locations[0].coords.longitude}&nearest_site=${nearestSite.site_id}&email=${user.email}&distance=${nearestSite.distance}`,
-        //   { method: "POST" }
-        //   ).catch((error) => {
-        //     console.log(error)
-        //   })
+           let sqlStamp = moment().utcOffset('-0400').format("YYYY-MM-DD HH:mm:ss").substr(0,18)+'0';
+         fetch(
+           // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
+           `${global.x}/addTracking?datetime=${sqlStamp}&latitude=${locations[0].coords.latitude}&longitude=${locations[0].coords.longitude}&nearest_site=${nearestSite.site_id}&email=${user.email}&distance=${nearestSite.distance}`,
+           { method: "POST" }
+           ).catch((error) => {
+             console.log(error)
+           })
       })
 
 
