@@ -460,7 +460,7 @@ class Home extends Component {
       this.setState({ submittedAnimation: true });
       await fetch(
         // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
-        `${global.x}/update?site_id=${this.props.reducer.playgroundId}&user_id=${this.props.reducer.userId[3]}&distance=${this.state.distance}&checkin_type=${this.state.submitted}`,
+        `${global.x}/update?site_id=${this.props.reducer.playgroundId}&user_id=${this.props.reducer.userId[3]}`,
         { method: "PUT" }
       ).catch((error) => {
         console.log(error)

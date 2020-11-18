@@ -67,7 +67,7 @@ const checkList = async (user_id) => {
 
 
 //FUNCTION: HANDLE MAIN CHECKIN
-const checkin = async (nearestSite, user_id, fname, lname, distance, anonymous,checkin_type) => {
+const checkin = async (nearestSite, user_id, fname, lname,anonymous) => {
 
     //if(distance < proximityMax) {
       //console.log('checking you IN via function...', distance)
@@ -79,7 +79,7 @@ const checkin = async (nearestSite, user_id, fname, lname, distance, anonymous,c
           `${global.x}/add?time=${
             moment().utc().format("YYYY-MM-DD HH:mm:ss").substr(0, 18) + "0"
           }&site_id=${nearestSite}&first_name=${anonymous ? 'Anonymous' :fname}
-          &last_name=${anonymous ? 'Player' : lname }&user_id=${user_id}&checkin_type=${checkin_type}&distance=${distance}`,
+          &last_name=${anonymous ? 'Player' : lname }&user_id=${user_id}`,
           { method: "POST" }
         ).catch((error) => {
           console.log(error)
@@ -99,7 +99,7 @@ const checkout = async (nearestSite, user_id, distance, checkin_type) => {
       //FIRST CHECK THE PERSON OUT
         await fetch(
           // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
-          `${global.x}/update?site_id=${nearestSite}&user_id=${user_id}&distance=${distance}&checkin_type=${checkin_type}`,
+          `${global.x}/update?site_id=${nearestSite}&user_id=${user_id}`,
           { method: "PUT" }
         ).catch((error) => {
           console.log(error)
@@ -234,10 +234,7 @@ export const configureBgTasks = async ({ user, storePlayground, storePlaygroundA
                           user.email,
                           user.first_name,
                           user.last_name,
-                          nearestSite.distance,
-                          anonymous,
-                          'false',
-                          nearestSite.distance
+                          anonymous
                           );
 
                //send value reducer - change color to check in
@@ -261,8 +258,8 @@ export const configureBgTasks = async ({ user, storePlayground, storePlaygroundA
                checkout(
                        nearestSite.site_id,
                        user.email, 
-                       nearestSite.distance,
-                       'true')
+                       nearestSite.distance
+                       )
 
                //send value reducer - change color to check in
                setTimeout(
