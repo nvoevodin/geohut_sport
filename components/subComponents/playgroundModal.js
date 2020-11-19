@@ -56,6 +56,18 @@ class PlaygroundModal extends Component {
 
 }
 
+//FUNCTION: STORE COURTS LOCALLY 
+_storeCourts = async (key,value) => {
+  try {
+    await AsyncStorage.setItem(
+      key,
+      JSON.stringify(value)
+    );
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 pageRefresh = () => {
 
   
@@ -63,10 +75,12 @@ fetch(`${global.x}/sites`)
 .then((res) => res.json())
 .then((res) => {
 this.setState({playgrounds:res.data})
-
+this._storeCourts('courts',res.data)
 }).catch((error) => {
   console.log(error)
 });
+
+
 
 
 fetch(`${global.x}/potential_sites`)
