@@ -59,20 +59,20 @@ class WeatherReport extends Component {
                 this.setState({overall:'Acceptable'})
               } 
 
-        } catch(e){console.log(e)}
+        } catch(e){console.log('error, no overall')}
 
     //this.setState({players:res.data})
     }).catch((error) => {
         //this.setState({temperature:0, conditions: '', wind: 0, lastUpdated:null, overall:''})
         this.updateWeather()
-      console.log('error')
+      console.log('error, initializing')
     });
 
 
   }
 
 
-  componentDidUpdate(prevProps){
+  componentDidUpdate(prevProps, prevState){
     if(prevProps.reducer.playgroundId !== this.props.reducer.playgroundId){
 
 
@@ -104,13 +104,13 @@ class WeatherReport extends Component {
                     this.setState({overall:'Acceptable'})
                   } 
 
-            } catch(e){console.log(e)}
+            } catch(e){console.log('error, no overall')}
 
         //this.setState({players:res.data})
         }).catch((error) => {
             //this.setState({temperature:0, conditions: '', wind: 0, lastUpdated:null, overall:''})
             this.updateWeather()
-          console.log('error')
+          console.log('error, updating')
         });
 
   }
@@ -123,6 +123,27 @@ class WeatherReport extends Component {
     .then(res => res.json())
     .then(res => {
 this.setState({temperature:res["main"]['temp'], conditions: res["weather"][0]["main"], wind:res["wind"]["speed"], lastUpdated: moment()})
+
+
+try{
+  if(parseFloat(res["main"]['temp']) > 95 || parseFloat(res["main"]['temp']) < 40 || (res["weather"][0]["main"] !== 'Clear' && res["weather"][0]["main"] !== 'Clouds') || parseFloat(res["wind"]["speed"]) > 14) {
+      this.props.setWeather('Bad')
+      this.setState({overall:'Bad'})
+
+    } else if ((parseFloat(res["main"]['temp']) <= 95 && parseFloat(res["main"]['temp']) >= 60) && (res["weather"][0]["main"] === 'Clear' || res["weather"][0]["main"] === 'Clouds') && parseFloat(res["wind"]["speed"]) < 7){
+      this.props.setWeather('Perfect')
+      this.setState({overall:'Perfect'})
+    } else if(parseFloat(res["wind"]["speed"]) < 11 && (parseFloat(res["main"]['temp']) <= 95 && parseFloat(res["main"]['temp']) >= 50)){
+      this.props.setWeather('Good')
+      this.setState({overall:'Good'})
+    }
+    else if(parseFloat(res["wind"]["speed"]) <= 14 && parseFloat(res["main"]['temp']) >= 40) {
+      this.props.setWeather('Acceptable')
+      this.setState({overall:'Acceptable'})
+    } 
+
+} catch(e){console.log('error, no overall in update weather')}
+
 
 fetch(
     // MUST USE YOUR LOCALHOST ACTUAL IP!!! NOT http://localhost...
