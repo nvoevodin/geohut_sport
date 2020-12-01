@@ -15,6 +15,7 @@ isAnanimous: false,
 preCheckStatus: false,
 userInfo:null,
 reportModal: false,
+countryPickerModal: false,
 reportWeatherModal: false,
 userId:[],
 tracking: false,
@@ -45,6 +46,13 @@ const ourReducer = (state = INITIAL_STATE, action) => {
       return{
         ...state,
         reportModal: action.value,
+      }
+    break;
+
+    case "MODAL_COUNTRY_PICKER":
+      return{
+        ...state,
+        countryPickerModal: action.value,
       }
     break;
 

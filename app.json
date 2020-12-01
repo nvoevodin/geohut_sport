@@ -7,7 +7,7 @@
       "android",
       "web"
     ],
-    "version": "1.1.4",
+    "version": "1.1.5",
     "orientation": "portrait",
     "icon": "./assets/appstore.png",
     "splash": {
@@ -24,7 +24,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.vcoolstudio.volleypal",
-      "buildNumber": "1.1.4",
+      "buildNumber": "1.1.5",
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription" : "Allow VolleyPal to use your location. Your location is used to check you in at the appropriate court when you enter it, and for adding new courts. Your location data are not used or stored for any other purpose.",
         "NSLocationAlwaysAndWhenInUseUsageDescription": "Allow VolleyPal to use your location. Your location is used to check you in at the appropriate court when you enter it, and for adding new courts. Your location data are not used or stored for any other purpose.",
@@ -38,7 +38,7 @@
     },
     "android": {
       "package": "com.vcoolstudio.volleypal",
-      "versionCode": 17
+      "versionCode": 18
     },
     "description": ""
   }

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {StyleSheet,Modal, TouchableOpacity, Alert} from 'react-native';
+import {StyleSheet,Modal, TouchableOpacity, Alert, Image,View} from 'react-native';
 import {Container, Header, Content, List, ListItem, Icon, Button, Left,Right, Body, Title,Text, Tab, Tabs,TabHeading} from 'native-base';
 import { connect } from 'react-redux';
 import { Entypo } from '@expo/vector-icons';
@@ -8,7 +8,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-community/async-storage';
 import { getDistance } from "geolib";
 import * as Location from "expo-location";
-
+import { Octicons } from '@expo/vector-icons'; 
 
 
 class PlaygroundModal extends Component {
@@ -24,13 +24,38 @@ class PlaygroundModal extends Component {
         
     }
 
-    getPlaygrounds = () => {
+    getPlaygrounds = async () => {
 
-  
+    let location = await this.getCurrentLoc();
+    
     fetch(`${global.x}/sites`)
     .then((res) => res.json())
     .then((res) => {
-    this.setState({playgrounds:res.data})
+
+var distanceData = res.data.map( (i) =>  {
+                       //test how far away the user is
+                       let distance = this.calculateDistance(
+                        parseFloat(location[0].coords.latitude),
+                        parseFloat(location[0].coords.longitude),
+                        i.latitude,
+                        i.longitude
+                      );
+
+                      i["distance"] = distance["distance"]/1000
+
+                      return i
+
+
+                    
+      })
+
+     
+
+
+
+       
+
+    this.setState({playgrounds:distanceData})
     
     }).catch((error) => {
       console.log(error)
@@ -104,36 +129,39 @@ alert('Refreshed')
 
 }
 
+
+makeDefault =(name,id,lat,lon)=>{
+  Alert.alert(
+    `${name} selected.`,
+    `Do you want to make ${name} your default court?`,
+    [
+      {
+        text: "No",
+        onPress: () => {
+  
+        },
+        style: "cancel"
+      },
+      { text: "Yes", onPress: () => {
+  
+        this.setState({defaultCourtId:id})
+  
+        try {
+          AsyncStorage.setItem('defaultCourt', JSON.stringify([name,id,lat,lon]))
+        } catch (e) {
+          console.log('something wrong (storage)')
+        }
+  
+        alert(`Nice! ${name} is your new default court.`)
+      } }
+    ],
+    { cancelable: false }
+  );
+}
+
 selectPlayground = (name,id,lat,lon) => {
 this.props.storePlayground(name,id,lat,lon)
 
-
-Alert.alert(
-  `${name} selected.`,
-  `Do you want to make ${name} your default court?`,
-  [
-    {
-      text: "No",
-      onPress: () => {
-
-      },
-      style: "cancel"
-    },
-    { text: "Yes", onPress: () => {
-
-      this.setState({defaultCourtId:id})
-
-      try {
-        AsyncStorage.setItem('defaultCourt', JSON.stringify([name,id,lat,lon]))
-      } catch (e) {
-        console.log('something wrong (storage)')
-      }
-
-      alert(`Nice! ${name} is your new default court.`)
-    } }
-  ],
-  { cancelable: false }
-);
 
 
 }
@@ -280,19 +308,71 @@ calculateDistance = (start_x,start_y, end_x,end_y, name) => {
         
         <Content>
           <List>
+            <ListItem>
+              <View style={{flexDirection:'row', flex:1, justifyContent:'space-between'}}>
+
+              
+              <View style={{flexDirection:'row'}}>
+              <Octicons name="settings" size={24} color="black" />
+              <Text style = {{marginLeft:5,fontSize:13}}>Filters</Text>
+              </View>
+              <View style={{flexDirection:'row', justifyContent:'space-between'}}>
+<Text style= {{fontSize:13}}>New York | Distance | Beach | Test | Testing</Text>
+              </View>
+              </View>
+            </ListItem>
           {this.state.playgrounds.map((object,index) =>
           
                         <ListItem  key = {index}>
                           <TouchableOpacity style = {{flexDirection:'row'}} onPress={() => {this.selectPlayground(object["site_name"], object["site_id"], object["latitude"], object["longitude"]),  this.props.checkIfChecked(),this.props.checkIfPreChecked()}}>
-                <Left>
-              <Text>{object["site_name"]}</Text>
-              </Left>
-              <Right>
-                {this.state.defaultCourtId === object["site_id"]?<Text>default</Text>:null}
+                
+                <Image
+        style={styles.tinyLogo}
+        source={{
+          uri: 'https://www.fivb.org/Vis2009/Images/GetImage.asmx?No=90913&type=Press&maxSize=920',
+        }}
+      />
+              {/* <Text>{object["site_name"]}</Text> */}
+            
+              
+                <View style = {{marginLeft:10, flex:1, justifyContent:'space-between'}}>
+                  <View style={{alignSelf:'flex-start'}}>
+                  <Text style = {{fontWeight:'bold'}}>{object["site_name"]}</Text>
+                    </View>
+                 <View style={{flexDirection:'row', justifyContent:'space-between'}}>
+                   <View>
+                   <Text>New York</Text>
+                   </View>
+                 
+                <View>
+                <Text>{object["distance"]} km</Text>
+                </View>
+                 
+                
+                 </View>
+     
+                   <View>
+                   {this.state.defaultCourtId === object["site_id"]?
+                   <Button style = {{textAlign: 'center', margin: 'auto',height: 35}}
+                   onPress ={() => {this.makeDefault(object["site_name"], object["site_id"], object["latitude"], object["longitude"])}}
+                   success
+                   disabled >
+                    <Text style = {{fontSize:10}}>Default</Text>
+                    </Button>:
+                                <Button style = {{textAlign: 'center', margin: 'auto',height: 35}}
+                                onPress ={() => {this.makeDefault(object["site_name"], object["site_id"], object["latitude"], object["longitude"])}}
+                                info >
+                                 <Text style = {{fontSize:10}}>Default?</Text>
+                                 </Button>
+  }
+                   </View>
+          
+                </View>
+                 {/* {this.state.defaultCourtId === object["site_id"]?<Text>default</Text>:null} */}
             {/* <Button onPress={() => {this.selectPlayground(object["site_name"], object["site_id"], object["latitude"], object["longitude"]), this.props.onModalOne(), this.props.checkIfChecked(),this.props.checkIfPreChecked()}}>
               <Icon name='arrow-forward'/>
             </Button> */}
-          </Right>
+          
           </TouchableOpacity>
             </ListItem>
           
@@ -338,6 +418,16 @@ calculateDistance = (start_x,start_y, end_x,end_y, name) => {
     );
   }
 }
+
+const styles = StyleSheet.create({
+
+  tinyLogo: {
+    width: 100,
+    height: 100,
+    
+  },
+
+});
 
 
 
